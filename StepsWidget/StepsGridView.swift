@@ -94,9 +94,9 @@ struct StepsGridView: View {
                 .fill(fill)
                 .overlay {
                     if date == today {
-                        // Highlight today with a contrasting ring (reads against any fill).
+                        // Highlight today with a gold ring (Steps accent).
                         RoundedRectangle(cornerRadius: corner, style: .continuous)
-                            .strokeBorder(Color.primary, lineWidth: max(corner * 0.45, 1.3))
+                            .strokeBorder(Color.stepsGold, lineWidth: max(corner * 0.45, 1.3))
                     }
                 }
         }
