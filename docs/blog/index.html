@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!--
+  devlog-new single-page template. Newest post first in #posts.
+  Plain static HTML — any static host serves it. Seeded from real project history.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Steps — Devlog</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="nav-left">
+    <a class="blog-title" href="./">Steps</a>
+    <!-- Optional standing pages added later (e.g. Goal, Decisions):
+    <nav aria-label="Devlog"><a href="goal.html">Goal</a></nav> -->
+  </div>
+  <div class="nav-right">
+    <a class="action-link" href="https://github.com/berndpl/Steps">View source</a>
+  </div>
+</header>
+
+<main id="top">
+<header class="hero">
+  <div class="hero-copy">
+    <h1>Steps</h1>
+    <p class="tagline">Your last month of steps, as a GitHub-style contribution grid.</p>
+    <p class="short">A small iOS app and home-screen widget that reads Apple Health and paints each day of the month by how close you got to 10,000 steps — empty to deep green, the way a contribution graph reads a year of commits.</p>
+    <p class="hero-cta"><a class="action-link" href="https://github.com/berndpl/Steps">View source</a></p>
+  </div>
+</header>
+
+<section id="posts">
+  <article class="entry">
+    <div class="date">2026-06-25 · design + widget</div>
+    <h3>A gold identity, today's count, and a ring on today</h3>
+    <p>Steps got its own look. Applying the <code>Deskgym</code> style (SF Rounded <strong>bold</strong> <code>monospacedDigit</code> numbers, a single Liquid-Glass <code>.glassProminent</code> action, flat surfaces with no shadows) but with a deliberately distinct accent: <strong>gold <code>#F5A623</code></strong>. The gold doubles as the grid's goal-reached colour, so a day that clears 10,000 steps flips from the darkest green to the same gold as the app's number — one coherent identity instead of a borrowed one.</p>
+    <p>The widget also stopped being grid-only. A small footer now sits under the month — a <code>figure.walk</code> glyph, today's total in gold, and a muted “today” — and <strong>today's cell carries a <code>Color.primary</code> ring</strong> so you can find it at a glance against any fill, green or gold. The grid and footer are one shared <code>StepsMonthView</code>, so the home screen and the in-app preview can't drift apart.</p>
+    <p>Provenance note: the earlier post said Steps skips an App Group. That changed — a <code>SharedStore</code> in the App Group container now lets the app sync recent totals for the widget to read instantly, with the direct HealthKit query kept only as a first-run fallback. The old decision is left below as written, because that's how it actually went.</p>
+  </article>
+
+  <article class="entry">
+    <div class="date">2026-06-24 · widget</div>
+    <h3>A month of steps as a contribution grid</h3>
+    <p>The home-screen widget lays out the current calendar month like a real calendar — seven weekday columns across, week rows down, the 1st sitting in its true weekday slot and honoring whether your week starts Sunday or Monday. Days outside the month stay blank so the month's shape reads at a glance; future days this month render as faint placeholders.</p>
+    <p>Each day's colour is bucketed against a fixed 10,000-step goal in quarters: empty, then four greens lifted from GitHub's contribution ramp (<code>#9be9a8</code> → <code>#216e39</code>). The goal is fixed on purpose — a green square should mean the same thing every day, not drift with a moving target. The grid is a single <code>StepsGridView</code> shared between the app and the widget, so the in-app preview and the home screen render from the exact same code. <a href="https://github.com/berndpl/Steps/commit/62638e6e7721ae1d5ee2b24e770c03dab70923b0"><code>62638e6</code></a></p>
+  </article>
+
+  <article class="entry">
+    <div class="date">2026-06-24 · architecture</div>
+    <h3>Reading Health without an App Group</h3>
+    <p>App and widget both need step data, and the textbook path is an App Group with a shared cache to hand totals from one to the other. Steps skips it. <code>HealthKitService.swift</code> is compiled into <em>both</em> targets, and HealthKit authorization granted to the app is inherited by its extensions — so the widget queries <code>HKStatisticsCollectionQuery</code> directly, with no shared container and nothing to keep in sync.</p>
+    <p>The app itself stays a single live view that routes through four phases — loading, needs-permission, ready, denied — driven by what HealthKit will tell us (it deliberately hides whether read access was granted). A <code>DEBUG</code>-only preview switcher, compiled out of release builds, lets any of those screens open with one tap during development without seeding data. <a href="https://github.com/berndpl/Steps/commit/62638e6e7721ae1d5ee2b24e770c03dab70923b0"><code>62638e6</code></a></p>
+    <div class="decisions">
+      <div class="card"><h3>Decided for</h3><ul class="for">
+        <li>One <code>HealthKitService.swift</code>, a member of both targets</li>
+        <li>Widget queries HealthKit directly — the extension inherits the app's read auth</li>
+        <li>Re-query on each refresh; nothing persisted, always fresh</li>
+      </ul></div>
+      <div class="card"><h3>Decided against</h3><ul class="against">
+        <li>An App Group container to pass data app → widget</li>
+        <li>A cached or synced step store to keep the two in step</li>
+        <li>A configurable goal, which would make the colour scale ambiguous</li>
+      </ul></div>
+    </div>
+  </article>
+</section>
+</main>
+
+<footer>Steps devlog · seeded from project history · 2026-06-24</footer>
+</body>
+</html>

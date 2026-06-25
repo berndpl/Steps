@@ -1,0 +1,28 @@
+{
+  "backgroundHex" : "#EFF0F6",
+  "backgroundLayer" : "dotted",
+  "cloneOpacityVariation" : 0.6,
+  "cloneScale" : 1.15,
+  "cloneScaleVariation" : 0.55,
+  "cornerRadius" : 8,
+  "cornerRadiusVariation" : 5,
+  "createdAt" : "2026-06-24T09:46:28Z",
+  "distributesRotationEvenly" : true,
+  "foregroundHex" : "#111111",
+  "includeIconPackage" : false,
+  "includePreview" : false,
+  "lineThickness" : 4.2,
+  "lineThicknessVariation" : 3.5,
+  "outputPath" : "Steps/Assets.xcassets",
+  "platforms" : [
+    "ios"
+  ],
+  "projectPath" : ".",
+  "prototypeOnly" : false,
+  "schemaVersion" : 1,
+  "selectedSymbolID" : "shape:triangle-echo",
+  "shapeRepetitions" : 7,
+  "shapeRotationDegrees" : 18,
+  "shapeVariantID" : "triangle-echo",
+  "transparentMacBackground" : false
+}

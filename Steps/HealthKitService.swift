@@ -14,24 +14,60 @@ import HealthKit
 /// measured relative to this fixed goal so colors mean the same thing every day.
 let dailyStepGoal = 10_000
 
-/// Maps a day's step total to an intensity level 0...4 (empty → full).
+/// Maps a day's step total to an intensity level 0...5.
 ///
-/// Buckets are quarters of the 10k goal so the green ramp reads like GitHub's
-/// contribution graph:
-///   0 steps → 0 (empty), 1–2500 → 1, 2501–5000 → 2, 5001–7500 → 3, 7501+ → 4.
+/// Levels 1–4 are quarters of the 10k goal so the green ramp reads like GitHub's
+/// contribution graph; level 5 is reserved for days that *reached the goal*, which
+/// get a distinct standout color (not just the darkest green):
+///   0 → 0 (empty), 1–2500 → 1, 2501–5000 → 2, 5001–7500 → 3,
+///   7501–9999 → 4, 10000+ → 5 (goal reached).
 func level(for steps: Int) -> Int {
     switch steps {
     case ..<1: return 0
     case ..<2_501: return 1
     case ..<5_001: return 2
     case ..<7_501: return 3
-    default: return 4
+    case ..<dailyStepGoal: return 4
+    default: return 5
     }
 }
 
 enum HealthKitError: Error {
     case notAvailable
     case noStepType
+}
+
+/// Shared cache in the App Group container, written by the app and read by the
+/// widget — so the widget renders instantly from synced data without needing its
+/// own HealthKit query on every timeline refresh.
+enum SharedStore {
+    static let appGroup = "group.de.plontsch.steps"
+    private static let key = "dailySteps"
+
+    private static var defaults: UserDefaults? { UserDefaults(suiteName: appGroup) }
+
+    /// Persist daily totals. Encoded as [startOfDay-epoch-string: steps] because
+    /// UserDefaults can't store Date keys directly.
+    static func save(_ steps: [Date: Int]) {
+        let calendar = Calendar.current
+        var encoded: [String: Int] = [:]
+        for (date, count) in steps {
+            let day = calendar.startOfDay(for: date)
+            encoded[String(Int(day.timeIntervalSince1970))] = count
+        }
+        defaults?.set(encoded, forKey: key)
+    }
+
+    static func load() -> [Date: Int] {
+        guard let encoded = defaults?.dictionary(forKey: key) as? [String: Int] else { return [:] }
+        var out: [Date: Int] = [:]
+        for (epoch, count) in encoded {
+            if let t = TimeInterval(epoch) {
+                out[Date(timeIntervalSince1970: t)] = count
+            }
+        }
+        return out
+    }
 }
 
 final class HealthKitService {
@@ -97,6 +133,15 @@ final class HealthKitService {
             }
         }
         return totals
+    }
+
+    /// Fetch recent daily totals and write them to the shared App Group cache so
+    /// the widget can render from synced data. Returns the data for reuse.
+    @discardableResult
+    func refreshSharedCache(daysBack: Int = 42) async -> [Date: Int] {
+        let data = (try? await dailySteps(daysBack: daysBack)) ?? [:]
+        if !data.isEmpty { SharedStore.save(data) }
+        return data
     }
 
     /// Plausible fake per-day step totals for previews and DEBUG testing

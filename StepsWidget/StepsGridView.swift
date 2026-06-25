@@ -10,21 +10,49 @@
 
 import SwiftUI
 
+extension Color {
+    /// Steps accent / goal-reached gold (#F5A623). Shared by app + widget.
+    static let stepsGold = Color(.sRGB, red: 0.96, green: 0.65, blue: 0.14)
+}
+
+/// The full small-widget content: the calendar-month grid plus today's step
+/// count. Shared so the widget and the in-app preview render identically.
+struct StepsMonthView: View {
+    let dailySteps: [Date: Int]
+
+    private var todaySteps: Int {
+        dailySteps[Calendar.current.startOfDay(for: Date())] ?? 0
+    }
+
+    var body: some View {
+        VStack(spacing: 6) {
+            StepsGridView(dailySteps: dailySteps)
+            // Today's count — just the number (Spark/Letters: monospaced).
+            Text(todaySteps, format: .number)
+                .font(.system(.footnote, design: .monospaced, weight: .semibold))
+                .foregroundStyle(Color.stepsGold)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
 struct StepsGridView: View {
     /// Per-day step totals keyed by local start-of-day (from HealthKitService).
     let dailySteps: [Date: Int]
 
     private let columns = 7   // days of the week
 
-    /// GitHub-inspired green ramp, level 0...4. Comment keeps values regenerable.
-    /// Buckets are quarters of the 10k goal (see `level(for:)`):
-    ///   L0 empty, L1 #9be9a8, L2 #40c463, L3 #30a14e, L4 #216e39.
+    /// GitHub-inspired green ramp (L0–L4) plus a standout gold for goal-reached
+    /// days (L5). Comment keeps values regenerable. See `level(for:)`:
+    ///   L0 empty, L1 #9be9a8, L2 #40c463, L3 #30a14e, L4 #216e39,
+    ///   L5 goal reached → #F5A623 (gold, pops against the green).
     private let ramp: [Color] = [
         Color(.sRGB, red: 0.93, green: 0.93, blue: 0.94),       // L0 empty (in-month, 0 steps)
         Color(.sRGB, red: 0.61, green: 0.91, blue: 0.66),       // L1
         Color(.sRGB, red: 0.25, green: 0.77, blue: 0.39),       // L2
         Color(.sRGB, red: 0.19, green: 0.63, blue: 0.31),       // L3
         Color(.sRGB, red: 0.13, green: 0.43, blue: 0.22),       // L4
+        .stepsGold,                                             // L5 goal reached (gold)
     ]
 
     var body: some View {
@@ -60,15 +88,17 @@ struct StepsGridView: View {
             Color.clear
         } else if let date = month.date(forDay: dayNumber) {
             let today = Calendar.current.startOfDay(for: Date())
-            if date > today {
-                // Future days this month: faint placeholder.
-                RoundedRectangle(cornerRadius: corner)
-                    .fill(ramp[0].opacity(0.4))
-            } else {
-                let steps = dailySteps[date] ?? 0
-                RoundedRectangle(cornerRadius: corner)
-                    .fill(ramp[level(for: steps)])
-            }
+            let fill = date > today ? ramp[0].opacity(0.4)          // future day, faint
+                                    : ramp[level(for: dailySteps[date] ?? 0)]
+            RoundedRectangle(cornerRadius: corner, style: .continuous)
+                .fill(fill)
+                .overlay {
+                    if date == today {
+                        // Highlight today with a contrasting ring (reads against any fill).
+                        RoundedRectangle(cornerRadius: corner, style: .continuous)
+                            .strokeBorder(Color.primary, lineWidth: max(corner * 0.45, 1.3))
+                    }
+                }
         }
     }
 }
