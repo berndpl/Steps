@@ -34,6 +34,13 @@
 
 <section id="posts">
   <article class="entry">
+    <div class="date">2026-06-27 · widgets</div>
+    <h3>Off the home screen, onto the lock screen — and a grid you can tune</h3>
+    <p>The widget stopped waiting for the app to open. An <code>HKObserverQuery</code> with HealthKit background delivery now refreshes it when your steps actually change — instantly in the foreground, roughly hourly when closed — and the timeline heartbeat tightened from an hour to fifteen minutes. Then it left the home screen entirely: two lock-screen accessories, a <em>Steps Ring</em> (count plus a goal gauge) and <em>Tiny Steps</em> (a single SF Symbol that evolves every 1,000 steps), built tint-safe so they read on the desaturated lock screen where the gold and green can't go. <a href="https://github.com/berndpl/Steps/commit/0eaebcb22a1a71bfaa1ad7585b8f04796d7cd442"><code>0eaebcb</code></a></p>
+    <p>Notifications arrived, opt-in: one catch-up nudge per crossed thousand, a louder one at the 10k goal, and "New monthly best!" the moment today beats every other day this month — a challenge that resets with the calendar. They ride the same step observer, so they cost nothing extra in the background.</p>
+    <p>The contribution grid grew a dial. It's generated continuously in OKLCH now instead of five fixed buckets, so a day's exact steps get an exact colour; a response-curve <em>spread</em> slider decides how hard goal days pop while the middling days recede. A paintbrush sheet opens palette presets, full-custom ramp and goal colour wells, and a day-shape pick (rounded, circle, squircle), all previewed on a live example month. The chosen goal colour ripples out to become the app accent, the month's best day wears a quiet dot, and every choice is written to the App Group so the widget wears it too. <a href="https://github.com/berndpl/Steps/commit/0eaebcb22a1a71bfaa1ad7585b8f04796d7cd442"><code>0eaebcb</code></a></p>
+  </article>
+  <article class="entry">
     <div class="date">2026-06-25 · design</div>
     <h3>Two surfaces, one gold thread</h3>
     <p>The app and the widget stopped sharing a look. The app now wears <code>notes-plontsch</code> — Catppuccin Mocha (dark) / Latte (light) surfaces, monospaced SF Mono throughout, flat, with weight flattened so emphasis comes from size and colour, not bold. The row of debug chips along the bottom collapsed into a single ladybug menu in the corner. <a href="https://github.com/berndpl/Steps/commit/d32e768dcef691d55cb28f61fe8e953d7b011dd1"><code>d32e768</code></a></p>
