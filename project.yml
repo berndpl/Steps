@@ -60,6 +60,9 @@ targets:
       path: Steps/Steps.entitlements
       properties:
         com.apple.developer.healthkit: true
+        # Lets HealthKit wake the app when new step samples arrive, so the
+        # observer can refresh the cache and reload the widget while closed.
+        com.apple.developer.healthkit.background-delivery: true
         com.apple.security.application-groups:
           - group.de.plontsch.steps
 
@@ -69,6 +72,7 @@ targets:
     sources:
       - path: StepsWidget
       - path: Steps/HealthKitService.swift
+      - path: Steps/GridStyle.swift          # shared: OKLCH ramp, GridStyle, shapes, palettes
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: de.plontsch.Steps.StepsWidget

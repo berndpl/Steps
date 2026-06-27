@@ -10,11 +10,16 @@
 		08D80B55E4B0789F69EFBC36 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CA3444CD9578DC32CC1F7D6F /* Assets.xcassets */; };
 		0D301650C390E3EA15892D35 /* StepsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A747E8CF173847817DFFEA /* StepsWidget.swift */; };
 		13231D59C4AC3684C3072D53 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650647087439AF5B333EB4AA /* HealthKitService.swift */; };
+		151BC8601660D2C61853577C /* GridStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D18FEE6FA38F062795F9BA /* GridStyle.swift */; };
 		1ECAC28A92B67138FC45693D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D6048643F41AAF2121BC801 /* ContentView.swift */; };
 		291BD0276B5B3982791683F5 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650647087439AF5B333EB4AA /* HealthKitService.swift */; };
 		2AA3D6B7EC6DF2DCFF83EFB6 /* StepsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C0293D916723287F977B02 /* StepsGridView.swift */; };
 		8987E0C38169E9652FE0D75B /* StepsWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DBFE320E0FFC1A13224B7567 /* StepsWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		9C1C3103D24CF24D51FF996D /* GridStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D18FEE6FA38F062795F9BA /* GridStyle.swift */; };
+		C23E035F4B508FBC20D7B5D1 /* StepsAccessoryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652546EE4DB6EA22B2F2E57B /* StepsAccessoryViews.swift */; };
+		C70B023CEE7FFBB91CFCBCA7 /* GridCustomizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94D00A1E1E247E0D5F0B5A6 /* GridCustomizationView.swift */; };
 		D84F3D63196C3CD062E7E12F /* StepsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C0293D916723287F977B02 /* StepsGridView.swift */; };
+		E14510AFFB30410EA6D6850A /* StepNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EF689CDC383CFD433DD833 /* StepNotifier.swift */; };
 		FA5787B1A276553491D3584B /* StepsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF37174DA15C09DDA6AD5E /* StepsApp.swift */; };
 /* End PBXBuildFile section */
 
@@ -44,16 +49,20 @@
 
 /* Begin PBXFileReference section */
 		11BF37174DA15C09DDA6AD5E /* StepsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsApp.swift; sourceTree = "<group>"; };
+		26D18FEE6FA38F062795F9BA /* GridStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridStyle.swift; sourceTree = "<group>"; };
 		2FEEE04CC6987E48638A774B /* Steps.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Steps.entitlements; sourceTree = "<group>"; };
 		37C0293D916723287F977B02 /* StepsGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsGridView.swift; sourceTree = "<group>"; };
 		650647087439AF5B333EB4AA /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
+		652546EE4DB6EA22B2F2E57B /* StepsAccessoryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsAccessoryViews.swift; sourceTree = "<group>"; };
 		79A747E8CF173847817DFFEA /* StepsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsWidget.swift; sourceTree = "<group>"; };
 		7D6048643F41AAF2121BC801 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A94D00A1E1E247E0D5F0B5A6 /* GridCustomizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCustomizationView.swift; sourceTree = "<group>"; };
 		A9C502E3EBF043D1C48B3449 /* Steps.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Steps.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA3444CD9578DC32CC1F7D6F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DBFE320E0FFC1A13224B7567 /* StepsWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = StepsWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0FA048CA0AEF0106A456611 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F2EAAE91F5047E9330C33D6A /* StepsWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepsWidget.entitlements; sourceTree = "<group>"; };
+		F4EF689CDC383CFD433DD833 /* StepNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepNotifier.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -61,6 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				E0FA048CA0AEF0106A456611 /* Info.plist */,
+				652546EE4DB6EA22B2F2E57B /* StepsAccessoryViews.swift */,
 				37C0293D916723287F977B02 /* StepsGridView.swift */,
 				F2EAAE91F5047E9330C33D6A /* StepsWidget.entitlements */,
 				79A747E8CF173847817DFFEA /* StepsWidget.swift */,
@@ -82,7 +92,10 @@
 			children = (
 				CA3444CD9578DC32CC1F7D6F /* Assets.xcassets */,
 				7D6048643F41AAF2121BC801 /* ContentView.swift */,
+				A94D00A1E1E247E0D5F0B5A6 /* GridCustomizationView.swift */,
+				26D18FEE6FA38F062795F9BA /* GridStyle.swift */,
 				650647087439AF5B333EB4AA /* HealthKitService.swift */,
+				F4EF689CDC383CFD433DD833 /* StepNotifier.swift */,
 				2FEEE04CC6987E48638A774B /* Steps.entitlements */,
 				11BF37174DA15C09DDA6AD5E /* StepsApp.swift */,
 			);
@@ -194,7 +207,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				1ECAC28A92B67138FC45693D /* ContentView.swift in Sources */,
+				C70B023CEE7FFBB91CFCBCA7 /* GridCustomizationView.swift in Sources */,
+				151BC8601660D2C61853577C /* GridStyle.swift in Sources */,
 				13231D59C4AC3684C3072D53 /* HealthKitService.swift in Sources */,
+				E14510AFFB30410EA6D6850A /* StepNotifier.swift in Sources */,
 				FA5787B1A276553491D3584B /* StepsApp.swift in Sources */,
 				D84F3D63196C3CD062E7E12F /* StepsGridView.swift in Sources */,
 			);
@@ -204,7 +220,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C1C3103D24CF24D51FF996D /* GridStyle.swift in Sources */,
 				291BD0276B5B3982791683F5 /* HealthKitService.swift in Sources */,
+				C23E035F4B508FBC20D7B5D1 /* StepsAccessoryViews.swift in Sources */,
 				2AA3D6B7EC6DF2DCFF83EFB6 /* StepsGridView.swift in Sources */,
 				0D301650C390E3EA15892D35 /* StepsWidget.swift in Sources */,
 			);

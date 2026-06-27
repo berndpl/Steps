@@ -9,6 +9,7 @@
 
 import Foundation
 import HealthKit
+import WidgetKit
 
 /// Daily step goal used to bucket grid intensity. GitHub-style "usage" is
 /// measured relative to this fixed goal so colors mean the same thing every day.
@@ -30,6 +31,45 @@ func level(for steps: Int) -> Int {
     case ..<dailyStepGoal: return 4
     default: return 5
     }
+}
+
+/// A "Tiny Steps" milestone: one stage per 1,000 steps, from a fresh start (0) to
+/// the 10k goal (10). Each stage carries two faces of the same idea:
+///   - `symbol`: an SF Symbol for widgets / lock screen / watch face, because those
+///     surfaces render desaturated/tinted — symbols stay crisp where emoji would
+///     flatten to a white blob.
+///   - `emoji`: the colorful face for full-color notification banners.
+/// Plus `message`, the encouraging line shown in the milestone notification.
+///
+/// The goal is fixed at 10,000 (see `dailyStepGoal`) so "every 1,000 steps = one
+/// new symbol" maps cleanly to exactly these 11 stages.
+struct StepStage {
+    let thousands: Int   // 0...10
+    let symbol: String   // SF Symbol name (tint-safe surfaces)
+    let emoji: String    // notification banner (full color)
+    let message: String  // encouraging copy
+}
+
+/// The 0…10 stage table. Index == thousands of steps completed.
+private let stepStages: [StepStage] = [
+    StepStage(thousands: 0,  symbol: "circle.dotted",      emoji: "🥚", message: "A fresh start — let's go."),
+    StepStage(thousands: 1,  symbol: "figure.walk",        emoji: "🐣", message: "You're on your way!"),
+    StepStage(thousands: 2,  symbol: "figure.walk",        emoji: "🐤", message: "Nice and steady."),
+    StepStage(thousands: 3,  symbol: "figure.walk.motion", emoji: "🚶", message: "Finding your rhythm."),
+    StepStage(thousands: 4,  symbol: "figure.walk.motion", emoji: "🚶", message: "Almost halfway there."),
+    StepStage(thousands: 5,  symbol: "figure.run",         emoji: "🏃", message: "Halfway — keep it up!"),
+    StepStage(thousands: 6,  symbol: "figure.run",         emoji: "🏃", message: "Past the midpoint!"),
+    StepStage(thousands: 7,  symbol: "flame",              emoji: "🔥", message: "You're on fire."),
+    StepStage(thousands: 8,  symbol: "flame.fill",         emoji: "🔥", message: "So close now."),
+    StepStage(thousands: 9,  symbol: "bolt.fill",          emoji: "⚡️", message: "One more to the goal!"),
+    StepStage(thousands: 10, symbol: "trophy.fill",        emoji: "🏆", message: "Goal reached! Amazing."),
+]
+
+/// The stage for a given step total. Clamped to the 10k goal — anything at or above
+/// the goal is the final trophy stage.
+func stage(for steps: Int) -> StepStage {
+    let index = max(0, min(steps / 1_000, 10))
+    return stepStages[index]
 }
 
 enum HealthKitError: Error {
@@ -70,13 +110,141 @@ enum SharedStore {
     }
 }
 
+/// Small preferences + milestone-progress store in the same App Group container.
+/// Kept beside `SharedStore` so the settings toggle and the milestone bookkeeping
+/// are reachable from the app process (the only place notifications are scheduled).
+enum SettingsStore {
+    static let appGroup = SharedStore.appGroup
+
+    /// Shared so `@AppStorage(..., store:)` in the UI and the background observer
+    /// read/write the very same defaults. Falls back to `.standard` if the App
+    /// Group suite is somehow unavailable (keeps `@AppStorage` non-optional).
+    static let defaults = UserDefaults(suiteName: appGroup) ?? .standard
+
+    /// Whether per-1,000-step milestone notifications are enabled.
+    static let notificationsEnabledKey = "milestoneNotificationsEnabled"
+
+    private static let lastNotifiedThousandKey = "lastNotifiedThousand"
+    private static let lastNotifiedDayKey = "lastNotifiedDay"   // start-of-day epoch
+
+    static var notificationsEnabled: Bool {
+        defaults.bool(forKey: notificationsEnabledKey)
+    }
+
+    /// Highest thousand-milestone already notified *today*. Reading on a new day
+    /// returns 0 so the next walk starts a fresh ladder of alerts.
+    static var lastNotifiedThousand: Int {
+        get {
+            guard isToday(defaults.object(forKey: lastNotifiedDayKey) as? Double) else { return 0 }
+            return defaults.integer(forKey: lastNotifiedThousandKey)
+        }
+        set {
+            let today = Calendar.current.startOfDay(for: Date()).timeIntervalSince1970
+            defaults.set(today, forKey: lastNotifiedDayKey)
+            defaults.set(newValue, forKey: lastNotifiedThousandKey)
+        }
+    }
+
+    // MARK: Monthly-record notification bookkeeping
+
+    private static let monthRecordNotifiedDayKey = "monthRecordNotifiedDay"
+
+    /// Whether the "new monthly best" alert already fired *today* — so it doesn't
+    /// re-fire as today's total keeps climbing past the (unchanging) prior best.
+    /// Resets daily; the record itself resets monthly because only current-month
+    /// days are ever compared (see `monthBestDay`).
+    static var hasNotifiedMonthRecordToday: Bool {
+        isToday(defaults.object(forKey: monthRecordNotifiedDayKey) as? Double)
+    }
+
+    static func markMonthRecordNotifiedToday() {
+        defaults.set(Calendar.current.startOfDay(for: Date()).timeIntervalSince1970,
+                     forKey: monthRecordNotifiedDayKey)
+    }
+
+    // MARK: Grid appearance (read by the widget via the App Group)
+
+    // Keys are public so `@AppStorage(key, store: SettingsStore.defaults)` in the
+    // customization sheet writes the very same values these accessors read.
+    static let gridRampHexKey = "gridRampHex"
+    static let gridGoalHexKey = "gridGoalHex"
+    static let gridSpreadKey = "gridSpread"
+    static let gridShapeKey = "gridShape"
+
+    static var gridRampHex: String {
+        defaults.string(forKey: gridRampHexKey) ?? GridStyle.defaultRampHex
+    }
+    static var gridGoalHex: String {
+        defaults.string(forKey: gridGoalHexKey) ?? GridStyle.defaultGoalHex
+    }
+    static var gridSpread: Double {
+        (defaults.object(forKey: gridSpreadKey) as? Double) ?? GridStyle.defaultSpread
+    }
+    static var gridShape: String {
+        defaults.string(forKey: gridShapeKey) ?? DayShape.roundedSquare.rawValue
+    }
+
+    private static func isToday(_ epoch: Double?) -> Bool {
+        guard let epoch else { return false }
+        let stored = Date(timeIntervalSince1970: epoch)
+        return Calendar.current.isDateInToday(stored)
+    }
+}
+
 final class HealthKitService {
     static let shared = HealthKitService()
+
+    /// Set by the app (in `AppDelegate`) to react to every step refresh — used to
+    /// fire milestone notifications. Lives here so the same observer that updates
+    /// the widget cache also drives alerts, on the same (throttled) background
+    /// wake-ups. Receives today's running total.
+    static var onStepsUpdate: ((Int) -> Void)?
 
     private let store = HKHealthStore()
     private let stepType = HKQuantityType(.stepCount)
 
+    /// Retained so the long-lived observer query keeps running; also guards
+    /// against registering it more than once per launch.
+    private var observerQuery: HKObserverQuery?
+
     private init() {}
+
+    /// Starts a long-lived observer that refreshes the shared cache and reloads
+    /// the widget whenever HealthKit reports new step samples — so the grid keeps
+    /// up with the current step count without the user opening the app.
+    ///
+    /// Paired with background delivery, iOS wakes the app (subject to its own
+    /// throttling — roughly hourly for step count in the background) when new
+    /// samples land; while the app is in the foreground the observer fires
+    /// immediately. Safe to call repeatedly; it only registers once.
+    ///
+    /// Requires the `com.apple.developer.healthkit.background-delivery`
+    /// entitlement and granted read access (no-ops harmlessly before either).
+    func startObservingSteps() {
+        guard HKHealthStore.isHealthDataAvailable(), observerQuery == nil else { return }
+
+        store.enableBackgroundDelivery(for: stepType, frequency: .immediate) { _, _ in
+            // Errors here (e.g. before authorization) are expected and ignored;
+            // delivery starts working once access is granted on a later launch.
+        }
+
+        let query = HKObserverQuery(sampleType: stepType, predicate: nil) { [weak self] _, completionHandler, _ in
+            Task {
+                let data = await self?.refreshSharedCache() ?? [:]
+                WidgetCenter.shared.reloadAllTimelines()
+                // Drive milestone notifications from the same wake-up that refreshed
+                // the widget cache (no separate background mechanism). Pass today's
+                // running total; the app-side hook decides whether to alert.
+                let today = Calendar.current.startOfDay(for: Date())
+                Self.onStepsUpdate?(data[today] ?? 0)
+                // Tell HealthKit we finished handling this (possibly background)
+                // update, so it can release the app and schedule the next wake.
+                completionHandler()
+            }
+        }
+        store.execute(query)
+        observerQuery = query
+    }
 
     /// Requests read access to step count. Safe to call repeatedly; iOS only
     /// prompts the user the first time.

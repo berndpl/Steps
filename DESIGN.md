@@ -19,7 +19,7 @@ Catalog: `Steps` (`projects/Steps/Steps.tokens.json`).
 | Font | `.system(design: .monospaced)` (SF Mono) | `ContentView.swift` | notes-plontsch is Inconsolata mono throughout; SF Mono is the owner-chosen stand-in. |
 | Weight | medium / regular (flattened) | `ContentView.swift` | notes-plontsch forces 400 — emphasis from size + colour, not weight (taste C1). |
 | Number | 68pt medium monospaced, gold | `ContentView.swift` `stepsView` | The one hero; colour (gold) + size carry it, not boldness. |
-| Accent | gold `#F5A623` | `AccentColor.colorset` | Steps fingerprint; kept (not notes-plontsch lavender) and == grid goal colour. |
+| Accent | gold `#F5A623` default, now == the **palette goal colour** (`.tint`) | `ContentView.swift` / `AccentColor.colorset` | Steps fingerprint; follows the customizer's goal colour so app + grid cohere. |
 | Shadows | none | `ContentView.swift` | Flat; depth via Catppuccin surface tints. |
 | CTA | `.glassProminent` | `ContentView.swift` | Deskgym remnant — the single deliberate action stays Liquid Glass. |
 | Count motion | `spring(0.28, 0.86)` + `.numericText()` | `ContentView.swift` | Deskgym remnant — smooth count. |
@@ -37,9 +37,19 @@ Catalog: `Steps` (`projects/Steps/Steps.tokens.json`).
 
 ## Local directives (win over both styles) — the contribution grid
 
+The grid is now **generated in OKLCH** (perceptually-uniform), not hand-picked sRGB, and is
+**user-customizable** (palette, spread, shape) via the paintbrush sheet. Values persist to the
+App Group so the widget renders identically. OKLCH math: `GridStyle.swift` (Björn Ottosson).
+
 | Token | Value | Source | Why |
 |-------|-------|--------|-----|
-| Grid ramp | `#9be9a8 → #40c463 → #30a14e → #216e39` (L1–L4) over empty `#EDEDF0` | `StepsGridView.swift` | GitHub-style contribution data — load-bearing, not chrome. |
-| Goal-reached | `#F5A623` gold (L5, 10000+) | `StepsGridView.swift` | A goal-hit day must stand out from the darkest green. |
-| Today | `Color.primary` ring on today's cell | `StepsGridView.swift` | Find today at a glance against any fill. |
-| Goal | `10000` (fixed) | `HealthKitService.swift` | A colour should mean the same thing every day. |
+| Grid fill | **continuous** OKLCH ramp: neutral empty → `rampBase` (default `#216E39`), chroma rising with effort | `GridStyle.color(forSteps:)` | A day's exact steps → an exact, evenly-spaced colour — more spread than 5 buckets. |
+| Spread | response curve `pow(t, spread)`, default `1.5`, range `1.0–3.0` | `GridStyle.swift` | Higher = mid days recede, goal days pop. The "intensity reflects steps" dial. |
+| Goal-reached | distinct **goal colour** per palette (default gold `#F5A623`), 10000+ | `GridStyle.color(forSteps:)` | A goal-hit day must pop off the ramp's most-intense step. |
+| Empty endpoint | neutral, **adapts to scheme** (light-gray / dark-gray) | `GridStyle.color(forSteps:)` | Matches the surface in both modes; background stays neutral. |
+| Today | ring in the palette **goal colour**, following the chosen shape | `StepsGridView.swift` | Find today at a glance against any fill. |
+| Month's best | subtle centered **dot**, black/white auto-picked by the cell's OKLCH lightness | `StepsGridView.swift` | Mark the month's peak day without competing with today's ring. |
+| Day shape | `roundedSquare` (default) / `circle` / `squircle` — one rounded-rect path, corner factor only | `DayShape` | Customizable cell shape; circle = corner 0.5 of a square cell. |
+| Palettes | curated presets (Green/Ocean/Violet/Mono/Sunset) + full custom (ramp + goal wells) | `GridPalette.presets` | Designed in OKLCH; user can override either colour. |
+| Accent ripple | palette **goal colour** becomes the app `.tint` (hero number, CTA, today ring) | `ContentView.swift` | Grid + app cohere; **background colorsets untouched**. |
+| Goal | `10000` (fixed) | `HealthKitService.swift` | A colour should mean the same thing every day; keeps the per-1,000 stage mapping clean. |
