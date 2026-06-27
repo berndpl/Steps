@@ -108,6 +108,9 @@ struct StepsRingWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: TodayProvider()) { entry in
             StepsRingView(steps: entry.steps)
+                // iOS 17+ requires every widget to declare a container background;
+                // accessory widgets render broken on the lock screen without it.
+                .containerBackground(for: .widget) { AccessoryWidgetBackground() }
                 .widgetURL(URL(string: "steps://open"))
         }
         .configurationDisplayName("Steps Ring")
@@ -122,6 +125,7 @@ struct TinyStepsWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: TodayProvider()) { entry in
             TinyStepsView(steps: entry.steps)
+                .containerBackground(for: .widget) { AccessoryWidgetBackground() }
                 .widgetURL(URL(string: "steps://open"))
         }
         .configurationDisplayName("Tiny Steps")

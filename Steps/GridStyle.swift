@@ -146,6 +146,41 @@ enum DayShape: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - Best-day marker
+
+/// How the month's highest-steps day is marked. All variants stay subtle and are
+/// auto-tinted for contrast against the cell fill (see StepsGridView).
+enum BestDayMarker: String, CaseIterable, Identifiable {
+    case dot
+    case ring
+    case asterisk
+    case star
+    case none
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .dot:      return "Dot"
+        case .ring:     return "Ring"
+        case .asterisk: return "Asterisk"
+        case .star:     return "Star"
+        case .none:     return "None"
+        }
+    }
+
+    /// SF Symbol for the segmented picker (and the symbol-based markers).
+    var symbol: String {
+        switch self {
+        case .dot:      return "circle.fill"
+        case .ring:     return "circle"
+        case .asterisk: return "asterisk"
+        case .star:     return "star.fill"
+        case .none:     return "slash.circle"
+        }
+    }
+}
+
 // MARK: - Grid style
 
 /// The full, persisted description of how the grid looks. Read by both the app
@@ -155,6 +190,7 @@ struct GridStyle: Equatable {
     var goalHex: String
     var spread: Double      // response-curve gamma; higher = mid-days recede
     var shape: DayShape
+    var marker: BestDayMarker
 
     static let defaultRampHex = "#216E39"   // current darkest-green ramp end
     static let defaultGoalHex = "#F5A623"   // current Steps gold
@@ -165,7 +201,8 @@ struct GridStyle: Equatable {
         rampHex: defaultRampHex,
         goalHex: defaultGoalHex,
         spread: defaultSpread,
-        shape: .roundedSquare
+        shape: .roundedSquare,
+        marker: .dot
     )
 
     /// Live style from the App Group (falls back to `.default`).
@@ -174,12 +211,21 @@ struct GridStyle: Equatable {
             rampHex: SettingsStore.gridRampHex,
             goalHex: SettingsStore.gridGoalHex,
             spread: SettingsStore.gridSpread,
-            shape: DayShape(rawValue: SettingsStore.gridShape) ?? .roundedSquare
+            shape: DayShape(rawValue: SettingsStore.gridShape) ?? .roundedSquare,
+            marker: BestDayMarker(rawValue: SettingsStore.gridMarker) ?? .dot
         )
     }
 
     var goalColor: Color { Color(hex: goalHex) }
     var rampBaseColor: Color { Color(hex: rampHex) }
+
+    /// A luminous version of the goal color for *today's* ring — pushed bright and
+    /// more saturated in OKLCH so it out-pops every fill (including a goal-day
+    /// cell, which uses the plain goal color). Keeps the palette's hue.
+    var todayRingColor: Color {
+        let base = goalColor.oklch
+        return OKLCH(l: 0.82, c: min(base.c * 1.3 + 0.03, 0.37), h: base.h).color
+    }
 
     /// The fill for a day, generated continuously in OKLCH.
     ///

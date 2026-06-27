@@ -23,11 +23,14 @@ struct GridCustomizationView: View {
     private var spread = GridStyle.defaultSpread
     @AppStorage(SettingsStore.gridShapeKey, store: SettingsStore.defaults)
     private var shapeRaw = DayShape.roundedSquare.rawValue
+    @AppStorage(SettingsStore.gridMarkerKey, store: SettingsStore.defaults)
+    private var markerRaw = BestDayMarker.dot.rawValue
 
     /// The style currently described by the controls — drives the live preview.
     private var draft: GridStyle {
         GridStyle(rampHex: rampHex, goalHex: goalHex, spread: spread,
-                  shape: DayShape(rawValue: shapeRaw) ?? .roundedSquare)
+                  shape: DayShape(rawValue: shapeRaw) ?? .roundedSquare,
+                  marker: BestDayMarker(rawValue: markerRaw) ?? .dot)
     }
 
     // ColorPickers work in Color; storage is hex, so bridge the two.
@@ -82,11 +85,27 @@ struct GridCustomizationView: View {
                 }
 
                 Section {
+                    Picker("Best-day marker", selection: $markerRaw) {
+                        ForEach(BestDayMarker.allCases) { marker in
+                            Label(marker.label, systemImage: marker.symbol)
+                                .tag(marker.rawValue)
+                        }
+                    }
+                    .font(.system(.body, design: .monospaced))
+                } header: {
+                    Text("Month's best day").font(.system(.caption, design: .monospaced))
+                } footer: {
+                    Text("Marks the highest-steps day of the month.")
+                        .font(.system(.caption2, design: .monospaced))
+                }
+
+                Section {
                     Button("Reset to default", role: .destructive) {
                         rampHex = GridStyle.defaultRampHex
                         goalHex = GridStyle.defaultGoalHex
                         spread = GridStyle.defaultSpread
                         shapeRaw = DayShape.roundedSquare.rawValue
+                        markerRaw = BestDayMarker.dot.rawValue
                     }
                     .font(.system(.body, design: .monospaced))
                 }
@@ -153,7 +172,7 @@ struct GridCustomizationView: View {
     /// A mini ramp + goal swatch for a palette, generated the same way as the grid.
     private func swatch(_ palette: GridPalette) -> some View {
         let style = GridStyle(rampHex: palette.rampHex, goalHex: palette.goalHex,
-                              spread: spread, shape: .roundedSquare)
+                              spread: spread, shape: .roundedSquare, marker: .none)
         return HStack(spacing: 2) {
             ForEach([2_000, 5_000, 8_000], id: \.self) { steps in
                 RoundedRectangle(cornerRadius: 3, style: .continuous)

@@ -96,23 +96,49 @@ struct StepsGridView: View {
                 .fill(fill)
                 .overlay {
                     if date == bestDay {
-                        // Subtle "month's best" dot. Pick black/white by the fill's
-                        // OKLCH lightness so it stays recognizable on any color.
-                        let dot: Color = fill.oklch.l < 0.55 ? .white.opacity(0.9)
-                                                             : .black.opacity(0.5)
-                        Circle()
-                            .fill(dot)
-                            .frame(width: cell * 0.18, height: cell * 0.18)
+                        // Subtle "month's best" marker. Pick black/white by the
+                        // fill's OKLCH lightness so it stays recognizable on any color.
+                        let ink: Color = fill.oklch.l < 0.55 ? .white.opacity(0.9)
+                                                             : .black.opacity(0.55)
+                        markerView(style.marker, cell: cell, ink: ink)
                     }
                 }
                 .overlay {
                     if date == today {
-                        // Highlight today with a ring in the palette goal color,
-                        // following the chosen cell shape.
-                        RoundedRectangle(cornerRadius: corner, style: .continuous)
-                            .strokeBorder(style.goalColor, lineWidth: max(corner * 0.45, 1.3))
+                        // Highlight today with a bright ring stroked *outside* the
+                        // cell (in the gap), so the full fill stays visible and the
+                        // ring never blends with a goal-day fill. Negative padding
+                        // expands the rounded rect past the cell edge; the corner
+                        // grows with it to stay concentric.
+                        let lw = max(cell * 0.11, 1.6)
+                        let outset = lw * 0.55
+                        RoundedRectangle(cornerRadius: corner + outset, style: .continuous)
+                            .stroke(style.todayRingColor, lineWidth: lw)
+                            .padding(-outset)
                     }
                 }
+        }
+    }
+
+    /// The month's-best marker, sized to the cell and tinted for contrast.
+    @ViewBuilder
+    private func markerView(_ marker: BestDayMarker, cell: CGFloat, ink: Color) -> some View {
+        switch marker {
+        case .none:
+            EmptyView()
+        case .dot:
+            Circle().fill(ink).frame(width: cell * 0.18, height: cell * 0.18)
+        case .ring:
+            Circle().strokeBorder(ink, lineWidth: max(cell * 0.06, 1))
+                .frame(width: cell * 0.34, height: cell * 0.34)
+        case .asterisk:
+            Image(systemName: "asterisk")
+                .font(.system(size: cell * 0.44, weight: .bold))
+                .foregroundStyle(ink)
+        case .star:
+            Image(systemName: "star.fill")
+                .font(.system(size: cell * 0.40))
+                .foregroundStyle(ink)
         }
     }
 }

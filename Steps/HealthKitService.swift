@@ -170,6 +170,7 @@ enum SettingsStore {
     static let gridGoalHexKey = "gridGoalHex"
     static let gridSpreadKey = "gridSpread"
     static let gridShapeKey = "gridShape"
+    static let gridMarkerKey = "gridMarker"
 
     static var gridRampHex: String {
         defaults.string(forKey: gridRampHexKey) ?? GridStyle.defaultRampHex
@@ -182,6 +183,9 @@ enum SettingsStore {
     }
     static var gridShape: String {
         defaults.string(forKey: gridShapeKey) ?? DayShape.roundedSquare.rawValue
+    }
+    static var gridMarker: String {
+        defaults.string(forKey: gridMarkerKey) ?? BestDayMarker.dot.rawValue
     }
 
     private static func isToday(_ epoch: Double?) -> Bool {

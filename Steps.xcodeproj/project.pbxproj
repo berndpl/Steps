@@ -14,7 +14,7 @@
 		1ECAC28A92B67138FC45693D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D6048643F41AAF2121BC801 /* ContentView.swift */; };
 		291BD0276B5B3982791683F5 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650647087439AF5B333EB4AA /* HealthKitService.swift */; };
 		2AA3D6B7EC6DF2DCFF83EFB6 /* StepsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C0293D916723287F977B02 /* StepsGridView.swift */; };
-		8987E0C38169E9652FE0D75B /* StepsWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DBFE320E0FFC1A13224B7567 /* StepsWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8987E0C38169E9652FE0D75B /* StepsWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DBFE320E0FFC1A13224B7567 /* StepsWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9C1C3103D24CF24D51FF996D /* GridStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D18FEE6FA38F062795F9BA /* GridStyle.swift */; };
 		C23E035F4B508FBC20D7B5D1 /* StepsAccessoryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652546EE4DB6EA22B2F2E57B /* StepsAccessoryViews.swift */; };
 		C70B023CEE7FFBB91CFCBCA7 /* GridCustomizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94D00A1E1E247E0D5F0B5A6 /* GridCustomizationView.swift */; };
@@ -40,7 +40,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				8987E0C38169E9652FE0D75B /* StepsWidgetExtension.appex in Embed Foundation Extensions */,
+				8987E0C38169E9652FE0D75B /* StepsWidget.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -57,9 +57,9 @@
 		79A747E8CF173847817DFFEA /* StepsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsWidget.swift; sourceTree = "<group>"; };
 		7D6048643F41AAF2121BC801 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A94D00A1E1E247E0D5F0B5A6 /* GridCustomizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCustomizationView.swift; sourceTree = "<group>"; };
-		A9C502E3EBF043D1C48B3449 /* Steps.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Steps.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A9C502E3EBF043D1C48B3449 /* Steps.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Steps.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA3444CD9578DC32CC1F7D6F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		DBFE320E0FFC1A13224B7567 /* StepsWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = StepsWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		DBFE320E0FFC1A13224B7567 /* StepsWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StepsWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0FA048CA0AEF0106A456611 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F2EAAE91F5047E9330C33D6A /* StepsWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepsWidget.entitlements; sourceTree = "<group>"; };
 		F4EF689CDC383CFD433DD833 /* StepNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepNotifier.swift; sourceTree = "<group>"; };
@@ -106,7 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				A9C502E3EBF043D1C48B3449 /* Steps.app */,
-				DBFE320E0FFC1A13224B7567 /* StepsWidgetExtension.appex */,
+				DBFE320E0FFC1A13224B7567 /* StepsWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -128,7 +128,7 @@
 			packageProductDependencies = (
 			);
 			productName = StepsWidgetExtension;
-			productReference = DBFE320E0FFC1A13224B7567 /* StepsWidgetExtension.appex */;
+			productReference = DBFE320E0FFC1A13224B7567 /* StepsWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		AA48C41E790B3510498F5404 /* Steps */ = {
@@ -161,11 +161,9 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					460735B1D41D3C2C8C8DAAB8 = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					AA48C41E790B3510498F5404 = {
-						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -247,6 +245,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Steps/Steps.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = DNKZNVGEK5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Shows your step count on the home-screen grid.";
@@ -270,6 +269,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = StepsWidget/StepsWidget.entitlements;
+				DEVELOPMENT_TEAM = DNKZNVGEK5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = StepsWidget/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -358,6 +358,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = StepsWidget/StepsWidget.entitlements;
+				DEVELOPMENT_TEAM = DNKZNVGEK5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = StepsWidget/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -443,6 +444,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Steps/Steps.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = DNKZNVGEK5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Shows your step count on the home-screen grid.";
