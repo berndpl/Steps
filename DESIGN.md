@@ -44,12 +44,17 @@ App Group so the widget renders identically. OKLCH math: `GridStyle.swift` (Bjö
 | Token | Value | Source | Why |
 |-------|-------|--------|-----|
 | Grid fill | **continuous** OKLCH ramp: neutral empty → `rampBase` (default `#216E39`), chroma rising with effort | `GridStyle.color(forSteps:)` | A day's exact steps → an exact, evenly-spaced colour — more spread than 5 buckets. |
-| Spread | response curve `pow(t, spread)`, default `1.5`, range `1.0–3.0` | `GridStyle.swift` | Higher = mid days recede, goal days pop. The "intensity reflects steps" dial. |
+| Curve | a `CurveShape` (linear / ease-in / ease-out / ease-in-out / log / exp) + `strength` 0–1 (default ease-in, 0.5) | `CurveShape.apply` | Pick *how* steps map to fill intensity; previewed as a sparkline in the sheet. |
 | Goal-reached | distinct **goal colour** per palette (default gold `#F5A623`), 10000+ | `GridStyle.color(forSteps:)` | A goal-hit day must pop off the ramp's most-intense step. |
 | Empty endpoint | neutral, **adapts to scheme** (light-gray / dark-gray) | `GridStyle.color(forSteps:)` | Matches the surface in both modes; background stays neutral. |
-| Today | ring in the palette **goal colour**, following the chosen shape | `StepsGridView.swift` | Find today at a glance against any fill. |
-| Month's best | subtle centered **dot**, black/white auto-picked by the cell's OKLCH lightness | `StepsGridView.swift` | Mark the month's peak day without competing with today's ring. |
+| Today | **luminous** goal colour (OKLCH lightness+chroma boosted), stroked **outside** the cell | `GridStyle.todayRingColor`, `StepsGridView.swift` | Out-pops every fill incl. a goal-day; the full fill stays visible. |
+| Month's best | a chosen **marker** — dot (default) / ring / asterisk / star / none — auto black-or-white by cell OKLCH lightness | `BestDayMarker`, `StepsGridView.swift` | Mark the month's peak day subtly, readable on any fill, without echoing today's ring. |
 | Day shape | `roundedSquare` (default) / `circle` / `squircle` — one rounded-rect path, corner factor only | `DayShape` | Customizable cell shape; circle = corner 0.5 of a square cell. |
-| Palettes | curated presets (Green/Ocean/Violet/Mono/Sunset) + full custom (ramp + goal wells) | `GridPalette.presets` | Designed in OKLCH; user can override either colour. |
+| Palettes | 12 curated presets (Green/Ocean/Violet/Mono/Sunset/Teal/Indigo/Rose/Amber/Slate/Crimson/Forest) + full custom (ramp + goal wells) | `GridPalette.presets` | Designed in OKLCH; user can override either colour. |
+| Activity badges | today's logged cycling / meditation / strength as `figure.outdoor.cycle.circle.fill` · `figure.mind.and.body.circle.fill` · `figure.strengthtraining.traditional.circle.fill`, tinted goal colour | `DayActivity`, `StepsMonthView` | A glanceable "what else I did today" beside the count. |
 | Accent ripple | palette **goal colour** becomes the app `.tint` (hero number, CTA, today ring) | `ContentView.swift` | Grid + app cohere; **background colorsets untouched**. |
 | Goal | `10000` (fixed) | `HealthKitService.swift` | A colour should mean the same thing every day; keeps the per-1,000 stage mapping clean. |
+
+**Watch complications** reuse the same `StepsRingView` / `TinyStepsView` accessory views (via the
+shared `StepsAccessoryWidgets.swift`); the watch reads HealthKit directly (no App Group sync across
+devices). Notifications carry a custom bundled chime (`StepsChime.wav`).

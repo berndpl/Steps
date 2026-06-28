@@ -34,6 +34,19 @@
 
 <section id="posts">
   <article class="entry">
+    <div class="date">2026-06-28 · watch</div>
+    <h3>A wrist, a chime, and little badges for the rest of the day</h3>
+    <p>Steps reached the wrist. A small watchOS app shows today against the goal as a ring, and the same <em>Steps Ring</em> and <em>Tiny Steps</em> views that drive the lock screen now appear as watch-face complications — one set of code, three surfaces. The watch reads HealthKit on its own, since the App Group cache doesn't cross devices. <a href="https://github.com/berndpl/Steps/commit/7209f44"><code>7209f44</code></a></p>
+    <p>The grid learned to notice the rest of the day. If you logged a ride, a meditation, or a strength session, a little badge sits beside today's count — cycling, mind-and-body, or strength-training. That meant asking Health for workouts and mindful minutes too, including for people who'd already granted steps. <a href="https://github.com/berndpl/Steps/commit/865b9e7"><code>865b9e7</code></a></p>
+    <p>And the alerts got more fun, with their own voice. Beyond the per-thousand nudges there's a morning greeting, a double-goal cheer, goal-streak milestones, and a record-day shout — each at most once a day. They all ring a custom bell bundled with the app rather than the system default, and today's screen now shows cycling minutes when there's a ride to show. <a href="https://github.com/berndpl/Steps/commit/38252dc"><code>38252dc</code></a></p>
+  </article>
+  <article class="entry">
+    <div class="date">2026-06-28 · grid</div>
+    <h3>The grid, dialled in</h3>
+    <p>The single spread slider became a proper instrument. A row of curve shapes — linear, ease-in, ease-out, ease-in-out, log, exp — each shown as a tiny sparkline, decides how a day's steps map to fill, with a strength slider for how hard. The palette shelf grew from five to twelve, and the month's-best day can wear a dot, ring, asterisk, star, or nothing. <a href="https://github.com/berndpl/Steps/commit/4a2b84e"><code>4a2b84e</code></a></p>
+    <p>Today got easier to find: its ring is now a brightened version of the palette's goal colour, stroked just outside the cell so the fill underneath stays whole and it never blends into a goal-day. <a href="https://github.com/berndpl/Steps/commit/2dcd685"><code>2dcd685</code></a></p>
+  </article>
+  <article class="entry">
     <div class="date">2026-06-27 · widgets</div>
     <h3>Off the home screen, onto the lock screen — and a grid you can tune</h3>
     <p>The widget stopped waiting for the app to open. An <code>HKObserverQuery</code> with HealthKit background delivery now refreshes it when your steps actually change — instantly in the foreground, roughly hourly when closed — and the timeline heartbeat tightened from an hour to fifteen minutes. Then it left the home screen entirely: two lock-screen accessories, a <em>Steps Ring</em> (count plus a goal gauge) and <em>Tiny Steps</em> (a single SF Symbol that evolves every 1,000 steps), built tint-safe so they read on the desaturated lock screen where the gold and green can't go. <a href="https://github.com/berndpl/Steps/commit/0eaebcb22a1a71bfaa1ad7585b8f04796d7cd442"><code>0eaebcb</code></a></p>
