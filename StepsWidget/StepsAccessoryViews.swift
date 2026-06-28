@@ -42,7 +42,7 @@ struct StepsRingView: View {
 
         case .accessoryRectangular:
             HStack(spacing: 10) {
-                ringGauge
+                ring
                     .frame(width: 44, height: 44)
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Steps")
@@ -54,21 +54,19 @@ struct StepsRingView: View {
             }
 
         default: // .accessoryCircular
-            ringGauge
+            ring
         }
     }
 
-    /// Circular capacity gauge — the native lock-screen / watch ring — with the
-    /// compact count in the center.
-    private var ringGauge: some View {
-        Gauge(value: progress) {
-            EmptyView()
-        } currentValueLabel: {
-            Text(compactCount)
-                .font(.system(.caption, design: .rounded, weight: .semibold))
-                .minimumScaleFactor(0.6)
-        }
-        .gaugeStyle(.accessoryCircularCapacity)
+    /// A circular progress ring (not a gauge) with the compact count centered.
+    private var ring: some View {
+        ProgressView(value: progress)
+            .progressViewStyle(.circular)
+            .overlay {
+                Text(compactCount)
+                    .font(.system(.caption, design: .rounded, weight: .semibold))
+                    .minimumScaleFactor(0.6)
+            }
     }
 }
 
@@ -108,16 +106,15 @@ struct TinyStepsView: View {
         }
     }
 
-    /// A thin progress ring (Gauge) with the current stage symbol centered inside.
+    /// A circular progress ring with the current stage symbol centered inside.
     private var symbolOverRing: some View {
-        Gauge(value: progress) {
-            EmptyView()
-        } currentValueLabel: {
-            Image(systemName: currentStage.symbol)
-                .font(.system(size: 16, weight: .semibold))
-                .symbolRenderingMode(.hierarchical)
-                .minimumScaleFactor(0.5)
-        }
-        .gaugeStyle(.accessoryCircular)
+        ProgressView(value: progress)
+            .progressViewStyle(.circular)
+            .overlay {
+                Image(systemName: currentStage.symbol)
+                    .font(.system(size: 16, weight: .semibold))
+                    .symbolRenderingMode(.hierarchical)
+                    .minimumScaleFactor(0.5)
+            }
     }
 }
