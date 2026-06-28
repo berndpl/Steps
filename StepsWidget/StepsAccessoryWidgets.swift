@@ -44,14 +44,17 @@ struct TodayProvider: TimelineProvider {
         }
     }
 
-    /// Prefer a live HealthKit read (the widget shares the app's authorization);
-    /// fall back to today's bucket in the App Group cache.
+    /// Today's freshest step total. A HealthKit read from *inside the widget
+    /// extension* can lag the main app (the extension's store isn't always
+    /// synced), and that stale read still succeeds — so trusting it alone can show
+    /// an older, lower count than the app does. Since steps only climb during a
+    /// day, take the max of the App Group cache (which the app refreshes on every
+    /// foreground + background step wake) and a live read.
     private static func todaySteps() async -> Int {
-        if let fresh = try? await HealthKitService.shared.todaySteps() {
-            return fresh
-        }
         let today = Calendar.current.startOfDay(for: Date())
-        return SharedStore.load()[today] ?? 0
+        let cached = SharedStore.load()[today] ?? 0
+        let live = (try? await HealthKitService.shared.todaySteps()) ?? 0
+        return max(cached, live)
     }
 }
 

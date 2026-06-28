@@ -44,13 +44,18 @@ struct Provider: TimelineProvider {
 
     /// Query HealthKit directly so the grid reflects the latest steps (the widget
     /// shares the app's Health authorization). Fall back to the App Group cache
-    /// the app keeps in sync if a live read isn't available (e.g. before the
-    /// app's first run or a transient query failure).
+    /// the app keeps in sync if a live read isn't available. Reconcile *today*
+    /// with the cache too: a widget-extension read can lag the main app, and since
+    /// today's count only climbs, the higher of the two is the freshest.
     private static func currentSteps() async -> [Date: Int] {
-        if let fresh = try? await HealthKitService.shared.dailySteps(daysBack: 42), !fresh.isEmpty {
-            return fresh
+        let cached = SharedStore.load()
+        guard var data = try? await HealthKitService.shared.dailySteps(daysBack: 42),
+              !data.isEmpty else {
+            return cached
         }
-        return SharedStore.load()
+        let today = Calendar.current.startOfDay(for: Date())
+        data[today] = max(data[today] ?? 0, cached[today] ?? 0)
+        return data
     }
 
     /// Plausible fake data for placeholder/preview (no Health access).
