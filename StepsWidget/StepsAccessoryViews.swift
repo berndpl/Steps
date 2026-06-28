@@ -42,7 +42,7 @@ struct StepsRingView: View {
 
         case .accessoryRectangular:
             HStack(spacing: 10) {
-                ringGauge
+                ring
                     .frame(width: 44, height: 44)
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Steps")
@@ -54,43 +54,19 @@ struct StepsRingView: View {
             }
 
         default: // .accessoryCircular
-            ringGauge
+            ring
         }
     }
 
-    /// A drawn progress ring — a stroked circle trimmed to `progress` — with the
-    /// compact count centered inside. Replaces the native capacity gauge so the
-    /// lock-screen ring matches the app's own ring styling.
-    private var ringGauge: some View {
-        AccessoryProgressRing(progress: progress) {
-            Text(compactCount)
-                .font(.system(.caption, design: .rounded, weight: .semibold))
-                .minimumScaleFactor(0.6)
-        }
-    }
-}
-
-/// A thin circular progress ring for accessory (lock-screen / watch) families.
-/// Draws a faint track plus a tinted arc trimmed to `progress`, with arbitrary
-/// content centered inside. The system tints the foreground stroke for us.
-struct AccessoryProgressRing<Label: View>: View {
-    let progress: Double
-    @ViewBuilder var label: Label
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .stroke(.tertiary, lineWidth: 5)
-            Circle()
-                .trim(from: 0, to: max(0.001, min(progress, 1.0)))
-                .stroke(
-                    .tint,
-                    style: StrokeStyle(lineWidth: 5, lineCap: .round)
-                )
-                .rotationEffect(.degrees(-90))
-            label
-        }
-        .padding(3)
+    /// A circular progress ring (not a gauge) with the compact count centered.
+    private var ring: some View {
+        ProgressView(value: progress)
+            .progressViewStyle(.circular)
+            .overlay {
+                Text(compactCount)
+                    .font(.system(.caption, design: .rounded, weight: .semibold))
+                    .minimumScaleFactor(0.6)
+            }
     }
 }
 
@@ -130,16 +106,15 @@ struct TinyStepsView: View {
         }
     }
 
-    /// A thin progress ring (Gauge) with the current stage symbol centered inside.
+    /// A circular progress ring with the current stage symbol centered inside.
     private var symbolOverRing: some View {
-        Gauge(value: progress) {
-            EmptyView()
-        } currentValueLabel: {
-            Image(systemName: currentStage.symbol)
-                .font(.system(size: 16, weight: .semibold))
-                .symbolRenderingMode(.hierarchical)
-                .minimumScaleFactor(0.5)
-        }
-        .gaugeStyle(.accessoryCircular)
+        ProgressView(value: progress)
+            .progressViewStyle(.circular)
+            .overlay {
+                Image(systemName: currentStage.symbol)
+                    .font(.system(size: 16, weight: .semibold))
+                    .symbolRenderingMode(.hierarchical)
+                    .minimumScaleFactor(0.5)
+            }
     }
 }
