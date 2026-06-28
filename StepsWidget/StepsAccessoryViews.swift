@@ -58,17 +58,39 @@ struct StepsRingView: View {
         }
     }
 
-    /// Circular capacity gauge — the native lock-screen / watch ring — with the
-    /// compact count in the center.
+    /// A drawn progress ring — a stroked circle trimmed to `progress` — with the
+    /// compact count centered inside. Replaces the native capacity gauge so the
+    /// lock-screen ring matches the app's own ring styling.
     private var ringGauge: some View {
-        Gauge(value: progress) {
-            EmptyView()
-        } currentValueLabel: {
+        AccessoryProgressRing(progress: progress) {
             Text(compactCount)
                 .font(.system(.caption, design: .rounded, weight: .semibold))
                 .minimumScaleFactor(0.6)
         }
-        .gaugeStyle(.accessoryCircularCapacity)
+    }
+}
+
+/// A thin circular progress ring for accessory (lock-screen / watch) families.
+/// Draws a faint track plus a tinted arc trimmed to `progress`, with arbitrary
+/// content centered inside. The system tints the foreground stroke for us.
+struct AccessoryProgressRing<Label: View>: View {
+    let progress: Double
+    @ViewBuilder var label: Label
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(.tertiary, lineWidth: 5)
+            Circle()
+                .trim(from: 0, to: max(0.001, min(progress, 1.0)))
+                .stroke(
+                    .tint,
+                    style: StrokeStyle(lineWidth: 5, lineCap: .round)
+                )
+                .rotationEffect(.degrees(-90))
+            label
+        }
+        .padding(3)
     }
 }
 

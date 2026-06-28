@@ -25,6 +25,9 @@ struct ContentView: View {
     @State private var showCustomize = false
     /// Minutes of cycling logged today (0 hides the bike row).
     @State private var cyclingMinutes = 0
+    /// Activities logged today (cycling / strength workouts, mindful sessions),
+    /// shown as small badges — mirroring the widget.
+    @State private var activities: Set<DayActivity> = []
     /// The palette goal color, used as the app accent. Re-read whenever the grid
     /// style might have changed (launch, foreground, after customizing).
     @State private var accentColor = GridStyle.current.goalColor
@@ -209,7 +212,22 @@ struct ContentView: View {
                     .padding(.top, 4)
                     .transition(.opacity)
             }
+
+            // Today's activity badges (cycling / workout / mindful), matching the
+            // widget. Only shown for activities actually logged today.
+            if !activities.isEmpty {
+                HStack(spacing: 10) {
+                    ForEach(DayActivity.allCases.filter(activities.contains)) { activity in
+                        Image(systemName: activity.symbol)
+                            .font(.system(size: 28))
+                            .foregroundStyle(.tint)
+                    }
+                }
+                .padding(.top, 4)
+                .transition(.opacity)
+            }
         }
+        .animation(.spring(response: 0.28, dampingFraction: 0.86), value: activities)
     }
 
     private var permissionView: some View {
@@ -335,6 +353,7 @@ struct ContentView: View {
             await HealthKitService.shared.refreshSharedCache()
             WidgetCenter.shared.reloadAllTimelines()
             cyclingMinutes = await HealthKitService.shared.todayCyclingMinutes()
+            activities = await HealthKitService.shared.todayActivities()
         } catch {
             phase = .denied
         }
