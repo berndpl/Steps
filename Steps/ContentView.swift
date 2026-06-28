@@ -322,6 +322,11 @@ struct ContentView: View {
             phase = .needsPermission
             return
         }
+        // Ensure access to all read types we use — Workouts and Mindfulness were
+        // added after steps, so users who granted steps earlier still need the
+        // prompt for them (otherwise cycling minutes + activity badges stay empty).
+        // Idempotent: iOS only prompts for not-yet-determined types.
+        try? await HealthKitService.shared.requestAuthorization()
         do {
             let steps = try await HealthKitService.shared.todaySteps()
             phase = .ready(steps)

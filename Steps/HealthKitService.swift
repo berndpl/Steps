@@ -77,6 +77,24 @@ enum HealthKitError: Error {
     case noStepType
 }
 
+/// An activity done today, surfaced as a small badge on the widget. Each maps to
+/// an SF Symbol; detection is from HealthKit workouts / mindful sessions.
+enum DayActivity: String, CaseIterable, Identifiable {
+    case cycling
+    case mindful
+    case strength
+
+    var id: String { rawValue }
+
+    var symbol: String {
+        switch self {
+        case .cycling:  return "figure.outdoor.cycle.circle.fill"
+        case .mindful:  return "figure.mind.and.body.circle.fill"
+        case .strength: return "figure.strengthtraining.traditional.circle.fill"
+        }
+    }
+}
+
 /// Shared cache in the App Group container, written by the app and read by the
 /// widget — so the widget renders instantly from synced data without needing its
 /// own HealthKit query on every timeline refresh.
@@ -271,7 +289,47 @@ final class HealthKitService {
         guard HKHealthStore.isHealthDataAvailable() else {
             throw HealthKitError.notAvailable
         }
-        try await store.requestAuthorization(toShare: [], read: [stepType, HKObjectType.workoutType()])
+        try await store.requestAuthorization(toShare: [], read: [
+            stepType,
+            HKObjectType.workoutType(),
+            HKCategoryType(.mindfulSession),
+        ])
+    }
+
+    /// Which tracked activities happened today (cycling/strength workouts, mindful
+    /// sessions) — drives the widget badges. Empty on no access / nothing logged.
+    func todayActivities() async -> Set<DayActivity> {
+        let start = Calendar.current.startOfDay(for: Date())
+        let datePredicate = HKQuery.predicateForSamples(withStart: start, end: Date())
+        var found: Set<DayActivity> = []
+
+        // Workouts → cycling / strength.
+        let workoutDescriptor = HKSampleQueryDescriptor(
+            predicates: [.workout(datePredicate)], sortDescriptors: []
+        )
+        if let workouts = try? await workoutDescriptor.result(for: store) {
+            for workout in workouts {
+                switch workout.workoutActivityType {
+                case .cycling:
+                    found.insert(.cycling)
+                case .traditionalStrengthTraining, .functionalStrengthTraining:
+                    found.insert(.strength)
+                default:
+                    break
+                }
+            }
+        }
+
+        // Mindful sessions → meditation.
+        let mindfulDescriptor = HKSampleQueryDescriptor(
+            predicates: [.categorySample(type: HKCategoryType(.mindfulSession), predicate: datePredicate)],
+            sortDescriptors: []
+        )
+        if let mindful = try? await mindfulDescriptor.result(for: store), !mindful.isEmpty {
+            found.insert(.mindful)
+        }
+
+        return found
     }
 
     /// Total minutes of cycling logged today, summed across cycling workouts

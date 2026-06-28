@@ -24,6 +24,8 @@ extension Color {
 struct StepsMonthView: View {
     let dailySteps: [Date: Int]
     var style: GridStyle = .current
+    /// Activities done today, shown as small badges beside the count.
+    var activities: Set<DayActivity> = []
 
     private var todaySteps: Int {
         dailySteps[Calendar.current.startOfDay(for: Date())] ?? 0
@@ -33,11 +35,19 @@ struct StepsMonthView: View {
         VStack(spacing: 6) {
             StepsGridView(dailySteps: dailySteps, style: style)
             // Today's count — just the number (Spark/Letters: monospaced), tinted
-            // with the palette's goal color so it stays in step with the grid.
-            Text(todaySteps, format: .number)
-                .font(.system(.footnote, design: .monospaced, weight: .semibold))
-                .foregroundStyle(style.goalColor)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            // with the palette's goal color — plus today's activity badges trailing.
+            HStack(spacing: 4) {
+                Text(todaySteps, format: .number)
+                    .font(.system(.footnote, design: .monospaced, weight: .semibold))
+                    .foregroundStyle(style.goalColor)
+                Spacer(minLength: 4)
+                ForEach(DayActivity.allCases.filter(activities.contains)) { activity in
+                    Image(systemName: activity.symbol)
+                        .font(.footnote)
+                        .foregroundStyle(style.goalColor)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
