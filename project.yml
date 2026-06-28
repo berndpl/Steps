@@ -3,6 +3,7 @@ options:
   bundleIdPrefix: de.plontsch
   deploymentTarget:
     iOS: "26.5"
+    watchOS: "26.5"
   createIntermediateGroups: true
 
 schemes:
@@ -17,6 +18,14 @@ schemes:
     profile:
       config: Release
     analyze:
+      config: Debug
+    archive:
+      config: Release
+  StepsWatch:
+    build:
+      targets:
+        StepsWatch: all
+    run:
       config: Debug
     archive:
       config: Release
@@ -41,6 +50,7 @@ targets:
       - path: StepsWidget/StepsGridView.swift   # shared so the app can preview the widget grid
     dependencies:
       - target: StepsWidgetExtension
+      - target: StepsWatch          # embed the watch app so it installs together
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: de.plontsch.Steps
@@ -87,3 +97,51 @@ targets:
         com.apple.developer.healthkit: true
         com.apple.security.application-groups:
           - group.de.plontsch.steps
+
+  # --- watchOS app + complications (Phase 2) ---
+  StepsWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: StepsWatch
+      - path: Steps/HealthKitService.swift   # shared: HealthKit, stages, App Group
+      - path: Steps/GridStyle.swift          # shared: SettingsStore depends on these types
+    dependencies:
+      - target: StepsWatchWidgetExtension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: de.plontsch.Steps.watchkitapp
+        TARGETED_DEVICE_FAMILY: "4"          # Apple Watch
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_WKApplication: YES
+        INFOPLIST_KEY_WKCompanionAppBundleIdentifier: de.plontsch.Steps
+        INFOPLIST_KEY_CFBundleDisplayName: Steps
+        INFOPLIST_KEY_NSHealthShareUsageDescription: "Shows your step count on the watch."
+    entitlements:
+      path: StepsWatch/StepsWatch.entitlements
+      properties:
+        # No App Group: the watch reads HealthKit directly (the cache doesn't sync
+        # across devices), and the code falls back gracefully without the suite.
+        com.apple.developer.healthkit: true
+
+  StepsWatchWidgetExtension:
+    type: app-extension
+    platform: watchOS
+    sources:
+      - path: StepsWatchWidget
+      - path: StepsWidget/StepsAccessoryViews.swift     # shared Ring / Tiny views
+      - path: StepsWidget/StepsAccessoryWidgets.swift   # shared provider + widgets
+      - path: Steps/HealthKitService.swift
+      - path: Steps/GridStyle.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: de.plontsch.Steps.watchkitapp.StepsWatchWidget
+        PRODUCT_NAME: StepsWatchWidget
+        TARGETED_DEVICE_FAMILY: "4"
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: StepsWatchWidget/Info.plist
+        SKIP_INSTALL: YES
+    entitlements:
+      path: StepsWatchWidget/StepsWatchWidget.entitlements
+      properties:
+        com.apple.developer.healthkit: true

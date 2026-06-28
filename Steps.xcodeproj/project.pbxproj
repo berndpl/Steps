@@ -8,23 +8,42 @@
 
 /* Begin PBXBuildFile section */
 		08D80B55E4B0789F69EFBC36 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CA3444CD9578DC32CC1F7D6F /* Assets.xcassets */; };
+		093726F5940FC96689DF681C /* StepsAccessoryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652546EE4DB6EA22B2F2E57B /* StepsAccessoryViews.swift */; };
 		0D301650C390E3EA15892D35 /* StepsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A747E8CF173847817DFFEA /* StepsWidget.swift */; };
+		0EF4538C98ACD1233C2E7D21 /* StepsWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CAF0D75F8FF046B240DA71 /* StepsWatchApp.swift */; };
 		13231D59C4AC3684C3072D53 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650647087439AF5B333EB4AA /* HealthKitService.swift */; };
 		151BC8601660D2C61853577C /* GridStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D18FEE6FA38F062795F9BA /* GridStyle.swift */; };
 		1ECAC28A92B67138FC45693D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D6048643F41AAF2121BC801 /* ContentView.swift */; };
+		1F86476481ED5F3819ABB0BE /* StepsWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0FDD2810FEA784E5C3549CC2 /* StepsWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		291BD0276B5B3982791683F5 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650647087439AF5B333EB4AA /* HealthKitService.swift */; };
 		2AA3D6B7EC6DF2DCFF83EFB6 /* StepsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C0293D916723287F977B02 /* StepsGridView.swift */; };
-		8987E0C38169E9652FE0D75B /* StepsWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DBFE320E0FFC1A13224B7567 /* StepsWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		32CA6A76855DC86CA4893573 /* StepsWatchWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5EB93A337538FE1FF90844 /* StepsWatchWidget.swift */; };
+		46B13D9E4DA5AC9CC484B5EE /* StepsAccessoryWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286DF7C75C319D9EB28D2B38 /* StepsAccessoryWidgets.swift */; };
+		6A7D503FABE26535570C2D70 /* StepsWatchWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B878455EA419B960F72913E5 /* StepsWatchWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8987E0C38169E9652FE0D75B /* StepsWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = DBFE320E0FFC1A13224B7567 /* StepsWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		899B8A2801F4DF4BF8E54D99 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650647087439AF5B333EB4AA /* HealthKitService.swift */; };
+		8A2FBC01226A0D1EFDF16372 /* WatchContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECECABDD5BDFB15079B129D0 /* WatchContentView.swift */; };
+		93886D4A5AAEC14392B743BC /* StepsAccessoryWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286DF7C75C319D9EB28D2B38 /* StepsAccessoryWidgets.swift */; };
 		9C1C3103D24CF24D51FF996D /* GridStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D18FEE6FA38F062795F9BA /* GridStyle.swift */; };
+		AF3AAC40A57C99D0D4CF4F96 /* GridStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D18FEE6FA38F062795F9BA /* GridStyle.swift */; };
 		C23E035F4B508FBC20D7B5D1 /* StepsAccessoryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652546EE4DB6EA22B2F2E57B /* StepsAccessoryViews.swift */; };
 		C70B023CEE7FFBB91CFCBCA7 /* GridCustomizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94D00A1E1E247E0D5F0B5A6 /* GridCustomizationView.swift */; };
+		CD56F665BEA72F8F5AA27147 /* GridStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D18FEE6FA38F062795F9BA /* GridStyle.swift */; };
 		D3A9EEF9D76DBAA689B003E0 /* StepsChime.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6D21A3B1C20FBE7612F488B8 /* StepsChime.wav */; };
 		D84F3D63196C3CD062E7E12F /* StepsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C0293D916723287F977B02 /* StepsGridView.swift */; };
 		E14510AFFB30410EA6D6850A /* StepNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EF689CDC383CFD433DD833 /* StepNotifier.swift */; };
+		F4000C4CA0F3712F312B5269 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650647087439AF5B333EB4AA /* HealthKitService.swift */; };
 		FA5787B1A276553491D3584B /* StepsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF37174DA15C09DDA6AD5E /* StepsApp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		82E00FA81176A6F38C33058C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FC0DA59F5BC4BFF003FE237C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 010F12D82A2D2EBCD60E27F3;
+			remoteInfo = StepsWatchWidgetExtension;
+		};
 		85CD09B76CBFDD85A47F86D1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FC0DA59F5BC4BFF003FE237C /* Project object */;
@@ -32,16 +51,45 @@
 			remoteGlobalIDString = 460735B1D41D3C2C8C8DAAB8;
 			remoteInfo = StepsWidgetExtension;
 		};
+		EB4DCE949F494769F7824CC0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FC0DA59F5BC4BFF003FE237C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D20E82CA5ECAE5BA9A84B380;
+			remoteInfo = StepsWatch;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		340DEA1ED672D1A829D76385 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				6A7D503FABE26535570C2D70 /* StepsWatchWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		410B006249D5132FE7F63C27 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				1F86476481ED5F3819ABB0BE /* StepsWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E7F0ED681F1501F21490C7B3 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				8987E0C38169E9652FE0D75B /* StepsWidget.appex in Embed Foundation Extensions */,
+				8987E0C38169E9652FE0D75B /* StepsWidgetExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -49,8 +97,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0FDD2810FEA784E5C3549CC2 /* StepsWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StepsWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		11BF37174DA15C09DDA6AD5E /* StepsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsApp.swift; sourceTree = "<group>"; };
 		26D18FEE6FA38F062795F9BA /* GridStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridStyle.swift; sourceTree = "<group>"; };
+		286DF7C75C319D9EB28D2B38 /* StepsAccessoryWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsAccessoryWidgets.swift; sourceTree = "<group>"; };
 		2FEEE04CC6987E48638A774B /* Steps.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Steps.entitlements; sourceTree = "<group>"; };
 		37C0293D916723287F977B02 /* StepsGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsGridView.swift; sourceTree = "<group>"; };
 		650647087439AF5B333EB4AA /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
@@ -58,13 +108,20 @@
 		6D21A3B1C20FBE7612F488B8 /* StepsChime.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = StepsChime.wav; sourceTree = "<group>"; };
 		79A747E8CF173847817DFFEA /* StepsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsWidget.swift; sourceTree = "<group>"; };
 		7D6048643F41AAF2121BC801 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		A77FE52361B004CC740C83D4 /* StepsWatchWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepsWatchWidget.entitlements; sourceTree = "<group>"; };
 		A94D00A1E1E247E0D5F0B5A6 /* GridCustomizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCustomizationView.swift; sourceTree = "<group>"; };
-		A9C502E3EBF043D1C48B3449 /* Steps.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Steps.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A9C502E3EBF043D1C48B3449 /* Steps.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Steps.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2CAF0D75F8FF046B240DA71 /* StepsWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsWatchApp.swift; sourceTree = "<group>"; };
+		B878455EA419B960F72913E5 /* StepsWatchWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StepsWatchWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA3444CD9578DC32CC1F7D6F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		DBFE320E0FFC1A13224B7567 /* StepsWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StepsWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		DBFE320E0FFC1A13224B7567 /* StepsWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = StepsWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E0FA048CA0AEF0106A456611 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		EC64E5E0A2FB4C4799DE9038 /* StepsWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepsWatch.entitlements; sourceTree = "<group>"; };
+		ECECABDD5BDFB15079B129D0 /* WatchContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchContentView.swift; sourceTree = "<group>"; };
+		EF5EB93A337538FE1FF90844 /* StepsWatchWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsWatchWidget.swift; sourceTree = "<group>"; };
 		F2EAAE91F5047E9330C33D6A /* StepsWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepsWidget.entitlements; sourceTree = "<group>"; };
 		F4EF689CDC383CFD433DD833 /* StepNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepNotifier.swift; sourceTree = "<group>"; };
+		F8AEBD94E086B8F24AC1513A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -73,6 +130,7 @@
 			children = (
 				E0FA048CA0AEF0106A456611 /* Info.plist */,
 				652546EE4DB6EA22B2F2E57B /* StepsAccessoryViews.swift */,
+				286DF7C75C319D9EB28D2B38 /* StepsAccessoryWidgets.swift */,
 				37C0293D916723287F977B02 /* StepsGridView.swift */,
 				F2EAAE91F5047E9330C33D6A /* StepsWidget.entitlements */,
 				79A747E8CF173847817DFFEA /* StepsWidget.swift */,
@@ -84,9 +142,31 @@
 			isa = PBXGroup;
 			children = (
 				7BCAD8FB65C8CDD919BF01E9 /* Steps */,
+				72FD0B2A39C7DA3B6F6B6D8F /* StepsWatch */,
+				6BD05D377E1D693903222BA1 /* StepsWatchWidget */,
 				557E3B7EAA7F5592BB07C460 /* StepsWidget */,
 				7E0C1D82B9E8250BB756A37E /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		6BD05D377E1D693903222BA1 /* StepsWatchWidget */ = {
+			isa = PBXGroup;
+			children = (
+				F8AEBD94E086B8F24AC1513A /* Info.plist */,
+				A77FE52361B004CC740C83D4 /* StepsWatchWidget.entitlements */,
+				EF5EB93A337538FE1FF90844 /* StepsWatchWidget.swift */,
+			);
+			path = StepsWatchWidget;
+			sourceTree = "<group>";
+		};
+		72FD0B2A39C7DA3B6F6B6D8F /* StepsWatch */ = {
+			isa = PBXGroup;
+			children = (
+				EC64E5E0A2FB4C4799DE9038 /* StepsWatch.entitlements */,
+				B2CAF0D75F8FF046B240DA71 /* StepsWatchApp.swift */,
+				ECECABDD5BDFB15079B129D0 /* WatchContentView.swift */,
+			);
+			path = StepsWatch;
 			sourceTree = "<group>";
 		};
 		7BCAD8FB65C8CDD919BF01E9 /* Steps */ = {
@@ -109,7 +189,9 @@
 			isa = PBXGroup;
 			children = (
 				A9C502E3EBF043D1C48B3449 /* Steps.app */,
-				DBFE320E0FFC1A13224B7567 /* StepsWidget.appex */,
+				0FDD2810FEA784E5C3549CC2 /* StepsWatch.app */,
+				B878455EA419B960F72913E5 /* StepsWatchWidgetExtension.appex */,
+				DBFE320E0FFC1A13224B7567 /* StepsWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -117,6 +199,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		010F12D82A2D2EBCD60E27F3 /* StepsWatchWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0BABD6C5633A0ABFEA2C3B1F /* Build configuration list for PBXNativeTarget "StepsWatchWidgetExtension" */;
+			buildPhases = (
+				1BA27291A434A44E67B22A2E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StepsWatchWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = StepsWatchWidgetExtension;
+			productReference = B878455EA419B960F72913E5 /* StepsWatchWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		460735B1D41D3C2C8C8DAAB8 /* StepsWidgetExtension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 125FEF445B6C2B569B57E0AA /* Build configuration list for PBXNativeTarget "StepsWidgetExtension" */;
@@ -131,7 +230,7 @@
 			packageProductDependencies = (
 			);
 			productName = StepsWidgetExtension;
-			productReference = DBFE320E0FFC1A13224B7567 /* StepsWidget.appex */;
+			productReference = DBFE320E0FFC1A13224B7567 /* StepsWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		AA48C41E790B3510498F5404 /* Steps */ = {
@@ -141,17 +240,38 @@
 				0BC6892F78BFA3B3C3F5071F /* Sources */,
 				CAF55B1E499B082979A3CA19 /* Resources */,
 				E7F0ED681F1501F21490C7B3 /* Embed Foundation Extensions */,
+				410B006249D5132FE7F63C27 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				0E5827AC5A5AA069F6D74FC5 /* PBXTargetDependency */,
+				13FEAC17ECFFD4BA2514E2A8 /* PBXTargetDependency */,
 			);
 			name = Steps;
 			packageProductDependencies = (
 			);
 			productName = Steps;
 			productReference = A9C502E3EBF043D1C48B3449 /* Steps.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D20E82CA5ECAE5BA9A84B380 /* StepsWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E54B7071B0EDCE8E6F6E92F0 /* Build configuration list for PBXNativeTarget "StepsWatch" */;
+			buildPhases = (
+				3BA1489A2AD523D900C95F8F /* Sources */,
+				340DEA1ED672D1A829D76385 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				DD1502E7FCBA69A1CA12D684 /* PBXTargetDependency */,
+			);
+			name = StepsWatch;
+			packageProductDependencies = (
+			);
+			productName = StepsWatch;
+			productReference = 0FDD2810FEA784E5C3549CC2 /* StepsWatch.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -163,10 +283,20 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					010F12D82A2D2EBCD60E27F3 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
 					460735B1D41D3C2C8C8DAAB8 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 					AA48C41E790B3510498F5404 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					D20E82CA5ECAE5BA9A84B380 = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -186,6 +316,8 @@
 			projectRoot = "";
 			targets = (
 				AA48C41E790B3510498F5404 /* Steps */,
+				D20E82CA5ECAE5BA9A84B380 /* StepsWatch */,
+				010F12D82A2D2EBCD60E27F3 /* StepsWatchWidgetExtension */,
 				460735B1D41D3C2C8C8DAAB8 /* StepsWidgetExtension */,
 			);
 		};
@@ -218,6 +350,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1BA27291A434A44E67B22A2E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AF3AAC40A57C99D0D4CF4F96 /* GridStyle.swift in Sources */,
+				899B8A2801F4DF4BF8E54D99 /* HealthKitService.swift in Sources */,
+				093726F5940FC96689DF681C /* StepsAccessoryViews.swift in Sources */,
+				93886D4A5AAEC14392B743BC /* StepsAccessoryWidgets.swift in Sources */,
+				32CA6A76855DC86CA4893573 /* StepsWatchWidget.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3BA1489A2AD523D900C95F8F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CD56F665BEA72F8F5AA27147 /* GridStyle.swift in Sources */,
+				F4000C4CA0F3712F312B5269 /* HealthKitService.swift in Sources */,
+				0EF4538C98ACD1233C2E7D21 /* StepsWatchApp.swift in Sources */,
+				8A2FBC01226A0D1EFDF16372 /* WatchContentView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7D1359381429EB4C63022485 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -225,6 +380,7 @@
 				9C1C3103D24CF24D51FF996D /* GridStyle.swift in Sources */,
 				291BD0276B5B3982791683F5 /* HealthKitService.swift in Sources */,
 				C23E035F4B508FBC20D7B5D1 /* StepsAccessoryViews.swift in Sources */,
+				46B13D9E4DA5AC9CC484B5EE /* StepsAccessoryWidgets.swift in Sources */,
 				2AA3D6B7EC6DF2DCFF83EFB6 /* StepsGridView.swift in Sources */,
 				0D301650C390E3EA15892D35 /* StepsWidget.swift in Sources */,
 			);
@@ -238,9 +394,38 @@
 			target = 460735B1D41D3C2C8C8DAAB8 /* StepsWidgetExtension */;
 			targetProxy = 85CD09B76CBFDD85A47F86D1 /* PBXContainerItemProxy */;
 		};
+		13FEAC17ECFFD4BA2514E2A8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D20E82CA5ECAE5BA9A84B380 /* StepsWatch */;
+			targetProxy = EB4DCE949F494769F7824CC0 /* PBXContainerItemProxy */;
+		};
+		DD1502E7FCBA69A1CA12D684 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 010F12D82A2D2EBCD60E27F3 /* StepsWatchWidgetExtension */;
+			targetProxy = 82E00FA81176A6F38C33058C /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		1B06F4DB27502ECC7D27FB79 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = StepsWatchWidget/StepsWatchWidget.entitlements;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = StepsWatchWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.plontsch.Steps.watchkitapp.StepsWatchWidget;
+				PRODUCT_NAME = StepsWatchWidget;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Debug;
+		};
 		2442750626B1DCD4779E7DEA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -249,7 +434,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Steps/Steps.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = DNKZNVGEK5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Shows your step count on the home-screen grid.";
@@ -273,7 +457,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = StepsWidget/StepsWidget.entitlements;
-				DEVELOPMENT_TEAM = DNKZNVGEK5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = StepsWidget/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -287,6 +470,42 @@
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		43EB7D48E95386BDA296F895 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = StepsWatchWidget/StepsWatchWidget.entitlements;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = StepsWatchWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.plontsch.Steps.watchkitapp.StepsWatchWidget;
+				PRODUCT_NAME = StepsWatchWidget;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+			};
+			name = Release;
+		};
+		5A367800C955B867753181FC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = StepsWatch/StepsWatch.entitlements;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Steps;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Shows your step count on the watch.";
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = de.plontsch.Steps;
+				PRODUCT_BUNDLE_IDENTIFIER = de.plontsch.Steps.watchkitapp;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
 			};
 			name = Debug;
 		};
@@ -350,11 +569,11 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WATCHOS_DEPLOYMENT_TARGET = 26.5;
 			};
 			name = Debug;
 		};
@@ -362,7 +581,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = StepsWidget/StepsWidget.entitlements;
-				DEVELOPMENT_TEAM = DNKZNVGEK5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = StepsWidget/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -432,11 +650,28 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				WATCHOS_DEPLOYMENT_TARGET = 26.5;
+			};
+			name = Release;
+		};
+		BA02FB4EA7C7525159DA86FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = StepsWatch/StepsWatch.entitlements;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Steps;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Shows your step count on the watch.";
+				INFOPLIST_KEY_WKApplication = YES;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = de.plontsch.Steps;
+				PRODUCT_BUNDLE_IDENTIFIER = de.plontsch.Steps.watchkitapp;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
 			};
 			name = Release;
 		};
@@ -448,7 +683,6 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Steps/Steps.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				DEVELOPMENT_TEAM = DNKZNVGEK5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Shows your step count on the home-screen grid.";
@@ -471,6 +705,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0BABD6C5633A0ABFEA2C3B1F /* Build configuration list for PBXNativeTarget "StepsWatchWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B06F4DB27502ECC7D27FB79 /* Debug */,
+				43EB7D48E95386BDA296F895 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		125FEF445B6C2B569B57E0AA /* Build configuration list for PBXNativeTarget "StepsWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -485,6 +728,15 @@
 			buildConfigurations = (
 				633FC851B708DCB08B653A4A /* Debug */,
 				7BFECDEC5DB29F1ACCF2B96B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		E54B7071B0EDCE8E6F6E92F0 /* Build configuration list for PBXNativeTarget "StepsWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5A367800C955B867753181FC /* Debug */,
+				BA02FB4EA7C7525159DA86FF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
