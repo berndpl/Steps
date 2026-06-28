@@ -122,6 +122,7 @@
 		F2EAAE91F5047E9330C33D6A /* StepsWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepsWidget.entitlements; sourceTree = "<group>"; };
 		F4EF689CDC383CFD433DD833 /* StepNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepNotifier.swift; sourceTree = "<group>"; };
 		F8AEBD94E086B8F24AC1513A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		"TEMP_3A373BC5-4274-4780-A9A9-8892EF5B32C8" /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -194,6 +195,14 @@
 				DBFE320E0FFC1A13224B7567 /* StepsWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		"TEMP_29D68E7A-5754-4C06-8463-D370BC6BCB87" /* Steps */ = {
+			isa = PBXGroup;
+			children = (
+				"TEMP_3A373BC5-4274-4780-A9A9-8892EF5B32C8" /* Local.xcconfig */,
+			);
+			path = Steps;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -284,19 +293,19 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					010F12D82A2D2EBCD60E27F3 = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = DNKZNVGEK5;
 						ProvisioningStyle = Automatic;
 					};
 					460735B1D41D3C2C8C8DAAB8 = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = DNKZNVGEK5;
 						ProvisioningStyle = Automatic;
 					};
 					AA48C41E790B3510498F5404 = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = DNKZNVGEK5;
 						ProvisioningStyle = Automatic;
 					};
 					D20E82CA5ECAE5BA9A84B380 = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = DNKZNVGEK5;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -511,6 +520,7 @@
 		};
 		633FC851B708DCB08B653A4A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = "TEMP_3A373BC5-4274-4780-A9A9-8892EF5B32C8" /* Local.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -546,7 +556,6 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -599,6 +608,7 @@
 		};
 		7BFECDEC5DB29F1ACCF2B96B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = "TEMP_3A373BC5-4274-4780-A9A9-8892EF5B32C8" /* Local.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -634,7 +644,6 @@
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
