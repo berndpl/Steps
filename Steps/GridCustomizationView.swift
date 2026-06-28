@@ -19,6 +19,8 @@ struct GridCustomizationView: View {
     private var rampHex = GridStyle.defaultRampHex
     @AppStorage(SettingsStore.gridGoalHexKey, store: SettingsStore.defaults)
     private var goalHex = GridStyle.defaultGoalHex
+    @AppStorage(SettingsStore.gridCurveKey, store: SettingsStore.defaults)
+    private var curveRaw = CurveShape.easeIn.rawValue
     @AppStorage(SettingsStore.gridSpreadKey, store: SettingsStore.defaults)
     private var spread = GridStyle.defaultSpread
     @AppStorage(SettingsStore.gridShapeKey, store: SettingsStore.defaults)
@@ -26,9 +28,11 @@ struct GridCustomizationView: View {
     @AppStorage(SettingsStore.gridMarkerKey, store: SettingsStore.defaults)
     private var markerRaw = BestDayMarker.dot.rawValue
 
+    private var curve: CurveShape { CurveShape(rawValue: curveRaw) ?? .easeIn }
+
     /// The style currently described by the controls — drives the live preview.
     private var draft: GridStyle {
-        GridStyle(rampHex: rampHex, goalHex: goalHex, spread: spread,
+        GridStyle(rampHex: rampHex, goalHex: goalHex, curve: curve, spread: spread,
                   shape: DayShape(rawValue: shapeRaw) ?? .roundedSquare,
                   marker: BestDayMarker(rawValue: markerRaw) ?? .dot)
     }
@@ -63,14 +67,21 @@ struct GridCustomizationView: View {
                 }
 
                 Section {
+                    curvePicker
                     VStack(alignment: .leading, spacing: 6) {
-                        Slider(value: $spread, in: GridStyle.spreadRange)
-                        Text("Higher = mid days recede; goal days pop.")
-                            .font(.system(.caption2, design: .monospaced))
-                            .foregroundStyle(.secondary)
+                        Slider(value: $spread, in: GridStyle.spreadRange) {
+                            Text("Strength")
+                        } minimumValueLabel: {
+                            Text("subtle").font(.system(.caption2, design: .monospaced))
+                        } maximumValueLabel: {
+                            Text("strong").font(.system(.caption2, design: .monospaced))
+                        }
                     }
                 } header: {
-                    Text("Spread").font(.system(.caption, design: .monospaced))
+                    Text("Curve").font(.system(.caption, design: .monospaced))
+                } footer: {
+                    Text("How a day's steps map to fill intensity.")
+                        .font(.system(.caption2, design: .monospaced))
                 }
 
                 Section {
@@ -103,6 +114,7 @@ struct GridCustomizationView: View {
                     Button("Reset to default", role: .destructive) {
                         rampHex = GridStyle.defaultRampHex
                         goalHex = GridStyle.defaultGoalHex
+                        curveRaw = CurveShape.easeIn.rawValue
                         spread = GridStyle.defaultSpread
                         shapeRaw = DayShape.roundedSquare.rawValue
                         markerRaw = BestDayMarker.dot.rawValue
@@ -140,6 +152,38 @@ struct GridCustomizationView: View {
         .padding(.vertical, 4)
     }
 
+    // MARK: - Curve type
+
+    /// Horizontal picker of curve shapes, each shown as a small sparkline of the
+    /// response at the current strength so the effect is visible before choosing.
+    private var curvePicker: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(CurveShape.allCases) { shape in
+                    let selected = shape == curve
+                    Button { curveRaw = shape.rawValue } label: {
+                        VStack(spacing: 6) {
+                            CurveSparkline(shape: shape, strength: spread)
+                                .frame(width: 44, height: 30)
+                                .padding(4)
+                                .background(Color("AppTextMuted").opacity(0.12))
+                                .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                                .overlay {
+                                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                                        .strokeBorder(selected ? Color.primary : .clear, lineWidth: 2)
+                                }
+                            Text(shape.label)
+                                .font(.system(.caption2, design: .monospaced))
+                                .foregroundStyle(selected ? .primary : .secondary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.vertical, 4)
+        }
+    }
+
     // MARK: - Palette presets
 
     private var palettePicker: some View {
@@ -172,7 +216,7 @@ struct GridCustomizationView: View {
     /// A mini ramp + goal swatch for a palette, generated the same way as the grid.
     private func swatch(_ palette: GridPalette) -> some View {
         let style = GridStyle(rampHex: palette.rampHex, goalHex: palette.goalHex,
-                              spread: spread, shape: .roundedSquare, marker: .none)
+                              curve: curve, spread: spread, shape: .roundedSquare, marker: .none)
         return HStack(spacing: 2) {
             ForEach([2_000, 5_000, 8_000], id: \.self) { steps in
                 RoundedRectangle(cornerRadius: 3, style: .continuous)
@@ -184,5 +228,29 @@ struct GridCustomizationView: View {
                 .frame(width: 13, height: 13)
         }
         .padding(4)
+    }
+}
+
+/// A tiny line plot of a `CurveShape` (input 0→1 across, intensity 0→1 up) used
+/// as the visual in the curve-type picker.
+private struct CurveSparkline: View {
+    let shape: CurveShape
+    let strength: Double
+
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width, h = geo.size.height
+            Path { p in
+                let steps = 24
+                for i in 0...steps {
+                    let t = Double(i) / Double(steps)
+                    let y = shape.apply(t, strength: strength)
+                    let point = CGPoint(x: w * t, y: h * (1 - y))
+                    if i == 0 { p.move(to: point) } else { p.addLine(to: point) }
+                }
+            }
+            .stroke(Color.primary,
+                    style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round))
+        }
     }
 }

@@ -168,6 +168,7 @@ enum SettingsStore {
     // customization sheet writes the very same values these accessors read.
     static let gridRampHexKey = "gridRampHex"
     static let gridGoalHexKey = "gridGoalHex"
+    static let gridCurveKey = "gridCurve"
     static let gridSpreadKey = "gridSpread"
     static let gridShapeKey = "gridShape"
     static let gridMarkerKey = "gridMarker"
@@ -177,6 +178,9 @@ enum SettingsStore {
     }
     static var gridGoalHex: String {
         defaults.string(forKey: gridGoalHexKey) ?? GridStyle.defaultGoalHex
+    }
+    static var gridCurve: String {
+        defaults.string(forKey: gridCurveKey) ?? CurveShape.easeIn.rawValue
     }
     static var gridSpread: Double {
         (defaults.object(forKey: gridSpreadKey) as? Double) ?? GridStyle.defaultSpread

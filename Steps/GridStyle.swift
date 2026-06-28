@@ -181,6 +181,58 @@ enum BestDayMarker: String, CaseIterable, Identifiable {
     }
 }
 
+// MARK: - Response curve
+
+/// The shape of the steps→intensity response. `apply` maps progress-to-goal
+/// `t` (0…1) to a fill intensity (0…1); `strength` (0…1, from the slider) sets how
+/// pronounced the shape is — 0 is ~linear for every type. Drives the OKLCH ramp
+/// position, and is previewed as a sparkline in the customization sheet.
+enum CurveShape: String, CaseIterable, Identifiable {
+    case linear
+    case easeIn
+    case easeOut
+    case easeInOut
+    case logarithmic
+    case exponential
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .linear:      return "Linear"
+        case .easeIn:      return "Ease-In"
+        case .easeOut:     return "Ease-Out"
+        case .easeInOut:   return "Ease-In-Out"
+        case .logarithmic: return "Log"
+        case .exponential: return "Exp"
+        }
+    }
+
+    func apply(_ t: Double, strength s: Double) -> Double {
+        let t = min(max(t, 0), 1)
+        let s = min(max(s, 0), 1)
+        let y: Double
+        switch self {
+        case .linear:
+            y = t
+        case .easeIn:               // mids recede; only near-goal days fill
+            y = pow(t, 1 + s * 3)
+        case .easeOut:              // mids lift toward the intense end
+            y = 1 - pow(1 - t, 1 + s * 3)
+        case .easeInOut:            // S-curve via smootherstep, blended by strength
+            let smooth = t * t * t * (t * (t * 6 - 15) + 10)
+            y = t + (smooth - t) * s
+        case .logarithmic:          // fast early rise, flattens near the goal
+            let a = s * 20
+            y = a < 0.0001 ? t : log1p(a * t) / log1p(a)
+        case .exponential:          // slow start, accelerates toward the goal
+            let b = 1 + s * 20
+            y = b <= 1.0001 ? t : (pow(b, t) - 1) / (b - 1)
+        }
+        return min(max(y, 0), 1)
+    }
+}
+
 // MARK: - Grid style
 
 /// The full, persisted description of how the grid looks. Read by both the app
@@ -188,18 +240,20 @@ enum BestDayMarker: String, CaseIterable, Identifiable {
 struct GridStyle: Equatable {
     var rampHex: String
     var goalHex: String
-    var spread: Double      // response-curve gamma; higher = mid-days recede
+    var curve: CurveShape   // shape of the steps→intensity response
+    var spread: Double      // curve strength 0…1 (how pronounced the shape is)
     var shape: DayShape
     var marker: BestDayMarker
 
     static let defaultRampHex = "#216E39"   // current darkest-green ramp end
     static let defaultGoalHex = "#F5A623"   // current Steps gold
-    static let defaultSpread = 1.5
-    static let spreadRange: ClosedRange<Double> = 1.0...3.0
+    static let defaultSpread = 0.5          // mid strength
+    static let spreadRange: ClosedRange<Double> = 0.0...1.0
 
     static let `default` = GridStyle(
         rampHex: defaultRampHex,
         goalHex: defaultGoalHex,
+        curve: .easeIn,
         spread: defaultSpread,
         shape: .roundedSquare,
         marker: .dot
@@ -210,6 +264,7 @@ struct GridStyle: Equatable {
         GridStyle(
             rampHex: SettingsStore.gridRampHex,
             goalHex: SettingsStore.gridGoalHex,
+            curve: CurveShape(rawValue: SettingsStore.gridCurve) ?? .easeIn,
             spread: SettingsStore.gridSpread,
             shape: DayShape(rawValue: SettingsStore.gridShape) ?? .roundedSquare,
             marker: BestDayMarker(rawValue: SettingsStore.gridMarker) ?? .dot
@@ -237,7 +292,7 @@ struct GridStyle: Equatable {
     func color(forSteps steps: Int, goal: Int, scheme: ColorScheme) -> Color {
         if steps >= goal { return goalColor }
         let t = max(0, min(Double(steps) / Double(goal), 1))
-        let i = pow(t, spread)
+        let i = curve.apply(t, strength: spread)
 
         let base = rampBaseColor.oklch
         let dark = scheme == .dark
@@ -263,11 +318,18 @@ struct GridPalette: Identifiable {
     var id: String { name }
 
     static let presets: [GridPalette] = [
-        GridPalette(name: "Green",  rampHex: "#216E39", goalHex: "#F5A623"), // current
-        GridPalette(name: "Ocean",  rampHex: "#1F6F8B", goalHex: "#F2714E"),
-        GridPalette(name: "Violet", rampHex: "#5B3E9B", goalHex: "#F0A500"),
-        GridPalette(name: "Mono",   rampHex: "#3A3F4B", goalHex: "#3B82F6"),
-        GridPalette(name: "Sunset", rampHex: "#C0392B", goalHex: "#FF5FA2"),
+        GridPalette(name: "Green",   rampHex: "#216E39", goalHex: "#F5A623"), // current
+        GridPalette(name: "Ocean",   rampHex: "#1F6F8B", goalHex: "#F2714E"),
+        GridPalette(name: "Violet",  rampHex: "#5B3E9B", goalHex: "#F0A500"),
+        GridPalette(name: "Mono",    rampHex: "#3A3F4B", goalHex: "#3B82F6"),
+        GridPalette(name: "Sunset",  rampHex: "#C0392B", goalHex: "#FF5FA2"),
+        GridPalette(name: "Teal",    rampHex: "#0F766E", goalHex: "#FB7185"),
+        GridPalette(name: "Indigo",  rampHex: "#4338CA", goalHex: "#FBBF24"),
+        GridPalette(name: "Rose",    rampHex: "#BE185D", goalHex: "#2DD4BF"),
+        GridPalette(name: "Amber",   rampHex: "#B45309", goalHex: "#3B82F6"),
+        GridPalette(name: "Slate",   rampHex: "#475569", goalHex: "#FACC15"),
+        GridPalette(name: "Crimson", rampHex: "#9F1239", goalHex: "#38BDF8"),
+        GridPalette(name: "Forest",  rampHex: "#14532D", goalHex: "#FCD34D"),
     ]
 }
 
