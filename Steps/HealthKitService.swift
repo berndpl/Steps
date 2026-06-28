@@ -162,6 +162,17 @@ enum SettingsStore {
                      forKey: monthRecordNotifiedDayKey)
     }
 
+    /// Generic "already fired this notification today" guard, keyed by a short
+    /// name — used by the fun moments (streak, double-goal, record, morning) so
+    /// each fires at most once per day and resets daily.
+    static func hasFiredToday(_ key: String) -> Bool {
+        isToday(defaults.object(forKey: "fired.\(key).day") as? Double)
+    }
+    static func markFiredToday(_ key: String) {
+        defaults.set(Calendar.current.startOfDay(for: Date()).timeIntervalSince1970,
+                     forKey: "fired.\(key).day")
+    }
+
     // MARK: Grid appearance (read by the widget via the App Group)
 
     // Keys are public so `@AppStorage(key, store: SettingsStore.defaults)` in the
@@ -254,13 +265,32 @@ final class HealthKitService {
         observerQuery = query
     }
 
-    /// Requests read access to step count. Safe to call repeatedly; iOS only
-    /// prompts the user the first time.
+    /// Requests read access to step count and workouts (for cycling minutes).
+    /// Safe to call repeatedly; iOS only prompts the user the first time.
     func requestAuthorization() async throws {
         guard HKHealthStore.isHealthDataAvailable() else {
             throw HealthKitError.notAvailable
         }
-        try await store.requestAuthorization(toShare: [], read: [stepType])
+        try await store.requestAuthorization(toShare: [], read: [stepType, HKObjectType.workoutType()])
+    }
+
+    /// Total minutes of cycling logged today, summed across cycling workouts
+    /// (Apple Watch auto-detected rides, the Fitness app, or third-party apps).
+    /// Casual biking with nothing recording a workout won't be counted. Returns
+    /// 0 on no access / no rides.
+    func todayCyclingMinutes() async -> Int {
+        let start = Calendar.current.startOfDay(for: Date())
+        let datePredicate = HKQuery.predicateForSamples(withStart: start, end: Date())
+        let cyclingPredicate = HKQuery.predicateForWorkouts(with: .cycling)
+        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [datePredicate, cyclingPredicate])
+
+        let descriptor = HKSampleQueryDescriptor(
+            predicates: [.workout(predicate)],
+            sortDescriptors: []
+        )
+        guard let workouts = try? await descriptor.result(for: store) else { return 0 }
+        let seconds = workouts.reduce(0.0) { $0 + $1.duration }
+        return Int(seconds / 60)
     }
 
     /// HealthKit deliberately hides whether *read* access was granted (to avoid

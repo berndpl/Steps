@@ -18,6 +18,7 @@
 		9C1C3103D24CF24D51FF996D /* GridStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D18FEE6FA38F062795F9BA /* GridStyle.swift */; };
 		C23E035F4B508FBC20D7B5D1 /* StepsAccessoryViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 652546EE4DB6EA22B2F2E57B /* StepsAccessoryViews.swift */; };
 		C70B023CEE7FFBB91CFCBCA7 /* GridCustomizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94D00A1E1E247E0D5F0B5A6 /* GridCustomizationView.swift */; };
+		D3A9EEF9D76DBAA689B003E0 /* StepsChime.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6D21A3B1C20FBE7612F488B8 /* StepsChime.wav */; };
 		D84F3D63196C3CD062E7E12F /* StepsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C0293D916723287F977B02 /* StepsGridView.swift */; };
 		E14510AFFB30410EA6D6850A /* StepNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EF689CDC383CFD433DD833 /* StepNotifier.swift */; };
 		FA5787B1A276553491D3584B /* StepsApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF37174DA15C09DDA6AD5E /* StepsApp.swift */; };
@@ -54,6 +55,7 @@
 		37C0293D916723287F977B02 /* StepsGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsGridView.swift; sourceTree = "<group>"; };
 		650647087439AF5B333EB4AA /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		652546EE4DB6EA22B2F2E57B /* StepsAccessoryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsAccessoryViews.swift; sourceTree = "<group>"; };
+		6D21A3B1C20FBE7612F488B8 /* StepsChime.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = StepsChime.wav; sourceTree = "<group>"; };
 		79A747E8CF173847817DFFEA /* StepsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsWidget.swift; sourceTree = "<group>"; };
 		7D6048643F41AAF2121BC801 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A94D00A1E1E247E0D5F0B5A6 /* GridCustomizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCustomizationView.swift; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 				F4EF689CDC383CFD433DD833 /* StepNotifier.swift */,
 				2FEEE04CC6987E48638A774B /* Steps.entitlements */,
 				11BF37174DA15C09DDA6AD5E /* StepsApp.swift */,
+				6D21A3B1C20FBE7612F488B8 /* StepsChime.wav */,
 			);
 			path = Steps;
 			sourceTree = "<group>";
@@ -194,6 +197,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				08D80B55E4B0789F69EFBC36 /* Assets.xcassets in Resources */,
+				D3A9EEF9D76DBAA689B003E0 /* StepsChime.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

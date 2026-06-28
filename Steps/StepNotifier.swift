@@ -2,16 +2,15 @@
 //  StepNotifier.swift
 //  Steps
 //
-//  Milestone notifications: an encouraging local notification at each crossed
-//  1,000-step mark toward the daily goal. App-target only — scheduling happens in
-//  the app process, driven by HealthKitService's step observer (so alerts ride the
-//  same background wake-ups that refresh the widget).
+//  Local notifications, scheduled in the app process and driven by
+//  HealthKitService's step observer (so they ride the same background wake-ups
+//  that refresh the widget). Background HealthKit delivery is throttled (~hourly
+//  when closed), so everything here is "catch-up" friendly: per-day guards make
+//  each alert fire at most once a day, and reset daily.
 //
-//  Because background HealthKit delivery is throttled (~hourly when the app is
-//  closed), several thousands can be crossed between wake-ups. We therefore send a
-//  single "catch-up" notification for the *highest* newly-crossed milestone rather
-//  than a burst of stale ones. A distinct message marks the 10k goal; nothing fires
-//  above it, and the ladder resets each day (see SettingsStore.lastNotifiedThousand).
+//  Beyond the per-1,000 milestone ladder and the goal alert, a few "fun moments"
+//  celebrate notable days: a morning greeting, double-goal, goal streaks, and a
+//  new record (best day in the cached ~6-week window). All share one custom chime.
 //
 
 import Foundation
@@ -22,6 +21,9 @@ final class StepNotifier {
 
     private let center = UNUserNotificationCenter.current()
 
+    /// Custom in-app chime (bundled WAV) used for every Steps notification.
+    private let chime = UNNotificationSound(named: UNNotificationSoundName("StepsChime.wav"))
+
     private init() {}
 
     /// Request alert + sound permission. Called when the user enables the toggle.
@@ -30,15 +32,18 @@ final class StepNotifier {
         (try? await center.requestAuthorization(options: [.alert, .sound])) ?? false
     }
 
-    /// Evaluate today's running total and post any due notifications: the highest
-    /// newly-crossed 1,000-step milestone, and a special "new monthly best" alert
-    /// when today first surpasses every other day this month. No-ops when the
-    /// toggle is off. Safe to call on every step refresh.
+    /// Evaluate today's running total and post any due notifications. No-ops when
+    /// the toggle is off. Safe to call on every step refresh.
     func evaluate(todaySteps: Int) {
         guard SettingsStore.notificationsEnabled else { return }
+        evaluateMorning(todaySteps: todaySteps)
         evaluateMilestone(todaySteps: todaySteps)
-        evaluateMonthlyRecord(todaySteps: todaySteps)
+        evaluateDoubleGoal(todaySteps: todaySteps)
+        evaluateStreak(todaySteps: todaySteps)
+        evaluateRecord(todaySteps: todaySteps)
     }
+
+    // MARK: - Milestones (the per-1,000 ladder + goal)
 
     private func evaluateMilestone(todaySteps: Int) {
         let current = min(todaySteps / 1_000, 10)   // highest thousand reached, capped at goal
@@ -46,57 +51,104 @@ final class StepNotifier {
         guard current > last, current >= 1 else { return }
 
         SettingsStore.lastNotifiedThousand = current
-        post(stage: stage(for: todaySteps), milestone: current)
+        let s = stage(for: todaySteps)
+        if current >= 10 {
+            post(title: "\(s.emoji) Goal reached!", body: s.message, id: "goal")
+        } else {
+            post(title: "\(s.emoji) \((current * 1_000).formatted()) steps", body: s.message,
+                 id: "milestone-\(current)")
+        }
     }
 
-    /// Fire once, the moment today's total beats the best of every *other*
-    /// current-month day. The prior best is computed from the shared cache
-    /// (refreshed just before this runs), so it excludes today by construction.
-    /// `priorBest > 0` avoids celebrating the first logged day of a month (no
-    /// competition yet). A daily stamp prevents re-firing as today keeps climbing.
+    // MARK: - Fun moments (each at most once/day)
+
+    /// A cheerful greeting the first time today's steps land — but only in the
+    /// morning, so an afternoon first-sync doesn't say "good morning" at 4pm.
+    private func evaluateMorning(todaySteps: Int) {
+        guard todaySteps > 0,
+              Calendar.current.component(.hour, from: Date()) < 12,
+              !SettingsStore.hasFiredToday("morning") else { return }
+        SettingsStore.markFiredToday("morning")
+        post(title: "🌅 First steps", body: "Good morning — you're moving!", id: "morning")
+    }
+
+    /// Twice the daily goal in a single day.
+    private func evaluateDoubleGoal(todaySteps: Int) {
+        guard todaySteps >= dailyStepGoal * 2, !SettingsStore.hasFiredToday("doubleGoal") else { return }
+        SettingsStore.markFiredToday("doubleGoal")
+        post(title: "💪 Double goal!", body: "\(todaySteps.formatted()) steps — twice your goal today.",
+             id: "doubleGoal")
+    }
+
+    /// Consecutive days hitting the goal, celebrated at streak milestones.
+    private func evaluateStreak(todaySteps: Int) {
+        guard todaySteps >= dailyStepGoal, !SettingsStore.hasFiredToday("streak") else { return }
+        let streak = goalStreakIncludingToday()
+        guard [3, 7, 14, 30].contains(streak) else { return }
+        SettingsStore.markFiredToday("streak")
+        post(title: "🔥 \(streak)-day streak!",
+             body: "\(streak) days at goal in a row. Keep it going!", id: "streak")
+    }
+
+    /// Today beats the best day in the cached window — a bigger deal than the
+    /// monthly best, so it takes precedence and suppresses the monthly alert.
+    private func evaluateRecord(todaySteps: Int) {
+        let today = Calendar.current.startOfDay(for: Date())
+        var data = SharedStore.load()
+        data[today] = nil   // compare against other days only
+
+        if !SettingsStore.hasFiredToday("record"),
+           let best = data.values.max(), best > 0, todaySteps > best {
+            SettingsStore.markFiredToday("record")
+            SettingsStore.markMonthRecordNotifiedToday()   // suppress the lesser monthly alert
+            post(title: "🏆 Record day!",
+                 body: "\(todaySteps.formatted()) steps — your best in weeks!", id: "record")
+            return
+        }
+        evaluateMonthlyRecord(todaySteps: todaySteps)
+    }
+
+    /// Fire once when today first beats the best of every *other* current-month
+    /// day. Prior best comes from the cache (refreshed just before this runs), so
+    /// it excludes today by construction. `> 0` skips the first logged day.
     private func evaluateMonthlyRecord(todaySteps: Int) {
         guard !SettingsStore.hasNotifiedMonthRecordToday else { return }
-
         let today = Calendar.current.startOfDay(for: Date())
         var monthData = SharedStore.load()
-        monthData[today] = nil   // exclude today; compare against other days only
-        guard let priorBest = monthBestDay(monthData)?.steps, priorBest > 0 else { return }
-        guard todaySteps > priorBest else { return }
-
+        monthData[today] = nil
+        guard let priorBest = monthBestDay(monthData)?.steps, priorBest > 0,
+              todaySteps > priorBest else { return }
         SettingsStore.markMonthRecordNotifiedToday()
-        postMonthlyRecord(steps: todaySteps)
+        post(title: "🏅 New monthly best!",
+             body: "\(todaySteps.formatted()) steps — your biggest day this month.", id: "month-record")
     }
 
-    private func post(stage: StepStage, milestone: Int) {
-        let content = UNMutableNotificationContent()
-        if milestone >= 10 {
-            content.title = "\(stage.emoji) Goal reached!"
-            content.body = stage.message
-        } else {
-            content.title = "\(stage.emoji) \( (milestone * 1_000).formatted() ) steps"
-            content.body = stage.message
+    /// Streak length ending today (which the caller guaranteed hit the goal),
+    /// walking backwards through the cached daily totals.
+    private func goalStreakIncludingToday() -> Int {
+        let cal = Calendar.current
+        let data = SharedStore.load()
+        var streak = 1
+        var day = cal.date(byAdding: .day, value: -1, to: cal.startOfDay(for: Date())) ?? Date()
+        while (data[cal.startOfDay(for: day)] ?? 0) >= dailyStepGoal {
+            streak += 1
+            guard streak <= 400, let prev = cal.date(byAdding: .day, value: -1, to: day) else { break }
+            day = prev
         }
-        content.sound = .default
-
-        // nil trigger → deliver immediately.
-        let request = UNNotificationRequest(
-            identifier: "milestone-\(milestone)-\(Int(Date().timeIntervalSince1970))",
-            content: content,
-            trigger: nil
-        )
-        center.add(request)
+        return streak
     }
 
-    private func postMonthlyRecord(steps: Int) {
-        let content = UNMutableNotificationContent()
-        content.title = "🏅 New monthly best!"
-        content.body = "\(steps.formatted()) steps — your biggest day this month."
-        content.sound = .default
+    // MARK: - Posting
 
+    private func post(title: String, body: String, id: String) {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = chime
         let request = UNNotificationRequest(
-            identifier: "month-record-\(Int(Date().timeIntervalSince1970))",
+            identifier: "\(id)-\(Int(Date().timeIntervalSince1970))",
             content: content,
-            trigger: nil
+            trigger: nil   // deliver immediately
         )
         center.add(request)
     }

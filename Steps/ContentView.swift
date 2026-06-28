@@ -23,6 +23,8 @@ struct ContentView: View {
     @State private var phase: Phase = .loading
     @State private var showSettings = false
     @State private var showCustomize = false
+    /// Minutes of cycling logged today (0 hides the bike row).
+    @State private var cyclingMinutes = 0
     /// The palette goal color, used as the app accent. Re-read whenever the grid
     /// style might have changed (launch, foreground, after customizing).
     @State private var accentColor = GridStyle.current.goalColor
@@ -198,6 +200,15 @@ struct ContentView: View {
             Text("steps today")
                 .font(.system(.title3, design: .monospaced))
                 .foregroundStyle(textMuted)
+
+            // Cycling, only when a ride was logged today.
+            if cyclingMinutes > 0 {
+                Label("\(cyclingMinutes) min cycling", systemImage: "bicycle")
+                    .font(.system(.callout, design: .monospaced))
+                    .foregroundStyle(textMuted)
+                    .padding(.top, 4)
+                    .transition(.opacity)
+            }
         }
     }
 
@@ -318,6 +329,7 @@ struct ContentView: View {
             // the widget so it renders from the synced data.
             await HealthKitService.shared.refreshSharedCache()
             WidgetCenter.shared.reloadAllTimelines()
+            cyclingMinutes = await HealthKitService.shared.todayCyclingMinutes()
         } catch {
             phase = .denied
         }
