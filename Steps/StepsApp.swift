@@ -37,6 +37,9 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         // Begin observing step changes immediately so background wake-ups can
         // refresh the cache and reload the widget. No-ops until access is granted.
         HealthKitService.shared.startObservingSteps()
+        // Bring up WatchConnectivity so the chosen grid theme reaches the watch.
+        ThemeSync.shared.activate()
+        ThemeSync.shared.push()
         return true
     }
 }

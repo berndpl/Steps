@@ -132,7 +132,10 @@ struct GridCustomizationView: View {
             }
         }
         // The widget reads the same App Group keys; refresh it as the user tweaks.
-        .onChange(of: draft) { _, _ in WidgetCenter.shared.reloadAllTimelines() }
+        .onChange(of: draft) { _, _ in
+            WidgetCenter.shared.reloadAllTimelines()
+            ThemeSync.shared.push()   // mirror the new theme to the watch
+        }
     }
 
     // MARK: - Live example grid
@@ -253,4 +256,8 @@ private struct CurveSparkline: View {
                     style: StrokeStyle(lineWidth: 1.5, lineCap: .round, lineJoin: .round))
         }
     }
+}
+
+#Preview {
+    GridCustomizationView()
 }

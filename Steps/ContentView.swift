@@ -23,6 +23,9 @@ struct ContentView: View {
     @State private var phase: Phase = .loading
     @State private var showSettings = false
     @State private var showCustomize = false
+    @State private var showInbox = false
+    /// Unread notification-history count, for the Inbox button badge.
+    @State private var unreadCount = 0
     /// Minutes of cycling logged today (0 hides the bike row).
     @State private var cyclingMinutes = 0
     /// Activities logged today (cycling / strength workouts, mindful sessions),
@@ -83,15 +86,42 @@ struct ContentView: View {
         // today's grid ring. Background colorsets are untouched (stays neutral).
         .tint(accentColor)
         .task { await load() }
+#if DEBUG
+        // Open the Inbox directly for testing: launch arg `-STEPS_OPEN_INBOX 1`.
+        // Seeds a few sample messages when the history is empty so the list is
+        // demonstrable without waiting for real notifications.
+        .onAppear {
+            if UserDefaults.standard.string(forKey: "STEPS_OPEN_INBOX") == "1" {
+                if NotificationLog.all().isEmpty {
+                    let cal = Calendar.current
+                    let now = Date()
+                    func at(_ h: Int, _ m: Int) -> Date {
+                        cal.date(bySettingHour: h, minute: m, second: 0, of: now) ?? now
+                    }
+                    NotificationLog.record(title: "🌅 First steps", body: "Good morning — you're moving!", date: at(7, 42))
+                    NotificationLog.record(title: "🚶 3,000 steps", body: "Finding your rhythm.", date: at(11, 18))
+                    NotificationLog.record(title: "🏃 5,000 steps", body: "Halfway — keep it up!", date: at(14, 5))
+                    NotificationLog.record(title: "🔥 7-day streak!", body: "7 days at goal in a row. Keep it going!", date: at(14, 6))
+                    NotificationLog.record(title: "🤏 So close!", body: "Just 700 steps to your 10,000-step goal — you're this close.", date: at(19, 30))
+                }
+                showInbox = true
+            }
+        }
+#endif
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active { Task { await load() } }
         }
         .sheet(isPresented: $showSettings) { settingsSheet }
         .sheet(isPresented: $showCustomize) { GridCustomizationView() }
+        .sheet(isPresented: $showInbox) { InboxView() }
         // Refresh the accent after the customizer closes (its writes land in the
         // App Group; re-read the current goal color so the app updates too).
         .onChange(of: showCustomize) { _, presented in
             if !presented { accentColor = GridStyle.current.goalColor }
+        }
+        // Clear the unread badge once the inbox has been opened and closed.
+        .onChange(of: showInbox) { _, presented in
+            if !presented { unreadCount = NotificationLog.unreadCount }
         }
     }
 
@@ -115,6 +145,24 @@ struct ContentView: View {
                         .contentShape(Rectangle())
                 }
                 .accessibilityLabel("Customize grid")
+                Button { showInbox = true } label: {
+                    Image(systemName: "tray")
+                        .foregroundStyle(textMuted)
+                        .padding(10)
+                        .contentShape(Rectangle())
+                        .overlay(alignment: .topTrailing) {
+                            if unreadCount > 0 {
+                                Text(unreadCount > 9 ? "9+" : "\(unreadCount)")
+                                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 4)
+                                    .padding(.vertical, 1)
+                                    .background(Capsule().fill(.tint))
+                                    .offset(x: -2, y: 6)
+                            }
+                        }
+                }
+                .accessibilityLabel("Inbox")
                 Spacer()
             }
             Spacer()
@@ -336,6 +384,7 @@ struct ContentView: View {
     private func load() async {
         // Keep the accent in step with the current grid goal color.
         accentColor = GridStyle.current.goalColor
+        unreadCount = NotificationLog.unreadCount
         if HealthKitService.shared.needsAuthorizationPrompt {
             phase = .needsPermission
             return

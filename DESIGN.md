@@ -58,3 +58,71 @@ App Group so the widget renders identically. OKLCH math: `GridStyle.swift` (Bjö
 **Watch complications** reuse the same `StepsRingView` / `TinyStepsView` accessory views (via the
 shared `StepsAccessoryWidgets.swift`); the watch reads HealthKit directly (no App Group sync across
 devices). Notifications carry a custom bundled chime (`StepsChime.wav`).
+
+**Complication family coverage.** Steps offers three lock-screen / watch-face widgets across every
+accessory family:
+
+| Widget | Families | Content |
+|--------|----------|---------|
+| **Steps Ring** | circular · rectangular · inline · **corner** (watchOS) | Goal-progress ring + today's count. Corner = compact count in the corner with a curved **progress `Gauge`** along the bezel. Rectangular adds the activity reward badges. |
+| **Tiny Steps** | circular · rectangular · inline · **corner** (watchOS) | The per-1,000 stage glyph over a thin ring. Corner = stage glyph + curved bezel `Gauge`. Rectangular adds the activity reward badges. |
+| **Steps Grid** | rectangular (watchOS **and** iOS lock screen) | A compact GitHub-style contribution grid, weeks-as-columns. |
+
+`.accessoryCorner` is watchOS-only, so its `supportedFamilies` entry and view branches are wrapped in
+`#if os(watchOS)` (the view/widget files are shared with the iOS target). `StepsGridComplication.swift`
+holds the grid complication's entry, provider, view, and widget — shared by both bundles.
+
+**Accessory tinting → opacity, not hue.** Accessory complications are rendered monochrome / vibrant
+by the system, which flattens the OKLCH ramp. So the grid complication encodes each day's intensity
+via **cell opacity** (`Color.primary` at ~0.12→1.0 of the goal fraction) rather than colour — the tint
+preserves opacity as brightness, keeping the contribution-graph feel. Today's cell gets a `.primary`
+ring. The same **activity reward badges** (cycling / strength / mindful) appear only in the roomy
+families — rectangular and the grid — where there's space; circular / corner / inline omit them.
+
+## Notifications — the encouragement system
+
+All local notifications are opt-in behind one **"Milestone alerts"** toggle (Settings sheet →
+`SettingsStore.notificationsEnabledKey`). When on, the app requests `.alert + .sound` once; later
+toggles are silent. Every alert carries the same custom chime (`StepsChime.wav`) and is posted
+immediately (`trigger: nil`).
+
+**How they fire.** There is no scheduling. `HealthKitService`'s long-lived step observer wakes the
+app (foreground *or* background — throttled to ~hourly when closed) on every new step sample, passes
+today's running total to `StepNotifier.shared.evaluate(todaySteps:)`, and the notifier decides what,
+if anything, is due. Because background delivery is bursty and "catch-up" by nature, every state is
+guarded so it fires **at most once per day** and resets at the local start-of-day. `evaluate` no-ops
+entirely when the toggle is off.
+
+**Per-day guards** (all in `SettingsStore`, stored in the App Group, compared against
+start-of-day epochs):
+
+- `lastNotifiedThousand` — highest 1,000-step rung already announced today; reads as `0` on a new day.
+- `hasFiredToday(key)` / `markFiredToday(key)` — generic once-a-day latch (`morning`, `finalPush`, `doubleGoal`, `streak`, `record`).
+- `hasNotifiedMonthRecordToday` / `markMonthRecordNotifiedToday` — monthly-best latch; resets daily, while the record itself resets monthly (only current-month days are compared).
+
+### States
+
+Evaluated in this order each refresh; states are independent (distinct notification ids) except
+where noted under **Precedence**.
+
+| State | Trigger | Guard (once/day) | Copy |
+|-------|---------|------------------|------|
+| **Morning greeting** | First steps land **and** local hour < 12 | `morning` | 🌅 "First steps" · "Good morning — you're moving!" |
+| **Milestone ladder** | Crossing each new 1,000-step rung (1k…9k), capped at the goal | `lastNotifiedThousand` (climbs through the day) | `<emoji> 6,000 steps` · the stage's message (`stage(for:)`) |
+| **Goal reached** | Crossing 10,000 (the 10th rung) | same ladder guard | 🏆 "Goal reached!" · "Goal reached! Amazing." |
+| **Final push** | Local hour **≥ 18** **and** goal within reach: `0 < (goal − steps) < 1,000` (i.e. below goal) | `finalPush` | 🤏 "So close!" · "Just 700 steps to your 10,000-step goal — you're this close." |
+| **Double goal** | `steps ≥ goal × 2` (20,000) | `doubleGoal` | 💪 "Double goal!" · "20,000 steps — twice your goal today." |
+| **Goal streak** | Goal hit today **and** consecutive goal-days ∈ {3, 7, 14, 30} (walked back through the cache) | `streak` | 🔥 "7-day streak!" · "7 days at goal in a row. Keep it going!" |
+| **Record day** | Today beats the best **other** day in the cached ~6-week window (`best > 0`) | `record` | 🏆 "Record day!" · "your best in weeks!" |
+| **Monthly best** | Today beats the best **other** current-month day (`priorBest > 0`) | monthly-best latch | 🏅 "New monthly best!" · "your biggest day this month." |
+
+**Precedence.** A **Record day** suppresses the lesser **Monthly best** the same day (it sets the
+monthly-best latch too), so a single day yields one "best" alert, not both. The **Final push** is
+mutually exclusive with **Goal reached** by construction (it only fires *below* goal); it can still
+coincide with the 9,000 milestone if that rung is first crossed after 18:00, by design — one is a
+neutral progress mark, the other an evening "last lap" nudge.
+
+**Edge cases & resets.** A fresh day resets every guard, so the full ladder and the fun moments are
+available again. The DEBUG "Simulate +1,000 steps" action zeroes `lastNotifiedThousand` so the ladder
+can be replayed. Streak/record reads come from the App Group cache, which is refreshed immediately
+before `evaluate` runs, so "prior best" always excludes today by construction.

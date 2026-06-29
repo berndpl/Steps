@@ -10,7 +10,12 @@
 //
 //  Beyond the per-1,000 milestone ladder and the goal alert, a few "fun moments"
 //  celebrate notable days: a morning greeting, double-goal, goal streaks, and a
-//  new record (best day in the cached ~6-week window). All share one custom chime.
+//  new record (best day in the cached ~6-week window). One evening "final push"
+//  nudge fires after 18:00 when the goal is within reach (< 1,000 steps away).
+//  All share one custom chime.
+//
+//  See DESIGN.md ("Notifications") for the full catalog of states, triggers,
+//  per-day guards, and precedence.
 //
 
 import Foundation
@@ -38,6 +43,7 @@ final class StepNotifier {
         guard SettingsStore.notificationsEnabled else { return }
         evaluateMorning(todaySteps: todaySteps)
         evaluateMilestone(todaySteps: todaySteps)
+        evaluateFinalPush(todaySteps: todaySteps)
         evaluateDoubleGoal(todaySteps: todaySteps)
         evaluateStreak(todaySteps: todaySteps)
         evaluateRecord(todaySteps: todaySteps)
@@ -61,6 +67,22 @@ final class StepNotifier {
     }
 
     // MARK: - Fun moments (each at most once/day)
+
+    /// Evening "final push": after 18:00, when the goal is close but not yet hit
+    /// (within 1,000 steps), a single 🤏 "you're *this* close" nudge. The pinch
+    /// frames the tiny gap left so the last lap feels achievable before the day
+    /// runs out. Fires at most once/day and only below the goal, so it never
+    /// competes with the goal-reached alert.
+    private func evaluateFinalPush(todaySteps: Int) {
+        let remaining = dailyStepGoal - todaySteps
+        guard Calendar.current.component(.hour, from: Date()) >= 18,
+              remaining > 0, remaining < 1_000,
+              !SettingsStore.hasFiredToday("finalPush") else { return }
+        SettingsStore.markFiredToday("finalPush")
+        post(title: "🤏 So close!",
+             body: "Just \(remaining.formatted()) steps to your \(dailyStepGoal.formatted())-step goal — you're this close.",
+             id: "finalPush")
+    }
 
     /// A cheerful greeting the first time today's steps land — but only in the
     /// morning, so an afternoon first-sync doesn't say "good morning" at 4pm.
@@ -141,6 +163,10 @@ final class StepNotifier {
     // MARK: - Posting
 
     private func post(title: String, body: String, id: String) {
+        // Mirror every posted alert into the in-app Inbox history (see InboxView),
+        // so the user has a running log even for background-fired notifications.
+        NotificationLog.record(title: title, body: body)
+
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body

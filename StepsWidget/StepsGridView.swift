@@ -120,7 +120,7 @@ struct StepsGridView: View {
                         // ring never blends with a goal-day fill. Negative padding
                         // expands the rounded rect past the cell edge; the corner
                         // grows with it to stay concentric.
-                        let lw = max(cell * 0.11, 1.6)
+                        let lw = max(cell * 0.14, 2.0)
                         let outset = lw * 0.55
                         RoundedRectangle(cornerRadius: corner + outset, style: .continuous)
                             .stroke(style.todayRingColor, lineWidth: lw)
@@ -184,4 +184,17 @@ private struct MonthLayout {
         calendar.date(byAdding: .day, value: day - 1, to: firstOfMonth)
             .map { calendar.startOfDay(for: $0) }
     }
+}
+
+#Preview("Month View") {
+    StepsMonthView(dailySteps: HealthKitService.sampleDailySteps(),
+                   activities: [.cycling, .strength])
+        .padding(18)
+        .frame(width: 170, height: 170)
+}
+
+#Preview("Grid Only") {
+    StepsGridView(dailySteps: HealthKitService.sampleDailySteps())
+        .padding(18)
+        .frame(width: 170, height: 170)
 }

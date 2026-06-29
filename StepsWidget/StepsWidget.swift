@@ -68,6 +68,11 @@ struct Provider: TimelineProvider {
 
 struct StepsWidgetEntryView: View {
     var entry: StepsEntry
+    @Environment(\.widgetFamily) private var family
+
+    private var todaySteps: Int {
+        entry.dailySteps[Calendar.current.startOfDay(for: Date())] ?? 0
+    }
 
     var body: some View {
         ZStack {
@@ -76,10 +81,60 @@ struct StepsWidgetEntryView: View {
             LinearGradient(colors: [.black.opacity(0.05), .black.opacity(0.02)],
                            startPoint: .topLeading, endPoint: .bottomTrailing)
 
-            StepsMonthView(dailySteps: entry.dailySteps, activities: entry.activities)
-                .padding(18)   // Letters/Spark LayoutMetrics inset
+            switch family {
+            case .systemMedium:
+                HStack(spacing: 16) {
+                    StepsGridView(dailySteps: entry.dailySteps)
+                        .aspectRatio(1, contentMode: .fit)
+                    statsPanel
+                    Spacer(minLength: 0)
+                }
+                .padding(18)
+            case .systemLarge:
+                StepsMonthView(dailySteps: entry.dailySteps, activities: entry.activities)
+                    .padding(20)
+            default: // .systemSmall
+                StepsMonthView(dailySteps: entry.dailySteps, activities: entry.activities)
+                    .padding(18)
+            }
         }
         .clipShape(ContainerRelativeShape())
+    }
+
+    /// Side panel for the medium family: today's count + stage glyph, activity
+    /// badges, and the month's best day.
+    private var statsPanel: some View {
+        let stage = stage(for: todaySteps)
+        let best = monthBestDay(entry.dailySteps)
+        return VStack(alignment: .leading, spacing: 8) {
+            Image(systemName: stage.symbol)
+                .font(.title2)
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(GridStyle.current.goalColor)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(todaySteps, format: .number)
+                    .font(.system(.title3, design: .rounded, weight: .bold))
+                    .foregroundStyle(GridStyle.current.goalColor)
+                Text("of \(dailyStepGoal.formatted())")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            if !entry.activities.isEmpty {
+                HStack(spacing: 4) {
+                    ForEach(DayActivity.allCases.filter(entry.activities.contains)) { activity in
+                        Image(systemName: activity.symbol)
+                            .font(.footnote)
+                            .foregroundStyle(GridStyle.current.goalColor)
+                    }
+                }
+            }
+            Spacer(minLength: 0)
+            if let best {
+                Text("Best \(best.steps.formatted())")
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundStyle(.secondary)
+            }
+        }
     }
 }
 
@@ -94,7 +149,7 @@ struct StepsWidget: Widget {
         }
         .configurationDisplayName("Steps Grid")
         .description("Your last month of steps as a GitHub-style grid.")
-        .supportedFamilies([.systemSmall])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
         .contentMarginsDisabled()
     }
 }
@@ -105,6 +160,7 @@ struct StepsWidgetBundle: WidgetBundle {
         StepsWidget()
         StepsRingWidget()
         TinyStepsWidget()
+        StepsGridAccessoryWidget()
     }
 }
 
@@ -112,6 +168,18 @@ struct StepsWidgetBundle: WidgetBundle {
     StepsWidget()
 } timeline: {
     StepsEntry(date: Date(), dailySteps: Provider.sampleData())
+}
+
+#Preview(as: .systemMedium) {
+    StepsWidget()
+} timeline: {
+    StepsEntry(date: Date(), dailySteps: Provider.sampleData(), activities: [.cycling, .strength])
+}
+
+#Preview(as: .systemLarge) {
+    StepsWidget()
+} timeline: {
+    StepsEntry(date: Date(), dailySteps: Provider.sampleData(), activities: [.cycling, .mindful])
 }
 
 #Preview("Ring", as: .accessoryCircular) {

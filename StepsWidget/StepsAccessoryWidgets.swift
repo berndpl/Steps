@@ -16,6 +16,10 @@ import SwiftUI
 struct StepsCountEntry: TimelineEntry {
     let date: Date
     let steps: Int
+    /// Today's activities (cycling / strength / mindful), surfaced as small reward
+    /// badges in the roomy `.accessoryRectangular` family. Ignored by the tight
+    /// circular / corner / inline families, which have no room for them.
+    var activities: Set<DayActivity> = []
 }
 
 /// Shared provider for both accessory widgets. Mirrors the grid provider's
@@ -23,22 +27,24 @@ struct StepsCountEntry: TimelineEntry {
 /// today's step total. On watchOS this reads the watch's own HealthKit store.
 struct TodayProvider: TimelineProvider {
     func placeholder(in context: Context) -> StepsCountEntry {
-        StepsCountEntry(date: Date(), steps: 6_240)
+        StepsCountEntry(date: Date(), steps: 6_240, activities: [.cycling])
     }
 
     func getSnapshot(in context: Context, completion: @escaping (StepsCountEntry) -> Void) {
         if context.isPreview {
-            completion(StepsCountEntry(date: Date(), steps: 6_240))
+            completion(StepsCountEntry(date: Date(), steps: 6_240, activities: [.cycling]))
             return
         }
         Task {
-            completion(StepsCountEntry(date: Date(), steps: await Self.todaySteps()))
+            completion(StepsCountEntry(date: Date(), steps: await Self.todaySteps(),
+                                       activities: await HealthKitService.shared.todayActivities()))
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<StepsCountEntry>) -> Void) {
         Task {
-            let entry = StepsCountEntry(date: Date(), steps: await Self.todaySteps())
+            let entry = StepsCountEntry(date: Date(), steps: await Self.todaySteps(),
+                                        activities: await HealthKitService.shared.todayActivities())
             let next = Calendar.current.date(byAdding: .minute, value: 15, to: Date()) ?? Date().addingTimeInterval(900)
             completion(Timeline(entries: [entry], policy: .after(next)))
         }
@@ -62,8 +68,12 @@ struct StepsRingWidget: Widget {
     let kind = "StepsRingWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: TodayProvider()) { entry in
-            StepsRingView(steps: entry.steps)
+        var families: [WidgetFamily] = [.accessoryCircular, .accessoryRectangular, .accessoryInline]
+        #if os(watchOS)
+        families.append(.accessoryCorner)
+        #endif
+        return StaticConfiguration(kind: kind, provider: TodayProvider()) { entry in
+            StepsRingView(steps: entry.steps, activities: entry.activities)
                 // Every widget must declare a container background, or accessory
                 // families render broken on the lock screen / watch face.
                 .containerBackground(for: .widget) { AccessoryWidgetBackground() }
@@ -71,7 +81,7 @@ struct StepsRingWidget: Widget {
         }
         .configurationDisplayName("Steps Ring")
         .description("Today's steps with a ring toward your daily goal.")
-        .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline])
+        .supportedFamilies(families)
     }
 }
 
@@ -79,13 +89,17 @@ struct TinyStepsWidget: Widget {
     let kind = "TinyStepsWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: TodayProvider()) { entry in
-            TinyStepsView(steps: entry.steps)
+        var families: [WidgetFamily] = [.accessoryCircular, .accessoryRectangular, .accessoryInline]
+        #if os(watchOS)
+        families.append(.accessoryCorner)
+        #endif
+        return StaticConfiguration(kind: kind, provider: TodayProvider()) { entry in
+            TinyStepsView(steps: entry.steps, activities: entry.activities)
                 .containerBackground(for: .widget) { AccessoryWidgetBackground() }
                 .widgetURL(URL(string: "steps://open"))
         }
         .configurationDisplayName("Tiny Steps")
         .description("A little symbol that grows every 1,000 steps toward your goal.")
-        .supportedFamilies([.accessoryCircular, .accessoryRectangular, .accessoryInline])
+        .supportedFamilies(families)
     }
 }

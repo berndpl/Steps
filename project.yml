@@ -112,6 +112,8 @@ targets:
       - path: StepsWatch
       - path: Steps/HealthKitService.swift   # shared: HealthKit, stages, App Group
       - path: Steps/GridStyle.swift          # shared: SettingsStore depends on these types
+      - path: StepsWidget/StepsGridView.swift  # shared: grid + badges, same as iOS widget
+      - path: Steps/ThemeSync.swift          # shared: WatchConnectivity theme sync
     dependencies:
       - target: StepsWatchWidgetExtension
     settings:
@@ -137,6 +139,7 @@ targets:
       - path: StepsWatchWidget
       - path: StepsWidget/StepsAccessoryViews.swift     # shared Ring / Tiny views
       - path: StepsWidget/StepsAccessoryWidgets.swift   # shared provider + widgets
+      - path: StepsWidget/StepsGridComplication.swift   # shared grid complication (rectangular)
       - path: Steps/HealthKitService.swift
       - path: Steps/GridStyle.swift
     settings:

@@ -12,6 +12,8 @@ import SwiftUI
 
 @main
 struct StepsWatchApp: App {
+    init() { ThemeSync.shared.activate() }
+
     var body: some Scene {
         WindowGroup {
             WatchContentView()

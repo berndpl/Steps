@@ -18,6 +18,8 @@ import WidgetKit
 /// Today's count with a goal-progress ring. The "Steps Ring" widget.
 struct StepsRingView: View {
     let steps: Int
+    /// Today's activities, surfaced as small reward badges in roomy families.
+    var activities: Set<DayActivity> = []
     @Environment(\.widgetFamily) private var family
 
     private var progress: Double {
@@ -50,8 +52,21 @@ struct StepsRingView: View {
                     Text("\(steps.formatted()) / \(dailyStepGoal.formatted())")
                         .font(.system(.caption, design: .rounded))
                         .foregroundStyle(.secondary)
+                    ActivityBadges(activities: activities)
                 }
             }
+
+        #if os(watchOS)
+        case .accessoryCorner:
+            // Corner slot: a compact count tucked in the corner, with a curved
+            // goal-progress gauge running along the watch-face bezel.
+            Text(compactCount)
+                .font(.system(.body, design: .rounded, weight: .semibold))
+                .minimumScaleFactor(0.6)
+                .widgetLabel {
+                    Gauge(value: progress) { Text("Steps") }
+                }
+        #endif
 
         default: // .accessoryCircular
             ring
@@ -74,6 +89,8 @@ struct StepsRingView: View {
 /// progress ring — a single glyph that advances every 1,000 steps.
 struct TinyStepsView: View {
     let steps: Int
+    /// Today's activities, surfaced as small reward badges in roomy families.
+    var activities: Set<DayActivity> = []
     @Environment(\.widgetFamily) private var family
 
     private var currentStage: StepStage { stage(for: steps) }
@@ -98,8 +115,21 @@ struct TinyStepsView: View {
                     Text("\(currentStage.thousands) / 10")
                         .font(.system(.caption, design: .rounded))
                         .foregroundStyle(.secondary)
+                    ActivityBadges(activities: activities)
                 }
             }
+
+        #if os(watchOS)
+        case .accessoryCorner:
+            // Corner slot: the stage glyph tucked in the corner, with a curved
+            // goal-progress gauge running along the watch-face bezel.
+            Image(systemName: currentStage.symbol)
+                .font(.system(size: 18, weight: .semibold))
+                .symbolRenderingMode(.hierarchical)
+                .widgetLabel {
+                    Gauge(value: progress) { Text("Steps") }
+                }
+        #endif
 
         default: // .accessoryCircular
             symbolOverRing
@@ -117,4 +147,48 @@ struct TinyStepsView: View {
                     .minimumScaleFactor(0.5)
             }
     }
+}
+
+/// Small reward badges for today's activities (cycling / strength / mindful),
+/// shown only in roomy accessory families. SF Symbols tint cleanly in the
+/// system's vibrant accessory rendering. Renders nothing when there's no activity.
+struct ActivityBadges: View {
+    let activities: Set<DayActivity>
+
+    var body: some View {
+        if !activities.isEmpty {
+            HStack(spacing: 3) {
+                ForEach(DayActivity.allCases.filter(activities.contains)) { activity in
+                    Image(systemName: activity.symbol)
+                        .font(.caption2)
+                        .symbolRenderingMode(.hierarchical)
+                }
+            }
+            .foregroundStyle(.secondary)
+        }
+    }
+}
+
+#Preview("Steps Ring", as: .accessoryCircular) {
+    StepsRingWidget()
+} timeline: {
+    StepsCountEntry(date: Date(), steps: 6_240)
+}
+
+#Preview("Steps Ring · Rectangular", as: .accessoryRectangular) {
+    StepsRingWidget()
+} timeline: {
+    StepsCountEntry(date: Date(), steps: 6_240, activities: [.cycling, .strength])
+}
+
+#Preview("Tiny Steps", as: .accessoryCircular) {
+    TinyStepsWidget()
+} timeline: {
+    StepsCountEntry(date: Date(), steps: 6_240)
+}
+
+#Preview("Tiny Steps · Rectangular", as: .accessoryRectangular) {
+    TinyStepsWidget()
+} timeline: {
+    StepsCountEntry(date: Date(), steps: 6_240, activities: [.cycling, .mindful, .strength])
 }

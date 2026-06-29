@@ -15,5 +15,6 @@ struct StepsWatchWidgetBundle: WidgetBundle {
     var body: some Widget {
         StepsRingWidget()
         TinyStepsWidget()
+        StepsGridAccessoryWidget()
     }
 }
