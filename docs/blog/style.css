@@ -1,29 +1,28 @@
-/* devlog-new base template — calm single-column notebook (Onsen DNA, generalized).
-   The :root token block below is the THEME LAYER. devlog-new replaces these values
+/* blog-new base template — calm single-column notebook (Onsen DNA, generalized).
+   The :root token block below is the THEME LAYER. blog-new replaces these values
    with the style picked from the design catalog (style-apply tokens). Structure stays;
    only the tokens change. Neutral defaults shipped so the page renders before theming. */
 
-/* notes-plontsch (Bernd's personal default) — Catppuccin Mocha dark-first, Inconsolata. */
-@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap');
+/* Steps style — Catppuccin Mocha (dark) + gold accent; monospaced SF Mono (system, no webfont). */
 
 :root {
   color-scheme: dark;
-  --theme-base: #1e1e2e;            /* Catppuccin Mocha base */
-  --theme-mantle: #181825;          /* mantle; card bg */
-  --theme-surface0: #313244;        /* borders, code bg, rules */
-  --theme-surface1: #45475a;        /* hover border */
-  --theme-text: #cdd6f4;            /* primary text */
-  --theme-heading: #cdd6f4;
-  --theme-body-rgb: 166, 173, 200;  /* paragraph/list text; bold lifts to full text color */
-  --theme-body-alpha: .6;
+  --theme-base: #1e1e2e;
+  --theme-mantle: #181825;
+  --theme-surface0: #313244;
+  --theme-surface1: #45475a;
+  --theme-text: #cdd6f4;
+  --theme-heading: #ffffff;
+  --theme-body-rgb: 205, 214, 244;
+  --theme-body-alpha: .82;
   --theme-subtext0: #a6adc8;
-  --theme-overlay0: #6c7086;        /* muted: dates, footer, captions */
-  --theme-accent: #b4befe;          /* Mocha lavender — primary accent */
-  --theme-hover: #cba6f7;           /* Mocha mauve */
-  --theme-link: #b4befe;
-  --theme-good: #a6e3a1;            /* Mocha green — Decided for */
-  --theme-bad: #f38ba8;             /* Mocha red — Decided against */
-  --theme-font: "Inconsolata", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --theme-overlay0: #6c7086;
+  --theme-accent: #f5a623;          /* gold — Steps fingerprint, grid goal-reached colour */
+  --theme-hover: #d9a300;
+  --theme-link: #f5a623;
+  --theme-good: #40c463;
+  --theme-bad: #c23b32;
+  --theme-font: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -65,13 +64,15 @@ h1, h2, h3, h4 {
   line-height: 1.4;
 }
 
-/* Topbar: brand mark + title, optional nav, primary action button */
+/* Topbar: brand mark + title, optional nav, primary action button — emphasized header band */
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0 0 1rem;
+  padding: .6rem 0 1.4rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--theme-surface0);
 }
 .nav-left, .nav-right, nav {
   display: flex;
@@ -81,22 +82,24 @@ h1, h2, h3, h4 {
 }
 .blog-title {
   display: inline-flex;
-  gap: .45rem;
+  gap: .55rem;
   align-items: center;
   color: var(--theme-text);
+  font-size: 1.1rem;
+  font-weight: 700;
   line-height: 1;
 }
 .brand-mark {
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1.4rem;
+  height: 1.4rem;
   flex: 0 0 auto;
   display: block;
-  border-radius: 4px;
+  border-radius: 5px;
 }
 nav a { color: rgba(var(--theme-body-rgb), .6); font-size: 1rem; line-height: 1; }
 nav a.active { color: var(--theme-text); text-decoration: none; }
 
-/* Primary action button — Play / Try / Download (label set per project type) */
+/* Primary action button — Play / Try / Download / Download and Build (label per project type) */
 .action-link {
   display: inline-flex;
   align-items: center;
@@ -112,9 +115,22 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
 }
 .action-link:hover { color: var(--theme-base); text-decoration: none; filter: brightness(.95); }
 
-/* Hero: strong teaser title + short description (+ optional shot) */
+/* Secondary action button — quieter outline variant (e.g. "Get in touch") */
+.action-link.secondary {
+  color: var(--theme-accent);
+  background: transparent;
+  border: 1px solid var(--theme-surface1);
+  font-weight: 400;
+}
+.action-link.secondary:hover {
+  color: var(--theme-hover);
+  background: var(--theme-mantle);
+  filter: none;
+}
+
+/* Hero: strong teaser title + short description (+ optional shot) — the product intro */
 .hero {
-  padding: 4rem 0 2rem;
+  padding: 3.5rem 0 4.5rem;
   border-bottom: 1px solid var(--theme-surface0);
 }
 .hero-with-shot {
@@ -123,23 +139,142 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
   gap: 2rem;
   align-items: center;
 }
-.hero h1 { margin-top: .3rem; color: var(--theme-accent); font-size: 1.6rem; font-weight: 700; }
-.tagline { margin-top: .4rem; color: var(--theme-subtext0); }
-.short { max-width: 38rem; margin-top: 1rem; }
-.hero-cta { margin-top: 1.4rem; }
+.hero h1 { margin-top: .3rem; color: var(--theme-accent); font-size: 2.1rem; font-weight: 700; }
+.hero-icon { width: 4rem; height: 4rem; display: block; border-radius: 12px; }
+.tagline { margin-top: .6rem; color: var(--theme-subtext0); font-size: 1.1rem; }
+.short { max-width: 38rem; margin-top: 1.1rem; color: var(--theme-subtext0); font-size: 1.1rem; }
+.hero-cta { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.8rem; }
+/* Optional: primary action + a small caption beneath it (.cta-primary wraps both). */
+.cta-primary { display: inline-flex; flex-direction: column; align-items: flex-start; gap: .4rem; }
+.cta-note { color: var(--theme-overlay0); font-size: .8rem; padding-left: .5rem; }
+
+/* Hero shot — a single borderless screenshot, OR a dot-paginated carousel of
+   product states. Add 2+ <img class="shot"> and the dots auto-generate (see JS). */
 .hero-shot { width: 100%; margin: 0; }
-.hero-shot img {
+.hero-shot > img {            /* single-shot variant */
   width: 100%;
   display: block;
-  border: 1px solid var(--theme-surface0);
+  border: 0;
   border-radius: 8px;
 }
+.shots {                      /* carousel variant — crossfaded slides in a fixed frame */
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;        /* set to your screenshots' ratio, e.g. 1144 / 1004 */
+  border-radius: 8px;
+  overflow: hidden;
+}
+.shot {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  border: 0;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity .4s ease;
+}
+.shot.is-active { opacity: 1; }
+.dots { display: flex; justify-content: center; gap: .5rem; margin-top: .9rem; }
+.dot {
+  width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%;
+  background: var(--theme-surface1); cursor: pointer;
+  transition: background .15s ease, transform .15s ease;
+}
+.dot:hover { background: var(--theme-overlay0); }
+.dot.is-active { background: var(--theme-accent); transform: scale(1.15); }
+/* Thumbnail-nav variant (.thumbs) — labelled image buttons that double as the picker.
+   Anchored to the bottom of the shot so they read as a filmstrip; set their aspect-ratio
+   (and .shots') to your screenshots' ratio. They sit in front of .shots (z-index) so taps
+   land on the thumbnails, not the screenshot frame above them. */
+.thumbs {
+  position: absolute; left: 0; right: 0; bottom: -20px;
+  display: flex; justify-content: center; gap: .55rem; z-index: 2;
+}
+.hero-shot { position: relative; }
+.shots { z-index: 1; }
+.thumb {
+  width: 64px; aspect-ratio: 4 / 3; padding: 0; border: 0; border-radius: 10px;
+  background: var(--theme-mantle); cursor: pointer; overflow: hidden; opacity: .55;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .12); transition: opacity .15s ease;
+}
+.thumb img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; border-radius: inherit; }
+.thumb:hover { opacity: .85; }
+.thumb.is-active { opacity: 1; }
 .kicker, .date, .tag, .badge { color: var(--theme-overlay0); font-size: .9rem; }
+
+/* ── Optional product-highlights components ───────────────────────────────────
+   Reusable building blocks for a product section that VARIES PER PRODUCT — use
+   what fits (a plain feature list, tabs, or a step "chain"), or omit entirely.
+   Icons are inline Lucide (ISC) <svg><use href="#i-name"> tinted via currentColor
+   (see the sprite + SKILL.md); never SF Symbols, never hot-linked. */
+
+/* Tabs (e.g. Features | Presets) */
+.tabs { display: flex; gap: .25rem; margin: 0 0 1.4rem; border-bottom: 1px solid var(--theme-surface0); }
+.tab {
+  appearance: none; background: none; border: 0; border-bottom: 2px solid transparent;
+  margin-bottom: -1px; padding: .45rem .7rem; font: inherit; font-weight: 600;
+  color: var(--theme-subtext0); cursor: pointer;
+}
+.tab:hover { color: var(--theme-text); }
+.tab.is-active { color: var(--theme-accent); border-bottom-color: var(--theme-accent); }
+.tab-panel { display: none; }
+.tab-panel.is-active { display: block; }
+
+/* Engaging feature list — icon badge + title + paragraph */
+.feature-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.7rem; max-width: 46rem; }
+.feature-list li { display: flex; align-items: flex-start; gap: 1.1rem; }
+.feature-ico {
+  flex: 0 0 auto; width: 2.5rem; height: 2.5rem; display: grid; place-items: center;
+  border-radius: 11px; background: var(--theme-mantle);
+}
+.feature-ico .sym { width: 1.3rem; height: 1.3rem; color: var(--theme-accent); }
+.feature-list h3 { margin: .25rem 0 .4rem; color: var(--theme-text); font-size: 1.05rem; font-weight: 700; }
+.feature-list p { margin: 0; max-width: 40rem; color: var(--theme-subtext0); }
+.section-lead { max-width: 40rem; margin: 0 0 1.6rem; color: var(--theme-subtext0); }
+
+/* Inline Lucide icons (ISC), tinted via currentColor */
+.sym {
+  display: inline-block; width: 1em; height: 1em; flex: 0 0 auto; vertical-align: -.12em;
+  color: var(--theme-subtext0); fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* Cards with a visual step "chain" (e.g. a processing pipeline) */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1.1rem; }
+.card-item { padding: 1.1rem 1.2rem; background: var(--theme-mantle); border-radius: 10px; }
+.card-item h3 { display: flex; align-items: center; gap: .45rem; margin: 0; color: var(--theme-text); font-size: 1.05rem; font-weight: 700; }
+.card-item h3 .sym { width: 1.15em; height: 1.15em; }
+.card-item .sym { color: var(--theme-accent); }
+.chain {
+  display: flex; flex-wrap: nowrap; align-items: center; gap: .3rem;
+  margin: .9rem 0 .75rem; overflow-x: auto; scrollbar-width: none;
+}
+.chain::-webkit-scrollbar { display: none; }
+.chain.can-scroll-right {     /* right-edge fade when steps overflow (toggled by JS) */
+  -webkit-mask: linear-gradient(to right, #000 calc(100% - 34px), transparent);
+  mask: linear-gradient(to right, #000 calc(100% - 34px), transparent);
+}
+.node {
+  display: inline-flex; align-items: center; gap: .34rem; padding: .34rem .6rem;
+  border: 1px solid var(--theme-surface0); background: var(--theme-base);
+  color: var(--theme-text); font: inherit; font-size: .85rem; white-space: nowrap;
+  cursor: pointer; border-radius: 7px; transition: border-color .12s ease, background .12s ease;
+}
+.node:hover { color: var(--theme-heading); border-color: var(--theme-overlay0); background: var(--theme-mantle); }
+.node.active { font-weight: 700; border-color: var(--theme-overlay0); background: var(--theme-mantle); }
+.node .sym { width: .95em; height: .95em; }
+.arrow { flex: 0 0 auto; color: var(--theme-overlay0); font-size: .85rem; }
+.step-detail { margin: 0; min-height: 2.7em; color: var(--theme-subtext0); font-size: .9rem; }
+/* ─────────────────────────────────────────────────────────────────────────── */
 
 /* Posts */
 section { padding: 2rem 0; border-bottom: 1px solid var(--theme-surface0); }
-section#posts { padding-top: 0; }
-section#posts article.entry:first-child { padding-top: 1.2rem; }
+section#posts { padding-top: 3.5rem; }
+section#posts > h2 { margin-bottom: 1.4rem; color: var(--theme-accent); font-size: 1.35rem; font-weight: 700; }
+section#posts article.entry:first-of-type { padding-top: .4rem; }
 section > h2 { margin-bottom: 1rem; color: var(--theme-accent); }
 article.entry { padding: 2.2rem 0; border-bottom: 1px solid var(--theme-surface0); }
 article.entry:last-child { border-bottom: 0; }
@@ -171,7 +306,18 @@ figure img {
   border-radius: 8px;
 }
 figcaption { margin-top: .5rem; color: var(--theme-overlay0); font-size: .9rem; text-align: center; }
-footer { padding: 2rem 0 1rem; color: var(--theme-overlay0); font-size: .9rem; text-align: left; }
+
+/* Optional Thank-you colophon — compact, footer-sized credits above the footer.
+   Sits flush against the footer (no bottom padding), so the credit + license read as one block. */
+.colophon { border-bottom: 0; padding-top: 3rem; padding-bottom: 0; }
+.colophon > h2 {
+  display: flex; align-items: center; gap: .45rem; margin-bottom: .5rem;
+  color: var(--theme-accent); font-size: 1rem; font-weight: 700;
+}
+.colophon > h2 .sym { color: var(--theme-accent); width: 1em; height: 1em; }
+.thanks-intro { margin: 0; max-width: 46rem; color: var(--theme-subtext0); font-size: .9rem; }
+
+footer { padding: .75rem 0 1rem; color: var(--theme-overlay0); font-size: .9rem; text-align: left; }
 
 @media (max-width: 720px) {
   body { padding: 16px; }
