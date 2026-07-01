@@ -56,9 +56,16 @@ final class ThemeSync: NSObject, WCSessionDelegate {
     }
 
     func session(_ session: WCSession, activationDidCompleteWith state: WCSessionActivationState, error: Error?) {
+        #if os(iOS)
+        // Phone side: as soon as the session is live, push the current theme so a
+        // freshly launched watch mirrors it without waiting for a customization edit.
+        if state == .activated { push() }
+        #else
+        // Watch side: apply whatever theme the phone last published.
         if let ctx = session.receivedApplicationContext as [String: Any]?, !ctx.isEmpty {
             apply(ctx)
         }
+        #endif
     }
 
     #if os(iOS)

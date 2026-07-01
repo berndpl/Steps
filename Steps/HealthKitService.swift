@@ -93,6 +93,23 @@ enum DayActivity: String, CaseIterable, Identifiable {
         case .strength: return "figure.strengthtraining.traditional.circle.fill"
         }
     }
+
+    /// Human-readable name, shown when the user taps a badge.
+    var label: String {
+        switch self {
+        case .cycling:  return "Cycling"
+        case .mindful:  return "Mindful"
+        case .strength: return "Strength"
+        }
+    }
+}
+
+/// Today's effort for a tracked activity — surfaced when the user taps its badge.
+/// `minutes` comes from recorded workouts / mindful sessions; `distanceMeters`
+/// (cycling only) is summed from `distanceCycling`, independent of any workout.
+struct ActivityDetail: Equatable {
+    var minutes: Int = 0
+    var distanceMeters: Double = 0
 }
 
 /// Shared cache in the App Group container, written by the app and read by the
@@ -135,9 +152,15 @@ enum SettingsStore {
     static let appGroup = SharedStore.appGroup
 
     /// Shared so `@AppStorage(..., store:)` in the UI and the background observer
-    /// read/write the very same defaults. Falls back to `.standard` if the App
-    /// Group suite is somehow unavailable (keeps `@AppStorage` non-optional).
+    /// read/write the very same defaults. The watch has no App Group entitlement,
+    /// so it uses `.standard` — a single reliable store that `ThemeSync` writes the
+    /// synced theme into and `GridStyle.current` reads back. iOS/widget use the
+    /// App Group suite (falling back to `.standard` only if it's unavailable).
+    #if os(watchOS)
+    static let defaults = UserDefaults.standard
+    #else
     static let defaults = UserDefaults(suiteName: appGroup) ?? .standard
+    #endif
 
     /// Whether per-1,000-step milestone notifications are enabled.
     static let notificationsEnabledKey = "milestoneNotificationsEnabled"
@@ -239,6 +262,7 @@ final class HealthKitService {
 
     private let store = HKHealthStore()
     private let stepType = HKQuantityType(.stepCount)
+    private let cyclingDistanceType = HKQuantityType(.distanceCycling)
 
     /// Retained so the long-lived observer query keeps running; also guards
     /// against registering it more than once per launch.
@@ -291,6 +315,7 @@ final class HealthKitService {
         }
         try await store.requestAuthorization(toShare: [], read: [
             stepType,
+            cyclingDistanceType,
             HKObjectType.workoutType(),
             HKCategoryType(.mindfulSession),
         ])
@@ -329,7 +354,74 @@ final class HealthKitService {
             found.insert(.mindful)
         }
 
+        // Cycling can also be inferred from distance — a casual ride that no app
+        // recorded as a formal *workout* still logs `distanceCycling`. So award the
+        // badge whenever any cycling distance exists today, independent of workouts.
+        if !found.contains(.cycling), await todayCyclingDistanceMeters() > 0 {
+            found.insert(.cycling)
+        }
+
         return found
+    }
+
+    /// Per-activity time/distance for today, keyed by `DayActivity`. Drives the
+    /// in-app tap-to-reveal badge detail. A key is present only when that activity
+    /// happened today; cycling can appear via distance alone (no workout needed).
+    func todayActivityDetails() async -> [DayActivity: ActivityDetail] {
+        let start = Calendar.current.startOfDay(for: Date())
+        let datePredicate = HKQuery.predicateForSamples(withStart: start, end: Date())
+        var details: [DayActivity: ActivityDetail] = [:]
+
+        // Workouts → cycling / strength minutes.
+        let workoutDescriptor = HKSampleQueryDescriptor(
+            predicates: [.workout(datePredicate)], sortDescriptors: []
+        )
+        if let workouts = try? await workoutDescriptor.result(for: store) {
+            for workout in workouts {
+                let minutes = Int(workout.duration / 60)
+                switch workout.workoutActivityType {
+                case .cycling:
+                    details[.cycling, default: ActivityDetail()].minutes += minutes
+                case .traditionalStrengthTraining, .functionalStrengthTraining:
+                    details[.strength, default: ActivityDetail()].minutes += minutes
+                default:
+                    break
+                }
+            }
+        }
+
+        // Cycling distance (independent of any recorded workout).
+        let cyclingMeters = await todayCyclingDistanceMeters()
+        if cyclingMeters > 0 {
+            details[.cycling, default: ActivityDetail()].distanceMeters = cyclingMeters
+        }
+
+        // Mindful sessions → minutes (summed session durations).
+        let mindfulDescriptor = HKSampleQueryDescriptor(
+            predicates: [.categorySample(type: HKCategoryType(.mindfulSession), predicate: datePredicate)],
+            sortDescriptors: []
+        )
+        if let mindful = try? await mindfulDescriptor.result(for: store), !mindful.isEmpty {
+            let minutes = mindful.reduce(0) { $0 + Int($1.endDate.timeIntervalSince($1.startDate) / 60) }
+            details[.mindful] = ActivityDetail(minutes: minutes, distanceMeters: 0)
+        }
+
+        return details
+    }
+
+    /// Total cycling distance logged today, in meters, summed across all
+    /// `distanceCycling` samples — independent of whether a workout was recorded.
+    /// Returns 0 on no access / no rides.
+    func todayCyclingDistanceMeters() async -> Double {
+        let start = Calendar.current.startOfDay(for: Date())
+        let datePredicate = HKQuery.predicateForSamples(withStart: start, end: Date())
+        let descriptor = HKStatisticsQueryDescriptor(
+            predicate: HKSamplePredicate.quantitySample(type: cyclingDistanceType, predicate: datePredicate),
+            options: .cumulativeSum
+        )
+        guard let stats = try? await descriptor.result(for: store),
+              let sum = stats.sumQuantity() else { return 0 }
+        return sum.doubleValue(for: .meter())
     }
 
     /// Total minutes of cycling logged today, summed across cycling workouts

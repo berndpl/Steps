@@ -26,11 +26,11 @@ struct ContentView: View {
     @State private var showInbox = false
     /// Unread notification-history count, for the Inbox button badge.
     @State private var unreadCount = 0
-    /// Minutes of cycling logged today (0 hides the bike row).
-    @State private var cyclingMinutes = 0
-    /// Activities logged today (cycling / strength workouts, mindful sessions),
-    /// shown as small badges — mirroring the widget.
-    @State private var activities: Set<DayActivity> = []
+    /// Per-activity time/distance for today, keyed by `DayActivity`. Drives the
+    /// tappable badges and the detail line they reveal.
+    @State private var activityDetails: [DayActivity: ActivityDetail] = [:]
+    /// The badge the user tapped — reveals its time/distance (nil = none selected).
+    @State private var selectedActivity: DayActivity?
     /// The palette goal color, used as the app accent. Re-read whenever the grid
     /// style might have changed (launch, foreground, after customizing).
     @State private var accentColor = GridStyle.current.goalColor
@@ -209,7 +209,17 @@ struct ContentView: View {
         case .live:       liveContent
         case .permission: permissionView
         case .loading:    loadingView
-        case .steps:      stepsView(8_432)
+        case .steps:
+            stepsView(8_432)
+                .task {
+                    if activityDetails.isEmpty {
+                        activityDetails = [
+                            .cycling: ActivityDetail(minutes: 42, distanceMeters: 12_300),
+                            .strength: ActivityDetail(minutes: 35),
+                            .mindful: ActivityDetail(minutes: 10),
+                        ]
+                    }
+                }
         case .denied:     deniedView
         case .grid:       gridPreview
         }
@@ -252,30 +262,55 @@ struct ContentView: View {
                 .font(.system(.title3, design: .monospaced))
                 .foregroundStyle(textMuted)
 
-            // Cycling, only when a ride was logged today.
-            if cyclingMinutes > 0 {
-                Label("\(cyclingMinutes) min cycling", systemImage: "bicycle")
-                    .font(.system(.callout, design: .monospaced))
-                    .foregroundStyle(textMuted)
-                    .padding(.top, 4)
-                    .transition(.opacity)
-            }
-
-            // Today's activity badges (cycling / workout / mindful), matching the
-            // widget. Only shown for activities actually logged today.
-            if !activities.isEmpty {
-                HStack(spacing: 10) {
-                    ForEach(DayActivity.allCases.filter(activities.contains)) { activity in
-                        Image(systemName: activity.symbol)
-                            .font(.system(size: 28))
-                            .foregroundStyle(.tint)
+            // Today's activities as tappable badges. Tap one to reveal the time
+            // and/or distance covered — cycling shows distance even when no formal
+            // workout was recorded. Only activities logged today appear.
+            if !activityDetails.isEmpty {
+                VStack(spacing: 6) {
+                    HStack(spacing: 10) {
+                        ForEach(DayActivity.allCases.filter { activityDetails[$0] != nil }) { activity in
+                            Button {
+                                withAnimation(.spring(response: 0.28, dampingFraction: 0.86)) {
+                                    selectedActivity = (selectedActivity == activity) ? nil : activity
+                                }
+                            } label: {
+                                Image(systemName: activity.symbol)
+                                    .font(.system(size: 28))
+                                    .foregroundStyle(.tint)
+                                    .opacity(selectedActivity == nil || selectedActivity == activity ? 1 : 0.4)
+                                    .scaleEffect(selectedActivity == activity ? 1.12 : 1)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(activity.label)
+                            .accessibilityValue(badgeDetailText(activity, activityDetails[activity] ?? ActivityDetail()))
+                        }
+                    }
+                    if let sel = selectedActivity, let detail = activityDetails[sel] {
+                        Text(badgeDetailText(sel, detail))
+                            .font(.system(.callout, design: .monospaced))
+                            .foregroundStyle(textMuted)
+                            .transition(.opacity)
                     }
                 }
                 .padding(.top, 4)
                 .transition(.opacity)
             }
         }
-        .animation(.spring(response: 0.28, dampingFraction: 0.86), value: activities)
+        .animation(.spring(response: 0.28, dampingFraction: 0.86), value: activityDetails)
+    }
+
+    /// "Cycling · 5.4 km · 12 min" — the activity's name plus whichever metrics
+    /// exist today. Distance is localized (km or mi) via `.road` usage.
+    private func badgeDetailText(_ activity: DayActivity, _ d: ActivityDetail) -> String {
+        var parts: [String] = []
+        if d.distanceMeters > 0 {
+            parts.append(Measurement(value: d.distanceMeters, unit: UnitLength.meters)
+                .formatted(.measurement(width: .abbreviated, usage: .road,
+                                        numberFormatStyle: .number.precision(.fractionLength(1)))))
+        }
+        if d.minutes > 0 { parts.append("\(d.minutes) min") }
+        let detail = parts.joined(separator: " · ")
+        return detail.isEmpty ? activity.label : "\(activity.label) · \(detail)"
     }
 
     private var permissionView: some View {
@@ -401,8 +436,8 @@ struct ContentView: View {
             // the widget so it renders from the synced data.
             await HealthKitService.shared.refreshSharedCache()
             WidgetCenter.shared.reloadAllTimelines()
-            cyclingMinutes = await HealthKitService.shared.todayCyclingMinutes()
-            activities = await HealthKitService.shared.todayActivities()
+            activityDetails = await HealthKitService.shared.todayActivityDetails()
+            if let sel = selectedActivity, activityDetails[sel] == nil { selectedActivity = nil }
         } catch {
             phase = .denied
         }

@@ -52,6 +52,62 @@ struct StepsMonthView: View {
     }
 }
 
+/// The medium-widget layout: a square month grid beside a stats panel (today's
+/// stage glyph + count + goal, activity badges, and the month's best day).
+/// Shared so the iOS `.systemMedium` widget and the watch app render identically.
+struct StepsMediumView: View {
+    let dailySteps: [Date: Int]
+    var style: GridStyle = .current
+    var activities: Set<DayActivity> = []
+
+    private var todaySteps: Int {
+        dailySteps[Calendar.current.startOfDay(for: Date())] ?? 0
+    }
+
+    var body: some View {
+        HStack(spacing: 16) {
+            StepsGridView(dailySteps: dailySteps, style: style)
+                .aspectRatio(1, contentMode: .fit)
+            statsPanel
+            Spacer(minLength: 0)
+        }
+    }
+
+    private var statsPanel: some View {
+        let stage = stage(for: todaySteps)
+        let best = monthBestDay(dailySteps)
+        return VStack(alignment: .leading, spacing: 8) {
+            Image(systemName: stage.symbol)
+                .font(.title2)
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(style.goalColor)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(todaySteps, format: .number)
+                    .font(.system(.title3, design: .rounded, weight: .bold))
+                    .foregroundStyle(style.goalColor)
+                Text("of \(dailyStepGoal.formatted())")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+            if !activities.isEmpty {
+                HStack(spacing: 4) {
+                    ForEach(DayActivity.allCases.filter(activities.contains)) { activity in
+                        Image(systemName: activity.symbol)
+                            .font(.footnote)
+                            .foregroundStyle(style.goalColor)
+                    }
+                }
+            }
+            Spacer(minLength: 0)
+            if let best {
+                Text("Best \(best.steps.formatted())")
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+}
+
 struct StepsGridView: View {
     /// Per-day step totals keyed by local start-of-day (from HealthKitService).
     let dailySteps: [Date: Int]

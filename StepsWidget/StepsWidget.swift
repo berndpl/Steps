@@ -83,16 +83,19 @@ struct StepsWidgetEntryView: View {
 
             switch family {
             case .systemMedium:
-                HStack(spacing: 16) {
-                    StepsGridView(dailySteps: entry.dailySteps)
+                StepsMediumView(dailySteps: entry.dailySteps, activities: entry.activities)
+                    .padding(18)
+            case .systemLarge:
+                StepsMonthView(dailySteps: entry.dailySteps, activities: entry.activities)
+                    .padding(20)
+            case .systemExtraLarge:
+                HStack(spacing: 28) {
+                    StepsMonthView(dailySteps: entry.dailySteps, activities: entry.activities)
                         .aspectRatio(1, contentMode: .fit)
                     statsPanel
                     Spacer(minLength: 0)
                 }
-                .padding(18)
-            case .systemLarge:
-                StepsMonthView(dailySteps: entry.dailySteps, activities: entry.activities)
-                    .padding(20)
+                .padding(24)
             default: // .systemSmall
                 StepsMonthView(dailySteps: entry.dailySteps, activities: entry.activities)
                     .padding(18)
@@ -149,7 +152,7 @@ struct StepsWidget: Widget {
         }
         .configurationDisplayName("Steps Grid")
         .description("Your last month of steps as a GitHub-style grid.")
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
         .contentMarginsDisabled()
     }
 }
@@ -180,6 +183,12 @@ struct StepsWidgetBundle: WidgetBundle {
     StepsWidget()
 } timeline: {
     StepsEntry(date: Date(), dailySteps: Provider.sampleData(), activities: [.cycling, .mindful])
+}
+
+#Preview(as: .systemExtraLarge) {
+    StepsWidget()
+} timeline: {
+    StepsEntry(date: Date(), dailySteps: Provider.sampleData(), activities: [.cycling, .strength, .mindful])
 }
 
 #Preview("Ring", as: .accessoryCircular) {

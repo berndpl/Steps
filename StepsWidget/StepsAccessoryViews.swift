@@ -47,11 +47,11 @@ struct StepsRingView: View {
                 ring
                     .frame(width: 44, height: 44)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Steps")
+                    Text("\(steps.formatted())")
                         .font(.headline)
-                    Text("\(steps.formatted()) / \(dailyStepGoal.formatted())")
-                        .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(.secondary)
+//                    Text("\() / \(dailyStepGoal.formatted())")
+//                        .font(.system(.caption, design: .rounded))
+//                        .foregroundStyle(.secondary)
                     ActivityBadges(activities: activities)
                 }
             }
@@ -110,11 +110,11 @@ struct TinyStepsView: View {
                 symbolOverRing
                     .frame(width: 44, height: 44)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Tiny Steps")
+                    Text("\(steps)")
                         .font(.headline)
-                    Text("\(currentStage.thousands) / 10")
-                        .font(.system(.caption, design: .rounded))
-                        .foregroundStyle(.secondary)
+//                    Text("\(currentStage.thousands) / 10")
+//                        .font(.system(.caption, design: .rounded))
+//                        .foregroundStyle(.secondary)
                     ActivityBadges(activities: activities)
                 }
             }
@@ -192,3 +192,17 @@ struct ActivityBadges: View {
 } timeline: {
     StepsCountEntry(date: Date(), steps: 6_240, activities: [.cycling, .mindful, .strength])
 }
+
+#if os(watchOS)
+#Preview("Steps Ring · Corner", as: .accessoryCorner) {
+    StepsRingWidget()
+} timeline: {
+    StepsCountEntry(date: Date(), steps: 6_240)
+}
+
+#Preview("Tiny Steps · Corner", as: .accessoryCorner) {
+    TinyStepsWidget()
+} timeline: {
+    StepsCountEntry(date: Date(), steps: 6_240)
+}
+#endif
