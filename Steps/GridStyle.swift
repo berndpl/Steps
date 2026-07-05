@@ -274,12 +274,22 @@ struct GridStyle: Equatable {
     var goalColor: Color { Color(hex: goalHex) }
     var rampBaseColor: Color { Color(hex: rampHex) }
 
+    /// Scheme-aware goal/accent color. Stored palette colors are the source hue,
+    /// then lightness is clamped so every theme stays readable as text/icon tint
+    /// and still pops as a goal-day cell in both light and dark appearances.
+    func goalColor(for scheme: ColorScheme) -> Color {
+        let base = goalColor.oklch
+        let l = scheme == .dark ? max(base.l, 0.72) : min(base.l, 0.52)
+        return OKLCH(l: l, c: min(base.c, 0.34), h: base.h).color
+    }
+
     /// A luminous version of the goal color for *today's* ring — pushed bright and
     /// more saturated in OKLCH so it out-pops every fill (including a goal-day
     /// cell, which uses the plain goal color). Keeps the palette's hue.
-    var todayRingColor: Color {
-        let base = goalColor.oklch
-        return OKLCH(l: 0.82, c: min(base.c * 1.3 + 0.03, 0.37), h: base.h).color
+    func todayRingColor(for scheme: ColorScheme) -> Color {
+        let base = goalColor(for: scheme).oklch
+        let l = scheme == .dark ? 0.82 : 0.45
+        return OKLCH(l: l, c: min(base.c * 1.3 + 0.03, 0.37), h: base.h).color
     }
 
     /// The fill for a day, generated continuously in OKLCH.
@@ -290,7 +300,7 @@ struct GridStyle: Equatable {
     /// neutral empty endpoint adapts to the color scheme so it matches the surface
     /// (light-gray in light mode, dark-gray in dark) while chroma rises with effort.
     func color(forSteps steps: Int, goal: Int, scheme: ColorScheme) -> Color {
-        if steps >= goal { return goalColor }
+        if steps >= goal { return goalColor(for: scheme) }
         let t = max(0, min(Double(steps) / Double(goal), 1))
         let i = curve.apply(t, strength: spread)
 

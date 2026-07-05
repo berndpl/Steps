@@ -67,6 +67,8 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
         INFOPLIST_KEY_NSHealthShareUsageDescription: "Shows your step count on the home-screen grid."
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Steps notes the places you dwell to suggest round trips that reach your daily step goal."
+        INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription: "Steps uses low-power visit detection in the background to log where you dwell, so it can suggest round trips that reach your daily step goal. Location never leaves your phone except for map lookups."
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES

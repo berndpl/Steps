@@ -19,7 +19,7 @@ Catalog: `Steps` (`projects/Steps/Steps.tokens.json`).
 | Font | `.system(design: .monospaced)` (SF Mono) | `ContentView.swift` | notes-plontsch is Inconsolata mono throughout; SF Mono is the owner-chosen stand-in. |
 | Weight | medium / regular (flattened) | `ContentView.swift` | notes-plontsch forces 400 — emphasis from size + colour, not weight (taste C1). |
 | Number | 68pt medium monospaced, gold | `ContentView.swift` `stepsView` | The one hero; colour (gold) + size carry it, not boldness. |
-| Accent | gold `#F5A623` default, now == the **palette goal colour** (`.tint`) | `ContentView.swift` / `AccentColor.colorset` | Steps fingerprint; follows the customizer's goal colour so app + grid cohere. |
+| Accent | gold `#F5A623` default, now == the **scheme-adjusted palette goal colour** (`.tint`) | `ContentView.swift` / `GridStyle.goalColor(for:)` | Steps fingerprint; follows the customizer's goal colour while clamping lightness for readable light/dark contrast. |
 | Shadows | none | `ContentView.swift` | Flat; depth via Catppuccin surface tints. |
 | CTA | `.glassProminent` | `ContentView.swift` | Deskgym remnant — the single deliberate action stays Liquid Glass. |
 | Count motion | `spring(0.28, 0.86)` + `.numericText()` | `ContentView.swift` | Deskgym remnant — smooth count. |
@@ -45,14 +45,14 @@ App Group so the widget renders identically. OKLCH math: `GridStyle.swift` (Bjö
 |-------|-------|--------|-----|
 | Grid fill | **continuous** OKLCH ramp: neutral empty → `rampBase` (default `#216E39`), chroma rising with effort | `GridStyle.color(forSteps:)` | A day's exact steps → an exact, evenly-spaced colour — more spread than 5 buckets. |
 | Curve | a `CurveShape` (linear / ease-in / ease-out / ease-in-out / log / exp) + `strength` 0–1 (default ease-in, 0.5) | `CurveShape.apply` | Pick *how* steps map to fill intensity; previewed as a sparkline in the sheet. |
-| Goal-reached | distinct **goal colour** per palette (default gold `#F5A623`), 10000+ | `GridStyle.color(forSteps:)` | A goal-hit day must pop off the ramp's most-intense step. |
+| Goal-reached | distinct **scheme-adjusted goal colour** per palette (default gold hue), 10000+ | `GridStyle.color(forSteps:)` / `GridStyle.goalColor(for:)` | A goal-hit day must pop off the ramp's most-intense step and stay readable in both light and dark mode. |
 | Empty endpoint | neutral, **adapts to scheme** (light-gray / dark-gray) | `GridStyle.color(forSteps:)` | Matches the surface in both modes; background stays neutral. |
-| Today | **luminous** goal colour (OKLCH lightness+chroma boosted), stroked **outside** the cell | `GridStyle.todayRingColor`, `StepsGridView.swift` | Out-pops every fill incl. a goal-day; the full fill stays visible. |
+| Today | scheme-aware **luminous** goal colour (OKLCH lightness+chroma adjusted), stroked **outside** the cell | `GridStyle.todayRingColor(for:)`, `StepsGridView.swift` | Out-pops every fill incl. a goal-day; the full fill stays visible. |
 | Month's best | a chosen **marker** — dot (default) / ring / asterisk / star / none — auto black-or-white by cell OKLCH lightness | `BestDayMarker`, `StepsGridView.swift` | Mark the month's peak day subtly, readable on any fill, without echoing today's ring. |
 | Day shape | `roundedSquare` (default) / `circle` / `squircle` — one rounded-rect path, corner factor only | `DayShape` | Customizable cell shape; circle = corner 0.5 of a square cell. |
-| Palettes | 12 curated presets (Green/Ocean/Violet/Mono/Sunset/Teal/Indigo/Rose/Amber/Slate/Crimson/Forest) + full custom (ramp + goal wells) | `GridPalette.presets` | Designed in OKLCH; user can override either colour. |
-| Activity badges | today's logged cycling / meditation / strength as `figure.outdoor.cycle.circle.fill` · `figure.mind.and.body.circle.fill` · `figure.strengthtraining.traditional.circle.fill`, tinted goal colour | `DayActivity`, `StepsMonthView` | A glanceable "what else I did today" beside the count. |
-| Accent ripple | palette **goal colour** becomes the app `.tint` (hero number, CTA, today ring) | `ContentView.swift` | Grid + app cohere; **background colorsets untouched**. |
+| Palettes | 12 curated presets (Green/Ocean/Violet/Mono/Sunset/Teal/Indigo/Rose/Amber/Slate/Crimson/Forest) + full custom (ramp + goal wells) | `GridPalette.presets` / `GridStyle.goalColor(for:)` | Each stored hue derives a light and dark display variant; user can override either source colour. |
+| Activity badges | today's logged cycling / meditation / strength as `figure.outdoor.cycle.circle.fill` · `figure.mind.and.body.circle.fill` · `figure.strengthtraining.traditional.circle.fill`, tinted by the scheme-adjusted goal colour | `DayActivity`, `StepsMonthView` | A glanceable "what else I did today" beside the count. |
+| Accent ripple | scheme-adjusted palette **goal colour** becomes the app `.tint` (hero number, CTA, today ring) | `ContentView.swift` | Grid + app cohere; **background colorsets untouched**. |
 | Goal | `10000` (fixed) | `HealthKitService.swift` | A colour should mean the same thing every day; keeps the per-1,000 stage mapping clean. |
 
 **Watch complications** reuse the same `StepsRingView` / `TinyStepsView` accessory views (via the

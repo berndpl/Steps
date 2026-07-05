@@ -37,6 +37,9 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         // Begin observing step changes immediately so background wake-ups can
         // refresh the cache and reload the widget. No-ops until access is granted.
         HealthKitService.shared.startObservingSteps()
+        // Resume visit monitoring if the user previously granted Always location.
+        // No-ops until then; when active, iOS relaunches us for background visits.
+        LocationService.shared.startMonitoringIfAuthorized()
         // Bring up WatchConnectivity so the chosen grid theme reaches the watch.
         ThemeSync.shared.activate()
         ThemeSync.shared.push()

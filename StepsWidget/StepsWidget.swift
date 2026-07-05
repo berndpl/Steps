@@ -69,6 +69,7 @@ struct Provider: TimelineProvider {
 struct StepsWidgetEntryView: View {
     var entry: StepsEntry
     @Environment(\.widgetFamily) private var family
+    @Environment(\.colorScheme) private var scheme
 
     private var todaySteps: Int {
         entry.dailySteps[Calendar.current.startOfDay(for: Date())] ?? 0
@@ -109,15 +110,17 @@ struct StepsWidgetEntryView: View {
     private var statsPanel: some View {
         let stage = stage(for: todaySteps)
         let best = monthBestDay(entry.dailySteps)
+        let style = GridStyle.current
+        let accent = style.goalColor(for: scheme)
         return VStack(alignment: .leading, spacing: 8) {
             Image(systemName: stage.symbol)
                 .font(.title2)
                 .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(GridStyle.current.goalColor)
+                .foregroundStyle(accent)
             VStack(alignment: .leading, spacing: 0) {
                 Text(todaySteps, format: .number)
                     .font(.system(.title3, design: .rounded, weight: .bold))
-                    .foregroundStyle(GridStyle.current.goalColor)
+                    .foregroundStyle(accent)
                 Text("of \(dailyStepGoal.formatted())")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
@@ -127,7 +130,7 @@ struct StepsWidgetEntryView: View {
                     ForEach(DayActivity.allCases.filter(entry.activities.contains)) { activity in
                         Image(systemName: activity.symbol)
                             .font(.footnote)
-                            .foregroundStyle(GridStyle.current.goalColor)
+                            .foregroundStyle(accent)
                     }
                 }
             }

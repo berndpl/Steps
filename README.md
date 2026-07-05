@@ -10,6 +10,11 @@ by how close you got to 10,000 steps.
 
 - **App** — a single live view showing today's step count, with a clean Health
   permission flow (loading → permission → today's total → denied).
+- **Visits & suggestions** — optional, opt-in visit tracking (Apple's low-power
+  `CLVisit` dwell detection) logs the places you spend time at. A **History**
+  sheet lists them with the round-trip walking cost home ↔ there (distance +
+  estimated steps), and the main view nudges you with a line like *"A round trip
+  to the café would get you there"* when it'd close today's gap to the goal.
 - **Widget** — a small home-screen widget laying out the current calendar month
   like a real calendar: 7 weekday columns, week rows, the 1st in its true
   weekday slot (honoring Sunday/Monday week starts). Each past day is shaded
@@ -34,7 +39,10 @@ Then set your own Apple Developer Team under **Signing & Capabilities** (the rep
 ships with no team), select an iPhone simulator or device, and run.
 
 Requirements: Xcode 26+, iOS 26.5+. The app requests **read-only** access to
-step count via HealthKit and makes no network calls.
+step count via HealthKit. Step data stays on device; the visit-tracking feature
+(opt-in) reaches Apple's map services only to compute walking distances
+(MapKit) and reverse-geocode place names — no personal data is sent anywhere
+else.
 
 ### Testing every screen
 
@@ -42,7 +50,10 @@ In `DEBUG` builds a bottom switcher (compiled out of release) lets you jump to
 any state — including an in-app render of the widget grid with sample data — so
 you can test without granting Health access or seeding data. You can also launch
 straight into a state with `-STEPS_PREVIEW Grid` (Live · Permission · Loading ·
-Steps · Denied · Grid).
+Steps · Denied · Grid). Pass `-STEPS_SEED_VISITS 1` to populate the visit log
+with sample places (home + a couple of destinations) so History and the
+round-trip suggestion are demonstrable without real `CLVisit` events; the
+ladybug menu also has *Seed sample visits* / *Clear visits* actions.
 
 ## License
 

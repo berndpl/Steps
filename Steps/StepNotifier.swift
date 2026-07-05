@@ -49,6 +49,23 @@ final class StepNotifier {
         evaluateRecord(todaySteps: todaySteps)
     }
 
+    // MARK: - Visits
+
+    /// Post a notification each time Core Location reports a visit — an arrival
+    /// (still ongoing, no departure yet) or the end of a stay (departure set).
+    /// Rides the same toggle as the step notifications and reuses the shared
+    /// chime. Unlike the step alerts there's no per-day guard: every distinct
+    /// visit the system delivers is worth surfacing.
+    func postVisit(_ visit: Visit) {
+        guard SettingsStore.notificationsEnabled else { return }
+        let place = visit.name ?? VisitDistance.coordinateLabel(visit.coordinate)
+        if visit.departure == nil {
+            post(title: "📍 Arrived", body: "You're at \(place).", id: "visit-arrival")
+        } else {
+            post(title: "📍 Visit ended", body: "You left \(place).", id: "visit-departure")
+        }
+    }
+
     // MARK: - Milestones (the per-1,000 ladder + goal)
 
     private func evaluateMilestone(todaySteps: Int) {

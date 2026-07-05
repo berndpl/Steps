@@ -227,7 +227,7 @@ struct GridCustomizationView: View {
                     .frame(width: 13, height: 13)
             }
             RoundedRectangle(cornerRadius: 3, style: .continuous)
-                .fill(style.goalColor)
+                .fill(style.goalColor(for: scheme))
                 .frame(width: 13, height: 13)
         }
         .padding(4)

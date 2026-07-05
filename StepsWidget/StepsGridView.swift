@@ -26,6 +26,7 @@ struct StepsMonthView: View {
     var style: GridStyle = .current
     /// Activities done today, shown as small badges beside the count.
     var activities: Set<DayActivity> = []
+    @Environment(\.colorScheme) private var scheme
 
     private var todaySteps: Int {
         dailySteps[Calendar.current.startOfDay(for: Date())] ?? 0
@@ -39,12 +40,12 @@ struct StepsMonthView: View {
             HStack(spacing: 4) {
                 Text(todaySteps, format: .number)
                     .font(.system(.footnote, design: .monospaced, weight: .semibold))
-                    .foregroundStyle(style.goalColor)
+                    .foregroundStyle(style.goalColor(for: scheme))
                 Spacer(minLength: 4)
                 ForEach(DayActivity.allCases.filter(activities.contains)) { activity in
                     Image(systemName: activity.symbol)
                         .font(.footnote)
-                        .foregroundStyle(style.goalColor)
+                        .foregroundStyle(style.goalColor(for: scheme))
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -59,6 +60,7 @@ struct StepsMediumView: View {
     let dailySteps: [Date: Int]
     var style: GridStyle = .current
     var activities: Set<DayActivity> = []
+    @Environment(\.colorScheme) private var scheme
 
     private var todaySteps: Int {
         dailySteps[Calendar.current.startOfDay(for: Date())] ?? 0
@@ -80,11 +82,11 @@ struct StepsMediumView: View {
             Image(systemName: stage.symbol)
                 .font(.title2)
                 .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(style.goalColor)
+                .foregroundStyle(style.goalColor(for: scheme))
             VStack(alignment: .leading, spacing: 0) {
                 Text(todaySteps, format: .number)
                     .font(.system(.title3, design: .rounded, weight: .bold))
-                    .foregroundStyle(style.goalColor)
+                    .foregroundStyle(style.goalColor(for: scheme))
                 Text("of \(dailyStepGoal.formatted())")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
@@ -94,7 +96,7 @@ struct StepsMediumView: View {
                     ForEach(DayActivity.allCases.filter(activities.contains)) { activity in
                         Image(systemName: activity.symbol)
                             .font(.footnote)
-                            .foregroundStyle(style.goalColor)
+                            .foregroundStyle(style.goalColor(for: scheme))
                     }
                 }
             }
@@ -179,7 +181,7 @@ struct StepsGridView: View {
                         let lw = max(cell * 0.14, 2.0)
                         let outset = lw * 0.55
                         RoundedRectangle(cornerRadius: corner + outset, style: .continuous)
-                            .stroke(style.todayRingColor, lineWidth: lw)
+                            .stroke(style.todayRingColor(for: scheme), lineWidth: lw)
                             .padding(-outset)
                     }
                 }

@@ -24,6 +24,7 @@ struct ContentView: View {
     @State private var showSettings = false
     @State private var showCustomize = false
     @State private var showInbox = false
+    @State private var showHistory = false
     /// Unread notification-history count, for the Inbox button badge.
     @State private var unreadCount = 0
     /// Per-activity time/distance for today, keyed by `DayActivity`. Drives the
@@ -31,10 +32,13 @@ struct ContentView: View {
     @State private var activityDetails: [DayActivity: ActivityDetail] = [:]
     /// The badge the user tapped — reveals its time/distance (nil = none selected).
     @State private var selectedActivity: DayActivity?
+    /// A round-trip suggestion for reaching today's goal (nil = none to show).
+    @State private var suggestion: VisitDistance.Suggestion?
     /// The palette goal color, used as the app accent. Re-read whenever the grid
     /// style might have changed (launch, foreground, after customizing).
-    @State private var accentColor = GridStyle.current.goalColor
+    @State private var accentColor = GridStyle.current.goalColor(for: .dark)
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.colorScheme) private var scheme
 
     /// Milestone-alerts toggle, stored in the App Group so the background step
     /// observer reads the same value the settings sheet writes.
@@ -106,18 +110,30 @@ struct ContentView: View {
                 }
                 showInbox = true
             }
+            // Seed sample visits (home + a few places) for testing History and the
+            // Today suggestion without waiting for real CLVisit callbacks:
+            // launch arg `-STEPS_SEED_VISITS 1`.
+            if UserDefaults.standard.string(forKey: "STEPS_SEED_VISITS") == "1",
+               VisitLog.all().isEmpty {
+                Self.seedSampleVisits()
+                showHistory = true
+            }
         }
 #endif
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .active { Task { await load() } }
         }
+        .onChange(of: scheme) { _, _ in
+            accentColor = GridStyle.current.goalColor(for: scheme)
+        }
         .sheet(isPresented: $showSettings) { settingsSheet }
         .sheet(isPresented: $showCustomize) { GridCustomizationView() }
         .sheet(isPresented: $showInbox) { InboxView() }
+        .sheet(isPresented: $showHistory) { HistoryView() }
         // Refresh the accent after the customizer closes (its writes land in the
         // App Group; re-read the current goal color so the app updates too).
         .onChange(of: showCustomize) { _, presented in
-            if !presented { accentColor = GridStyle.current.goalColor }
+            if !presented { accentColor = GridStyle.current.goalColor(for: scheme) }
         }
         // Clear the unread badge once the inbox has been opened and closed.
         .onChange(of: showInbox) { _, presented in
@@ -163,6 +179,13 @@ struct ContentView: View {
                         }
                 }
                 .accessibilityLabel("Inbox")
+                Button { showHistory = true } label: {
+                    Image(systemName: "map")
+                        .foregroundStyle(textMuted)
+                        .padding(10)
+                        .contentShape(Rectangle())
+                }
+                .accessibilityLabel("History")
                 Spacer()
             }
             Spacer()
@@ -218,6 +241,9 @@ struct ContentView: View {
                             .strength: ActivityDetail(minutes: 35),
                             .mindful: ActivityDetail(minutes: 10),
                         ]
+                    }
+                    if suggestion == nil {
+                        suggestion = await VisitDistance.todaySuggestion(todaySteps: 8_432)
                     }
                 }
         case .denied:     deniedView
@@ -295,8 +321,21 @@ struct ContentView: View {
                 .padding(.top, 4)
                 .transition(.opacity)
             }
+
+            // Nudge toward the goal: a known place whose round trip would close
+            // today's gap. Populated from tracked visits (see VisitDistance).
+            if let suggestion {
+                Text("A round trip to \(suggestion.name) — about \(suggestion.roundTripSteps.formatted()) steps — would get you there.")
+                    .font(.system(.callout, design: .monospaced))
+                    .foregroundStyle(textMuted)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 8)
+                    .padding(.horizontal, 8)
+                    .transition(.opacity)
+            }
         }
         .animation(.spring(response: 0.28, dampingFraction: 0.86), value: activityDetails)
+        .animation(.spring(response: 0.28, dampingFraction: 0.86), value: suggestion)
     }
 
     /// "Cycling · 5.4 km · 12 min" — the activity's name plus whichever metrics
@@ -387,6 +426,18 @@ struct ContentView: View {
                         simulatedSteps = 0
                         SettingsStore.lastNotifiedThousand = 0
                     }
+                    Divider()
+                    // Populate the visit log with sample places (home + a few
+                    // destinations) so History and the Today suggestion are
+                    // demonstrable without real CLVisit events.
+                    Button("Seed sample visits") {
+                        Self.seedSampleVisits()
+                        Task { await load() }
+                    }
+                    Button("Clear visits") {
+                        VisitLog.clear()
+                        suggestion = nil
+                    }
                 } label: {
                     Image(systemName: "ladybug.fill")
                         .foregroundStyle(textMuted)
@@ -398,6 +449,33 @@ struct ContentView: View {
             Spacer()
         }
         .padding(8)
+    }
+
+    /// Sample places for testing: a home base (with overnight dwell so it's
+    /// detected as home) plus a few daytime destinations at real, walkable
+    /// distances so MapKit can route a round trip.
+    static func seedSampleVisits() {
+        let cal = Calendar.current
+        let now = Date()
+        func at(_ dayOffset: Int, _ h: Int, _ m: Int) -> Date {
+            let base = cal.date(byAdding: .day, value: dayOffset, to: now) ?? now
+            return cal.date(bySettingHour: h, minute: m, second: 0, of: base) ?? base
+        }
+        // Home: Alexanderplatz-ish, occupied overnight.
+        let home = Visit(latitude: 52.5219, longitude: 13.4132,
+                         arrival: at(-1, 22, 0), departure: at(0, 7, 0),
+                         horizontalAccuracy: 30, recordedAt: at(0, 7, 0),
+                         name: "Home")
+        // A close café (~1 km one way) and a farther park (~2.5 km one way).
+        let cafe = Visit(latitude: 52.5290, longitude: 13.4010,
+                         arrival: at(0, 10, 0), departure: at(0, 11, 0),
+                         horizontalAccuracy: 30, recordedAt: at(0, 11, 0),
+                         name: "Corner Café")
+        let park = Visit(latitude: 52.5145, longitude: 13.3760,
+                         arrival: at(0, 14, 0), departure: at(0, 15, 30),
+                         horizontalAccuracy: 30, recordedAt: at(0, 15, 30),
+                         name: "Tiergarten")
+        for v in [park, cafe, home] { VisitLog.record(v) }
     }
 #endif
 
@@ -418,7 +496,7 @@ struct ContentView: View {
 
     private func load() async {
         // Keep the accent in step with the current grid goal color.
-        accentColor = GridStyle.current.goalColor
+        accentColor = GridStyle.current.goalColor(for: scheme)
         unreadCount = NotificationLog.unreadCount
         if HealthKitService.shared.needsAuthorizationPrompt {
             phase = .needsPermission
@@ -438,6 +516,8 @@ struct ContentView: View {
             WidgetCenter.shared.reloadAllTimelines()
             activityDetails = await HealthKitService.shared.todayActivityDetails()
             if let sel = selectedActivity, activityDetails[sel] == nil { selectedActivity = nil }
+            // Round-trip nudge from tracked visits (nil once at/over goal).
+            suggestion = await VisitDistance.todaySuggestion(todaySteps: steps)
         } catch {
             phase = .denied
         }
