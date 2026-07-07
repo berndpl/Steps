@@ -42,6 +42,7 @@
 		CD56F665BEA72F8F5AA27147 /* GridStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D18FEE6FA38F062795F9BA /* GridStyle.swift */; };
 		D3A9EEF9D76DBAA689B003E0 /* StepsChime.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6D21A3B1C20FBE7612F488B8 /* StepsChime.wav */; };
 		D84F3D63196C3CD062E7E12F /* StepsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C0293D916723287F977B02 /* StepsGridView.swift */; };
+		DA313363EA7E27343F4408C7 /* WalkFlyoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF0876FBE15F7D08694B979 /* WalkFlyoverView.swift */; };
 		E14510AFFB30410EA6D6850A /* StepNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EF689CDC383CFD433DD833 /* StepNotifier.swift */; };
 		E39F9962912489E381385651 /* VisitLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BF87752AADFFEF944714729 /* VisitLog.swift */; };
 		ED4BAEBB55F4BDD5EBB684F8 /* InboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32AD4C11D5B4218BBB5D01AA /* InboxView.swift */; };
@@ -137,6 +138,7 @@
 		CA3444CD9578DC32CC1F7D6F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CB111751562307FE71103F01 /* VisitDistance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitDistance.swift; sourceTree = "<group>"; };
 		DBFE320E0FFC1A13224B7567 /* StepsWidgetExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = StepsWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		DDF0876FBE15F7D08694B979 /* WalkFlyoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalkFlyoverView.swift; sourceTree = "<group>"; };
 		E0FA048CA0AEF0106A456611 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		EC64E5E0A2FB4C4799DE9038 /* StepsWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepsWatch.entitlements; sourceTree = "<group>"; };
 		ECECABDD5BDFB15079B129D0 /* WatchContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchContentView.swift; sourceTree = "<group>"; };
@@ -144,7 +146,7 @@
 		F2EAAE91F5047E9330C33D6A /* StepsWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepsWidget.entitlements; sourceTree = "<group>"; };
 		F4EF689CDC383CFD433DD833 /* StepNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepNotifier.swift; sourceTree = "<group>"; };
 		F8AEBD94E086B8F24AC1513A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		"TEMP_77D30003-45BA-43BE-A9EC-EEFFDFC4E8A2" /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = "<group>"; };
+		"TEMP_52D11B99-9121-4604-91FD-130CE5D5FE8E" /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -213,6 +215,7 @@
 				9174E91672B84EA9C3CA02FA /* ThemeSync.swift */,
 				CB111751562307FE71103F01 /* VisitDistance.swift */,
 				8BF87752AADFFEF944714729 /* VisitLog.swift */,
+				DDF0876FBE15F7D08694B979 /* WalkFlyoverView.swift */,
 			);
 			path = Steps;
 			sourceTree = "<group>";
@@ -228,10 +231,10 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		"TEMP_9A6E2537-BABE-4ADE-8150-CC3AEC349B77" /* Steps */ = {
+		"TEMP_174EEC2B-312A-42AE-888A-E72A5F3129B7" /* Steps */ = {
 			isa = PBXGroup;
 			children = (
-				"TEMP_77D30003-45BA-43BE-A9EC-EEFFDFC4E8A2" /* Local.xcconfig */,
+				"TEMP_52D11B99-9121-4604-91FD-130CE5D5FE8E" /* Local.xcconfig */,
 			);
 			path = Steps;
 			sourceTree = "<group>";
@@ -404,6 +407,7 @@
 				3F23D7A86452E7EB751D24EC /* ThemeSync.swift in Sources */,
 				4F9FD803729A188D8BAFBE6D /* VisitDistance.swift in Sources */,
 				E39F9962912489E381385651 /* VisitLog.swift in Sources */,
+				DA313363EA7E27343F4408C7 /* WalkFlyoverView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -574,7 +578,7 @@
 		};
 		633FC851B708DCB08B653A4A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_77D30003-45BA-43BE-A9EC-EEFFDFC4E8A2" /* Local.xcconfig */;
+			baseConfigurationReference = "TEMP_52D11B99-9121-4604-91FD-130CE5D5FE8E" /* Local.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -662,7 +666,7 @@
 		};
 		7BFECDEC5DB29F1ACCF2B96B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_77D30003-45BA-43BE-A9EC-EEFFDFC4E8A2" /* Local.xcconfig */;
+			baseConfigurationReference = "TEMP_52D11B99-9121-4604-91FD-130CE5D5FE8E" /* Local.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;

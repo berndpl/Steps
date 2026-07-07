@@ -26,6 +26,18 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
+#if DEBUG
+        // Force a named grid palette for screenshots/audits (before any view or the
+        // watch sync reads it): launch arg `-STEPS_PALETTE Rose` (any preset name,
+        // case-insensitive). Mirrors what selecting a palette in the customizer does.
+        if let name = UserDefaults.standard.string(forKey: "STEPS_PALETTE"),
+           let preset = GridPalette.presets.first(where: {
+               $0.name.caseInsensitiveCompare(name) == .orderedSame
+           }) {
+            SettingsStore.defaults.set(preset.rampHex, forKey: SettingsStore.gridRampHexKey)
+            SettingsStore.defaults.set(preset.goalHex, forKey: SettingsStore.gridGoalHexKey)
+        }
+#endif
         // Drive milestone notifications from the step observer: every refresh
         // (foreground or background wake-up) passes today's total here, and the
         // notifier decides whether a new 1,000-step mark warrants an alert. Set

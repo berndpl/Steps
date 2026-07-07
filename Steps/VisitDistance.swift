@@ -57,20 +57,25 @@ enum VisitDistance {
         // Same place (or within cluster radius) — no meaningful trip.
         guard straightLine > VisitLog.clusterRadius else { return nil }
 
+        if let route = await walkingRoute(from: home, to: destination) {
+            return route.distance * 2   // there and back
+        }
+        return straightLine * 2
+    }
+
+    /// The shortest walking `MKRoute` between two points, geometry included, so
+    /// callers (e.g. the flyover) can draw and fly the actual path. Returns `nil`
+    /// when no route is available or the network is down. Unlike `roundTripMeters`
+    /// this keeps the polyline rather than reducing to a distance.
+    static func walkingRoute(from source: CLLocationCoordinate2D,
+                             to destination: CLLocationCoordinate2D) async -> MKRoute? {
         let request = MKDirections.Request()
-        request.source = MKMapItem(placemark: MKPlacemark(coordinate: home))
+        request.source = MKMapItem(placemark: MKPlacemark(coordinate: source))
         request.destination = MKMapItem(placemark: MKPlacemark(coordinate: destination))
         request.transportType = .walking
 
-        do {
-            let response = try await MKDirections(request: request).calculate()
-            if let route = response.routes.min(by: { $0.distance < $1.distance }) {
-                return route.distance * 2   // there and back
-            }
-        } catch {
-            // Fall through to the straight-line estimate.
-        }
-        return straightLine * 2
+        guard let response = try? await MKDirections(request: request).calculate() else { return nil }
+        return response.routes.min(by: { $0.distance < $1.distance })
     }
 
     /// Compute and cache the round-trip distance + step estimate for a cluster,
@@ -119,25 +124,50 @@ enum VisitDistance {
         VisitLog.update(updated)
     }
 
-    /// The nearest named point of interest to the coordinate, within
+    /// Venue types you're most likely to actually dwell at. When one of these is
+    /// nearby it gets a distance discount (`preferredPOIWeight`) so it can win
+    /// over a marginally-closer generic POI — a supermarket, park, or gym reads
+    /// as the place you spent time on rather than whatever pin happens to sit a
+    /// few metres closer.
+    ///
+    /// Note: MapKit has no dedicated `playground` category — playgrounds surface
+    /// under `.park` in Apple Maps, so `.park` covers them here.
+    private static let preferredPOICategories: Set<MKPointOfInterestCategory> = [
+        .foodMarket,    // supermarket / grocery store
+        .park,          // park (and playgrounds, which share this category)
+        .nationalPark,  // larger parks
+        .fitnessCenter, // gym
+    ]
+
+    /// How much to shrink a preferred venue's effective distance when ranking.
+    /// 0.5 = a preferred venue competes as if it were half as far, so it wins
+    /// over any generic POI up to twice its distance — but a much closer generic
+    /// POI still wins. Lower = stronger bias.
+    private static let preferredPOIWeight: Double = 0.5
+
+    /// The best-matching named point of interest to the coordinate, within
     /// `poiSearchRadius`. Uses MapKit's POI search so venues (shops, parks,
-    /// playgrounds, pools…) win over plain addresses. `nil` if nothing is close.
+    /// gyms, cafés…) win over plain addresses, and biases toward the venue types
+    /// in `preferredPOICategories` so a dwell reads as the place you actually
+    /// spent time on. `nil` if nothing is close.
     private static func nearbyPOIName(for coordinate: CLLocationCoordinate2D) async -> String? {
         let request = MKLocalPointsOfInterestRequest(center: coordinate, radius: poiSearchRadius)
         let search = MKLocalSearch(request: request)
         guard let response = try? await search.start() else { return nil }
 
         let origin = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
-        let nearest = response.mapItems
-            .compactMap { item -> (name: String, distance: CLLocationDistance)? in
+        let best = response.mapItems
+            .compactMap { item -> (name: String, effectiveDistance: CLLocationDistance)? in
                 guard let name = item.name else { return nil }
                 let c = item.placemark.coordinate
                 let distance = CLLocation(latitude: c.latitude, longitude: c.longitude).distance(from: origin)
-                return (name, distance)
+                guard distance <= poiSearchRadius else { return nil }
+                let isPreferred = item.pointOfInterestCategory.map(preferredPOICategories.contains) ?? false
+                let effectiveDistance = isPreferred ? distance * preferredPOIWeight : distance
+                return (name, effectiveDistance)
             }
-            .filter { $0.distance <= poiSearchRadius }
-            .min { $0.distance < $1.distance }
-        return nearest?.name
+            .min { $0.effectiveDistance < $1.effectiveDistance }
+        return best?.name
     }
 
     /// Street/locality fallback via reverse geocoding.
@@ -161,6 +191,20 @@ enum VisitDistance {
         let name: String
         let roundTripMeters: Double
         let roundTripSteps: Int
+        /// Detected home — the start/end of the round trip (for the flyover).
+        let home: CLLocationCoordinate2D
+        /// The place to walk to (for the flyover).
+        let destination: CLLocationCoordinate2D
+
+        static func == (lhs: Suggestion, rhs: Suggestion) -> Bool {
+            lhs.name == rhs.name
+                && lhs.roundTripMeters == rhs.roundTripMeters
+                && lhs.roundTripSteps == rhs.roundTripSteps
+                && lhs.home.latitude == rhs.home.latitude
+                && lhs.home.longitude == rhs.home.longitude
+                && lhs.destination.latitude == rhs.destination.latitude
+                && lhs.destination.longitude == rhs.destination.longitude
+        }
     }
 
     static func todaySuggestion(todaySteps: Int) async -> Suggestion? {
@@ -174,7 +218,11 @@ enum VisitDistance {
         for cluster in clusters where cluster.id != home.id {
             guard let trip = await resolveRoundTrip(for: cluster, home: home.coordinate) else { continue }
             let label = cluster.name ?? coordinateLabel(cluster.coordinate)
-            candidates.append(Suggestion(name: label, roundTripMeters: trip.meters, roundTripSteps: trip.steps))
+            candidates.append(Suggestion(name: label,
+                                         roundTripMeters: trip.meters,
+                                         roundTripSteps: trip.steps,
+                                         home: home.coordinate,
+                                         destination: cluster.coordinate))
         }
         guard !candidates.isEmpty else { return nil }
 

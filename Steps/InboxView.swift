@@ -35,16 +35,6 @@ struct InboxView: View {
                     Button("Done") { dismiss() }
                         .font(.system(.body, design: .monospaced))
                 }
-                if !messages.isEmpty {
-                    ToolbarItem(placement: .destructiveAction) {
-                        Button("Clear") {
-                            NotificationLog.clear()
-                            messages = []
-                        }
-                        .font(.system(.body, design: .monospaced))
-                        .tint(textMuted)
-                    }
-                }
             }
         }
         // Opening the Inbox counts as reading everything in it.
@@ -52,26 +42,66 @@ struct InboxView: View {
     }
 
     private var list: some View {
-        List(messages) { message in
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text(message.title)
-                        .font(.system(.callout, design: .monospaced, weight: .semibold))
-                        .foregroundStyle(textPrimary)
-                    Spacer(minLength: 8)
-                    Text(message.date, format: .dateTime.weekday().hour().minute())
-                        .font(.system(.caption2, design: .monospaced))
+        List {
+            ForEach(groupedMessages, id: \.day) { group in
+                Section {
+                    ForEach(group.items) { message in
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack(alignment: .firstTextBaseline) {
+                                Text(message.title)
+                                    .font(.system(.callout, design: .monospaced, weight: .semibold))
+                                    .foregroundStyle(textPrimary)
+                                Spacer(minLength: 8)
+                                Text(message.date, format: .dateTime.hour().minute())
+                                    .font(.system(.caption2, design: .monospaced))
+                                    .foregroundStyle(textMuted)
+                            }
+                            Text(message.body)
+                                .font(.system(.caption, design: .monospaced))
+                                .foregroundStyle(textMuted)
+                        }
+                        .padding(.vertical, 4)
+                        .listRowBackground(Color("AppBackground"))
+                    }
+                } header: {
+                    Text(dayLabel(group.day))
+                        .font(.system(.caption, design: .monospaced, weight: .semibold))
                         .foregroundStyle(textMuted)
+                        .textCase(nil)
                 }
-                Text(message.body)
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundStyle(textMuted)
             }
-            .padding(.vertical, 4)
-            .listRowBackground(Color("AppBackground"))
+
+            Section {
+                Button(role: .destructive) {
+                    NotificationLog.clear()
+                    messages = []
+                } label: {
+                    Label("Clear inbox", systemImage: "trash")
+                        .font(.system(.callout, design: .monospaced))
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.red)
+                .listRowBackground(Color("AppBackground"))
+            }
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
+    }
+
+    /// Messages bucketed by calendar day, newest day first.
+    private var groupedMessages: [(day: Date, items: [InboxMessage])] {
+        let cal = Calendar.current
+        return Dictionary(grouping: messages) { cal.startOfDay(for: $0.date) }
+            .map { (day: $0.key, items: $0.value.sorted { $0.date > $1.date }) }
+            .sorted { $0.day > $1.day }
+    }
+
+    private func dayLabel(_ date: Date) -> String {
+        let cal = Calendar.current
+        if cal.isDateInToday(date) { return "Today" }
+        if cal.isDateInYesterday(date) { return "Yesterday" }
+        return date.formatted(.dateTime.weekday(.wide).month().day())
     }
 
     private var emptyState: some View {

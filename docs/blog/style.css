@@ -3,7 +3,7 @@
    with the style picked from the design catalog (style-apply tokens). Structure stays;
    only the tokens change. Neutral defaults shipped so the page renders before theming. */
 
-/* Steps style — Catppuccin Mocha (dark) + gold accent; monospaced SF Mono (system, no webfont). */
+/* Steps style — Catppuccin Mocha (dark) + rose accent; monospaced SF Mono (system, no webfont). */
 
 :root {
   color-scheme: dark;
@@ -17,9 +17,9 @@
   --theme-body-alpha: .82;
   --theme-subtext0: #a6adc8;
   --theme-overlay0: #6c7086;
-  --theme-accent: #f5a623;          /* gold — Steps fingerprint, grid goal-reached colour */
-  --theme-hover: #d9a300;
-  --theme-link: #f5a623;
+  --theme-accent: #f38ba8;          /* rose — Catppuccin Mocha, the site fingerprint */
+  --theme-hover: #eb6f92;
+  --theme-link: #f38ba8;
   --theme-good: #40c463;
   --theme-bad: #c23b32;
   --theme-font: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
@@ -34,6 +34,10 @@ body {
   color: var(--theme-text);
   background: var(--theme-base);
   font: 16px/1.5 var(--theme-font);
+  /* SF Mono renders heavy with default subpixel smoothing on dark backgrounds —
+     grayscale antialiasing gives the regular weight its intended lighter stroke. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 a { color: var(--theme-link); text-decoration: none; }
 a:hover { color: var(--theme-hover); text-decoration: underline; }
@@ -64,15 +68,35 @@ h1, h2, h3, h4 {
   line-height: 1.4;
 }
 
-/* Topbar: brand mark + title, optional nav, primary action button — emphasized header band */
+/* Topbar: hidden by default; slides down into view only once the hero (masthead) has
+   scrolled off. Fixed / out of flow, so the hero sits flush at the top with no header gap.
+   The tail script toggles .is-scrolled once you scroll past the hero. */
 .topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 20;
+  border-bottom: 1px solid transparent;
+  background: color-mix(in srgb, var(--theme-base) 88%, transparent);
+  backdrop-filter: saturate(140%) blur(10px);
+  opacity: 0;
+  transform: translateY(-100%);
+  pointer-events: none;
+  transition: opacity .25s ease, transform .3s ease, border-color .25s ease;
+}
+.topbar.is-scrolled {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+  border-bottom-color: var(--theme-surface0);
+}
+.topbar-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: .7rem 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: .6rem 0 1.4rem;
-  margin-bottom: 2.5rem;
-  border-bottom: 1px solid var(--theme-surface0);
 }
 .nav-left, .nav-right, nav {
   display: flex;
@@ -94,7 +118,6 @@ h1, h2, h3, h4 {
   height: 1.4rem;
   flex: 0 0 auto;
   display: block;
-  border-radius: 5px;
 }
 nav a { color: rgba(var(--theme-body-rgb), .6); font-size: 1rem; line-height: 1; }
 nav a.active { color: var(--theme-text); text-decoration: none; }
@@ -135,12 +158,15 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
 }
 .hero-with-shot {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
-  gap: 2rem;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 21rem);
+  gap: 2.5rem;
   align-items: center;
 }
-.hero h1 { margin-top: .3rem; color: var(--theme-accent); font-size: 2.1rem; font-weight: 700; }
-.hero-icon { width: 4rem; height: 4rem; display: block; border-radius: 12px; }
+.hero-copy { min-width: 0; }
+.hero h1 { margin-top: .9rem; color: var(--theme-accent); font-size: 2.1rem; font-weight: 700; }
+/* icon.png is a glass render from Icon Composer (ictool) with the iOS squircle + transparent
+   corners baked in — so no CSS border-radius (that would clip the glass edge). */
+.hero-icon { width: 4rem; height: 4rem; display: block; }
 .tagline { margin-top: .6rem; color: var(--theme-subtext0); font-size: 1.1rem; }
 .short { max-width: 38rem; margin-top: 1.1rem; color: var(--theme-subtext0); font-size: 1.1rem; }
 .hero-cta { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.8rem; }
@@ -160,9 +186,11 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
 .shots {                      /* carousel variant — crossfaded slides in a fixed frame */
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3;        /* set to your screenshots' ratio, e.g. 1144 / 1004 */
-  border-radius: 8px;
+  aspect-ratio: 680 / 1478;   /* real iPhone screenshot ratio — no stretch */
+  border-radius: 22px;
   overflow: hidden;
+  background: var(--theme-mantle);
+  border: 1px solid var(--theme-surface0);
 }
 .shot {
   position: absolute;
@@ -170,9 +198,9 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: contain;
+  object-fit: cover;
   border: 0;
-  border-radius: 8px;
+  border-radius: 22px;
   opacity: 0;
   transition: opacity .4s ease;
 }
@@ -186,23 +214,59 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
 .dot:hover { background: var(--theme-overlay0); }
 .dot.is-active { background: var(--theme-accent); transform: scale(1.15); }
 /* Thumbnail-nav variant (.thumbs) — labelled image buttons that double as the picker.
-   Anchored to the bottom of the shot so they read as a filmstrip; set their aspect-ratio
-   (and .shots') to your screenshots' ratio. They sit in front of .shots (z-index) so taps
-   land on the thumbnails, not the screenshot frame above them. */
+   For portrait phone shots we sit them as a filmstrip below the frame and show the whole
+   phone (object-fit: contain) so each state stays distinguishable. They sit in front of
+   .shots (z-index) so taps land on the thumbnails. */
 .thumbs {
-  position: absolute; left: 0; right: 0; bottom: -20px;
-  display: flex; justify-content: center; gap: .55rem; z-index: 2;
+  position: static; margin-top: 1.4rem;
+  display: flex; justify-content: center; gap: .6rem; z-index: 2;
 }
 .hero-shot { position: relative; }
 .shots { z-index: 1; }
 .thumb {
-  width: 64px; aspect-ratio: 4 / 3; padding: 0; border: 0; border-radius: 10px;
-  background: var(--theme-mantle); cursor: pointer; overflow: hidden; opacity: .55;
+  width: 42px; aspect-ratio: 680 / 1478; padding: 0; border: 0; border-radius: 8px;
+  background: var(--theme-mantle); cursor: pointer; overflow: hidden; opacity: .5;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .12); transition: opacity .15s ease;
 }
-.thumb img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; border-radius: inherit; }
-.thumb:hover { opacity: .85; }
-.thumb.is-active { opacity: 1; }
+.thumb img { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
+.thumb:hover { opacity: .8; }
+.thumb.is-active { opacity: 1; box-shadow: 0 0 0 2px var(--theme-accent); }
+
+/* Staggered phone cascade — three portrait screenshots shown at once as a stepped
+   diagonal. The front phone is lower-left and fully visible; the others recede up-right,
+   slightly scaled and dimmed for depth. Slots (front/mid/back) are just classes the
+   script rotates, so any screen can take the front by tap or autoplay. Everything is
+   sized in % so it scales with the column. */
+.phone-stack {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.24;   /* group box: front phone (lowered) + full height */
+}
+.phone {
+  position: absolute;
+  width: 50%;
+  aspect-ratio: 680 / 1478;   /* the screenshots' real ratio */
+  /* iPhone Pro screen corner radius ≈ 62pt on a 402pt-wide display ⇒ ~15.4% of width.
+     The paired vertical value (15.4% × 680/1478) keeps the corner a true circle, not an
+     ellipse — so the clip matches the real device screen the screenshots came from. */
+  border-radius: 15.4% / 7.1%;
+  overflow: hidden;
+  background: var(--theme-mantle);
+  border: 1px solid var(--theme-surface0);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .38);
+  cursor: pointer;
+  transition: left .5s cubic-bezier(.4, 0, .2, 1), top .5s cubic-bezier(.4, 0, .2, 1),
+              transform .5s cubic-bezier(.4, 0, .2, 1), opacity .5s ease, box-shadow .3s ease;
+}
+.phone img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.phone:focus-visible { outline: 2px solid var(--theme-accent); outline-offset: 4px; }
+/* Slots the script rotates (tap / autoplay). No-JS fallback: initial classes in the HTML
+   render a valid static cascade. */
+.phone.is-front { left: 0;   top: 12%; transform: scale(1);   opacity: 1;   z-index: 3; }
+.phone.is-mid   { left: 25%; top: 6%;  transform: scale(.96); opacity: .97; z-index: 2; }
+.phone.is-back  { left: 50%; top: 0;   transform: scale(.92); opacity: .9;  z-index: 1; }
+.phone.is-front:hover { box-shadow: 0 18px 42px rgba(0, 0, 0, .46); }
+@media (prefers-reduced-motion: reduce) { .phone { transition: none; } }
 .kicker, .date, .tag, .badge { color: var(--theme-overlay0); font-size: .9rem; }
 
 /* ── Optional product-highlights components ───────────────────────────────────
@@ -290,7 +354,6 @@ article.entry .decisions { margin: 1.25rem 0; }
 }
 .decisions > div + div, .grid2 > div + div {
   padding-left: 2rem;
-  border-left: 1px solid var(--theme-surface0);
 }
 .card h3 { margin-bottom: .65rem; }
 .card { background: transparent; border: 0; padding: 0 !important; }
@@ -321,12 +384,53 @@ footer { padding: .75rem 0 1rem; color: var(--theme-overlay0); font-size: .9rem;
 
 @media (max-width: 720px) {
   body { padding: 16px; }
-  .topbar { align-items: flex-start; }
+  .topbar-inner { align-items: flex-start; padding: .7rem 16px; }
   .hero { padding: 2.5rem 0 1.5rem; }
-  .hero-with-shot { grid-template-columns: 1fr; gap: 1.25rem; }
+  .hero-with-shot { grid-template-columns: 1fr; gap: 1.75rem; }
+  .hero-shot { max-width: 18rem; margin: 0 auto; }
   .decisions, .grid2 { grid-template-columns: 1fr; }
   .decisions > div + div, .grid2 > div + div {
-    padding-left: 0; padding-top: 1rem; border-left: 0; border-top: 1px solid var(--theme-surface0);
+    padding-left: 0; padding-top: 1rem;
   }
   figure { width: 100%; }
+}
+
+/* ── Changelog: homepage pointer + dedicated tight changelog page ──────────── */
+.changelog-cta { max-width: 40rem; margin: 0; color: var(--theme-subtext0); }
+
+/* Simple always-visible page nav (used on subpages like changelog.html) */
+.page-nav {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: .2rem 0 1.4rem; margin-bottom: 2rem;
+  border-bottom: 1px solid var(--theme-surface0);
+}
+.back-link { color: var(--theme-subtext0); }
+.back-link:hover { color: var(--theme-hover); }
+
+.changelog-page > h1 { margin: 0 0 .4rem; color: var(--theme-accent); font-size: 1.6rem; font-weight: 700; }
+.changelog-page > .lead { max-width: 40rem; margin: 0 0 1.6rem; color: var(--theme-subtext0); }
+
+/* Tight index — one dense line per entry: date · title · category */
+.log { list-style: none; margin: 1.4rem 0; padding: 0; }
+.log li { margin: 0; }
+.log-row {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .9rem;
+  padding: .55rem 0; border-bottom: 1px solid var(--theme-surface0);
+  color: var(--theme-text); text-decoration: none;
+}
+.log-row:hover { text-decoration: none; }
+.log-row:hover .log-title { color: var(--theme-hover); text-decoration: underline; }
+.log-date { flex: 0 0 auto; color: var(--theme-overlay0); font-size: .82rem; white-space: nowrap; }
+.log-title { flex: 1 1 60%; min-width: 12rem; color: var(--theme-link); }
+.log-cat { flex: 0 0 auto; margin-left: auto; color: var(--theme-overlay0); font-size: .8rem; white-space: nowrap; }
+
+.log-sep { border: 0; border-top: 1px solid var(--theme-surface0); margin: 2.2rem 0 .5rem; }
+.entries article.entry { scroll-margin-top: 1.5rem; }
+.entries article.entry:first-child { padding-top: 1.5rem; }
+.log-top { margin: 2rem 0 0; color: var(--theme-overlay0); font-size: .9rem; }
+
+@media (max-width: 720px) {
+  .log-title { min-width: 100%; order: 2; }
+  .log-date { order: 1; }
+  .log-cat { order: 1; }
 }

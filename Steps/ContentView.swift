@@ -34,11 +34,13 @@ struct ContentView: View {
     @State private var selectedActivity: DayActivity?
     /// A round-trip suggestion for reaching today's goal (nil = none to show).
     @State private var suggestion: VisitDistance.Suggestion?
+    @State private var showWalkFlyover = false
     /// The palette goal color, used as the app accent. Re-read whenever the grid
     /// style might have changed (launch, foreground, after customizing).
     @State private var accentColor = GridStyle.current.goalColor(for: .dark)
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.colorScheme) private var scheme
+    @Environment(\.openURL) private var openURL
 
     /// Milestone-alerts toggle, stored in the App Group so the background step
     /// observer reads the same value the settings sheet writes.
@@ -113,10 +115,22 @@ struct ContentView: View {
             // Seed sample visits (home + a few places) for testing History and the
             // Today suggestion without waiting for real CLVisit callbacks:
             // launch arg `-STEPS_SEED_VISITS 1`.
-            if UserDefaults.standard.string(forKey: "STEPS_SEED_VISITS") == "1",
-               VisitLog.all().isEmpty {
-                Self.seedSampleVisits()
+            if UserDefaults.standard.string(forKey: "STEPS_SEED_VISITS") == "1" {
+                if VisitLog.all().isEmpty { Self.seedSampleVisits() }
                 showHistory = true
+            }
+            // Open the Walk Flyover directly for testing/auditing the 3D fly-through:
+            // launch arg `-STEPS_OPEN_FLYOVER 1`. Seeds sample visits when the log is
+            // empty so a round-trip suggestion exists, resolves it, then presents the
+            // flyover — a normally transient state made reachable for screenshots.
+            if UserDefaults.standard.string(forKey: "STEPS_OPEN_FLYOVER") == "1" {
+                if VisitLog.all().isEmpty { Self.seedSampleVisits() }
+                Task {
+                    if suggestion == nil {
+                        suggestion = await VisitDistance.todaySuggestion(todaySteps: 8_432)
+                    }
+                    if suggestion != nil { showWalkFlyover = true }
+                }
             }
         }
 #endif
@@ -130,6 +144,11 @@ struct ContentView: View {
         .sheet(isPresented: $showCustomize) { GridCustomizationView() }
         .sheet(isPresented: $showInbox) { InboxView() }
         .sheet(isPresented: $showHistory) { HistoryView() }
+        .fullScreenCover(isPresented: $showWalkFlyover) {
+            if let suggestion {
+                WalkFlyoverView(suggestion: suggestion)
+            }
+        }
         // Refresh the accent after the customizer closes (its writes land in the
         // App Group; re-read the current goal color so the app updates too).
         .onChange(of: showCustomize) { _, presented in
@@ -324,14 +343,25 @@ struct ContentView: View {
 
             // Nudge toward the goal: a known place whose round trip would close
             // today's gap. Populated from tracked visits (see VisitDistance).
+            // Tap to fly the complete walk in 3D (see WalkFlyoverView).
             if let suggestion {
-                Text("A round trip to \(suggestion.name) — about \(suggestion.roundTripSteps.formatted()) steps — would get you there.")
-                    .font(.system(.callout, design: .monospaced))
-                    .foregroundStyle(textMuted)
-                    .multilineTextAlignment(.center)
+                Button {
+                    showWalkFlyover = true
+                } label: {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Text("A round trip to \(suggestion.name) — about \(suggestion.roundTripSteps.formatted()) steps — would get you there.")
+                            .font(.system(.callout, design: .monospaced))
+                            .foregroundStyle(textMuted)
+                            .multilineTextAlignment(.center)
+                        Image(systemName: "mountain.2")
+                            .font(.system(size: 12))
+                            .foregroundStyle(.tint)
+                    }
                     .padding(.top, 8)
                     .padding(.horizontal, 8)
-                    .transition(.opacity)
+                }
+                .buttonStyle(.plain)
+                .transition(.opacity)
             }
         }
         .animation(.spring(response: 0.28, dampingFraction: 0.86), value: activityDetails)
@@ -381,10 +411,25 @@ struct ContentView: View {
             Text("No step data")
                 .font(.system(.title2, design: .monospaced))
                 .foregroundStyle(textPrimary)
-            Text("Enable step access in Settings → Health → Data Access & Devices → Steps.")
+            Text("Steps needs permission to read your step count from Apple Health. Grant it below, or turn it on in Settings › Apps › Steps › Health.")
                 .font(.system(.callout, design: .monospaced))
                 .foregroundStyle(textMuted)
                 .multilineTextAlignment(.center)
+            VStack(spacing: 10) {
+                Button("Allow Health Access") {
+                    Task { await requestAccess() }
+                }
+                .buttonStyle(.glassProminent)
+                .controlSize(.large)
+                .font(.system(.body, design: .monospaced))
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.tint)
+                .font(.system(.callout, design: .monospaced))
+            }
+            .padding(.top, 4)
         }
     }
 

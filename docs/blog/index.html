@@ -8,102 +8,83 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Steps</title>
-<link rel="icon" href="img/icon.png" type="image/png">
+<link rel="icon" href="img/favicon.ico" sizes="any">
+<link rel="icon" href="img/favicon-16.png" type="image/png" sizes="16x16">
+<link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="img/favicon-180.png">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0" aria-hidden="true">
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></symbol>
+  <symbol id="i-medal" viewBox="0 0 24 24"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
+</svg>
 <header class="topbar">
-  <div class="nav-left">
-    <a class="blog-title" href="./"><img class="brand-mark" src="img/icon.png" alt="">Steps</a>
-  </div>
-  <div class="nav-right">
-    <a class="action-link" href="https://github.com/berndpl/Steps">Download and Build</a>
-    <a class="action-link secondary" href="https://notes.plontsch.de/about/">Get in touch</a>
+  <div class="topbar-inner">
+    <div class="nav-left">
+      <a class="blog-title" href="./"><img class="brand-mark" src="img/icon.png" alt="">Steps</a>
+    </div>
+    <div class="nav-right">
+      <a class="action-link" href="https://github.com/berndpl/Steps">Download and Build</a>
+      <a class="action-link secondary" href="https://notes.plontsch.de/about/">Get in touch</a>
+    </div>
   </div>
 </header>
 
 <main id="top">
-<header class="hero">
+<header class="hero hero-with-shot">
   <div class="hero-copy">
+    <img class="hero-icon" src="img/icon.png" alt="Steps app icon">
     <h1>Steps</h1>
-    <p class="tagline">Your last month of steps, as a GitHub-style contribution grid.</p>
-    <p class="short">A small iOS app, home-screen and lock-screen widgets, and a watchOS app that read Apple Health and paint each day of the month by how close you got to 10,000 steps — empty to deep green, with a gold day for the goal, the way a contribution graph reads a year of commits.</p>
+    <p class="tagline">Personal step counting that also tells you where to walk to reach 10,000.</p>
+    <p class="short">A small iOS app, home- and lock-screen widgets, and a watchOS app that read Apple Health and paint each day of the month by how close you got to your 10,000-step goal — empty to a deep hue, a standout color for the goal, the way a contribution graph reads a year of commits. Pick from a set of palettes to match your home screen. And when you fall short, it points you to a real walk that would close the gap.</p>
     <p class="hero-cta">
       <a class="action-link" href="https://github.com/berndpl/Steps">Download and Build</a>
       <a class="action-link secondary" href="https://notes.plontsch.de/about/">Get in touch</a>
     </p>
   </div>
+  <figure class="hero-shot phone-stack" aria-label="Steps app screenshots — tap a screen to bring it to the front">
+    <div class="phone is-front"><img src="img/shot-widget.png" alt="Home-screen widget preview: the month as a contribution grid with today's step count" width="680" height="1478"></div>
+    <div class="phone is-mid"><img src="img/shot-inapp.png" alt="In-app screen: today's total, activity badges, and a round-trip suggestion" width="680" height="1478"></div>
+    <div class="phone is-back"><img src="img/shot-flyover.png" alt="3D map fly-through of a round-trip walk with playback controls" width="680" height="1478"></div>
+  </figure>
 </header>
+
+<section id="features">
+  <h2>What it does</h2>
+  <ul class="feature-list">
+    <li>
+      <span class="feature-ico"><svg class="sym"><use href="#i-grid"/></svg></span>
+      <div>
+        <h3>A widget you can make your own</h3>
+        <p>Twelve palettes, tunable response curves, day shapes, and a marker for the month's best day — the contribution grid, painted your way, on both the home and lock screen.</p>
+      </div>
+    </li>
+    <li>
+      <span class="feature-ico"><svg class="sym"><use href="#i-medal"/></svg></span>
+      <div>
+        <h3>More than steps</h3>
+        <p>Log a ride, a strength session, or mindful minutes and a small badge joins the day beside the count. Fitness, cycling, and meditation, all at a glance.</p>
+      </div>
+    </li>
+    <li>
+      <span class="feature-ico"><svg class="sym"><use href="#i-route"/></svg></span>
+      <div>
+        <h3>A walk that reaches your goal</h3>
+        <p>Short of 10,000? Steps suggests a round trip to a place you've actually been — with the real walking distance and step cost — then flies the route in photorealistic 3D.</p>
+      </div>
+    </li>
+  </ul>
+</section>
 
 <section id="posts">
   <h2>Changelog</h2>
-  <article class="entry">
-    <div class="date">2026-06-29 · inbox + icon</div>
-    <h3>An inbox, a log, and a new face</h3>
-    <p>Steps grew an Inbox — one place that gathers the day's notices instead of letting them flash and vanish: the nudges, milestones, and badges now land in a list you can scroll back through, with a notification log behind them. The look stays in step across surfaces too, with a small theme sync so the gold and green follow your palette choice everywhere. <a href="https://github.com/berndpl/Steps/commit/fa26709"><code>fa26709</code></a></p>
-    <p>The app also got a new face: a hand-built Icon Composer icon replaced the placeholder set — two pink dots over a dotted dark grid, a quiet nod to the contribution grid inside. Signing moved to a gitignored <code>Local.xcconfig</code> so the team ID stays out of the repo, and the accessory widgets switched to a ProgressView ring (not a Gauge) and stopped showing stale step counts. <a href="https://github.com/berndpl/Steps/commit/56bae34"><code>56bae34</code></a></p>
-  </article>
-  <article class="entry">
-    <div class="date">2026-06-28 · watch</div>
-    <h3>A wrist, a chime, and little badges for the rest of the day</h3>
-    <p>Steps reached the wrist. A small watchOS app shows today against the goal as a ring, and the same <em>Steps Ring</em> and <em>Tiny Steps</em> views that drive the lock screen now appear as watch-face complications — one set of code, three surfaces. The watch reads HealthKit on its own, since the App Group cache doesn't cross devices. <a href="https://github.com/berndpl/Steps/commit/7209f44"><code>7209f44</code></a></p>
-    <p>The grid learned to notice the rest of the day. If you logged a ride, a meditation, or a strength session, a little badge sits beside today's count — cycling, mind-and-body, or strength-training. That meant asking Health for workouts and mindful minutes too, including for people who'd already granted steps. <a href="https://github.com/berndpl/Steps/commit/865b9e7"><code>865b9e7</code></a></p>
-    <p>And the alerts got more fun, with their own voice. Beyond the per-thousand nudges there's a morning greeting, a double-goal cheer, goal-streak milestones, and a record-day shout — each at most once a day. They all ring a custom bell bundled with the app rather than the system default, and today's screen now shows cycling minutes when there's a ride to show. <a href="https://github.com/berndpl/Steps/commit/38252dc"><code>38252dc</code></a></p>
-  </article>
-  <article class="entry">
-    <div class="date">2026-06-28 · grid</div>
-    <h3>The grid, dialled in</h3>
-    <p>The single spread slider became a proper instrument. A row of curve shapes — linear, ease-in, ease-out, ease-in-out, log, exp — each shown as a tiny sparkline, decides how a day's steps map to fill, with a strength slider for how hard. The palette shelf grew from five to twelve, and the month's-best day can wear a dot, ring, asterisk, star, or nothing. <a href="https://github.com/berndpl/Steps/commit/4a2b84e"><code>4a2b84e</code></a></p>
-    <p>Today got easier to find: its ring is now a brightened version of the palette's goal colour, stroked just outside the cell so the fill underneath stays whole and it never blends into a goal-day. <a href="https://github.com/berndpl/Steps/commit/2dcd685"><code>2dcd685</code></a></p>
-  </article>
-  <article class="entry">
-    <div class="date">2026-06-27 · widgets</div>
-    <h3>Off the home screen, onto the lock screen — and a grid you can tune</h3>
-    <p>The widget stopped waiting for the app to open. An <code>HKObserverQuery</code> with HealthKit background delivery now refreshes it when your steps actually change — instantly in the foreground, roughly hourly when closed — and the timeline heartbeat tightened from an hour to fifteen minutes. Then it left the home screen entirely: two lock-screen accessories, a <em>Steps Ring</em> (count plus a goal gauge) and <em>Tiny Steps</em> (a single SF Symbol that evolves every 1,000 steps), built tint-safe so they read on the desaturated lock screen where the gold and green can't go. <a href="https://github.com/berndpl/Steps/commit/0eaebcb"><code>0eaebcb</code></a></p>
-    <p>Notifications arrived, opt-in: one catch-up nudge per crossed thousand, a louder one at the 10k goal, and "New monthly best!" the moment today beats every other day this month — a challenge that resets with the calendar. They ride the same step observer, so they cost nothing extra in the background.</p>
-    <p>The contribution grid grew a dial. It's generated continuously in OKLCH now instead of five fixed buckets, so a day's exact steps get an exact colour; a response-curve <em>spread</em> slider decides how hard goal days pop while the middling days recede. A paintbrush sheet opens palette presets, full-custom ramp and goal colour wells, and a day-shape pick (rounded, circle, squircle), all previewed on a live example month. The chosen goal colour ripples out to become the app accent, the month's best day wears a quiet dot, and every choice is written to the App Group so the widget wears it too. <a href="https://github.com/berndpl/Steps/commit/0eaebcb"><code>0eaebcb</code></a></p>
-  </article>
-  <article class="entry">
-    <div class="date">2026-06-25 · design</div>
-    <h3>Two surfaces, one gold thread</h3>
-    <p>The app and the widget stopped sharing a look. The app now wears <code>notes-plontsch</code> — Catppuccin Mocha (dark) / Latte (light) surfaces, monospaced SF Mono throughout, flat, with weight flattened so emphasis comes from size and colour, not bold. The row of debug chips along the bottom collapsed into a single ladybug menu in the corner. <a href="https://github.com/berndpl/Steps/commit/d32e768"><code>d32e768</code></a></p>
-    <p>The widget went the other way — the Spark/Letters widget family: a near-transparent backdrop, a container-relative shape, 18pt insets, a <code>steps://open</code> deep-link, and the footer trimmed to just the gold number, nothing else. What keeps them one app is the gold. It's the accent, it's the goal-reached cell, and now it's today's ring too — promoted from a neutral stroke to the same gold so the whole thing speaks one colour. <a href="https://github.com/berndpl/Steps/commit/b9199c2"><code>b9199c2</code></a></p>
-  </article>
-  <article class="entry">
-    <div class="date">2026-06-25 · design + widget</div>
-    <h3>A gold identity, today's count, and a ring on today</h3>
-    <p>Steps got its own look. Applying the <code>Deskgym</code> style (SF Rounded <strong>bold</strong> <code>monospacedDigit</code> numbers, a single Liquid-Glass <code>.glassProminent</code> action, flat surfaces with no shadows) but with a deliberately distinct accent: <strong>gold <code>#F5A623</code></strong>. The gold doubles as the grid's goal-reached colour, so a day that clears 10,000 steps flips from the darkest green to the same gold as the app's number — one coherent identity instead of a borrowed one.</p>
-    <p>The widget also stopped being grid-only. A small footer now sits under the month — a <code>figure.walk</code> glyph, today's total in gold, and a muted "today" — and <strong>today's cell carries a <code>Color.primary</code> ring</strong> so you can find it at a glance against any fill, green or gold. The grid and footer are one shared <code>StepsMonthView</code>, so the home screen and the in-app preview can't drift apart.</p>
-    <p>Provenance note: the earlier post said Steps skips an App Group. That changed — a <code>SharedStore</code> in the App Group container now lets the app sync recent totals for the widget to read instantly, with the direct HealthKit query kept only as a first-run fallback. The old decision is left below as written, because that's how it actually went.</p>
-  </article>
-  <article class="entry">
-    <div class="date">2026-06-24 · widget</div>
-    <h3>A month of steps as a contribution grid</h3>
-    <p>The home-screen widget lays out the current calendar month like a real calendar — seven weekday columns across, week rows down, the 1st sitting in its true weekday slot and honoring whether your week starts Sunday or Monday. Days outside the month stay blank so the month's shape reads at a glance; future days this month render as faint placeholders.</p>
-    <p>Each day's colour is bucketed against a fixed 10,000-step goal in quarters: empty, then four greens lifted from GitHub's contribution ramp (<code>#9be9a8</code> → <code>#216e39</code>). The goal is fixed on purpose — a green square should mean the same thing every day, not drift with a moving target. The grid is a single <code>StepsGridView</code> shared between the app and the widget, so the in-app preview and the home screen render from the exact same code. <a href="https://github.com/berndpl/Steps/commit/62638e6"><code>62638e6</code></a></p>
-  </article>
-  <article class="entry">
-    <div class="date">2026-06-24 · architecture</div>
-    <h3>Reading Health without an App Group</h3>
-    <p>App and widget both need step data, and the textbook path is an App Group with a shared cache to hand totals from one to the other. Steps skips it. <code>HealthKitService.swift</code> is compiled into <em>both</em> targets, and HealthKit authorization granted to the app is inherited by its extensions — so the widget queries <code>HKStatisticsCollectionQuery</code> directly, with no shared container and nothing to keep in sync.</p>
-    <p>The app itself stays a single live view that routes through four phases — loading, needs-permission, ready, denied — driven by what HealthKit will tell us (it deliberately hides whether read access was granted). A <code>DEBUG</code>-only preview switcher, compiled out of release builds, lets any of those screens open with one tap during development without seeding data. <a href="https://github.com/berndpl/Steps/commit/62638e6"><code>62638e6</code></a></p>
-    <div class="decisions">
-      <div class="card"><h3>Decided for</h3><ul class="for">
-        <li>One <code>HealthKitService.swift</code>, a member of both targets</li>
-        <li>Widget queries HealthKit directly — the extension inherits the app's read auth</li>
-        <li>Re-query on each refresh; nothing persisted, always fresh</li>
-      </ul></div>
-      <div class="card"><h3>Decided against</h3><ul class="against">
-        <li>An App Group container to pass data app → widget</li>
-        <li>A cached or synced step store to keep the two in step</li>
-        <li>A configurable goal, which would make the colour scale ambiguous</li>
-      </ul></div>
-    </div>
-  </article>
+  <p class="changelog-cta">A running log of what shipped — visits, the 3D flyover, the watch app, the tunable grid, and more. <a href="changelog.html">Read the changelog →</a></p>
 </section>
 </main>
 
-<footer>Steps · seeded from project history · 2026-06-29 · A project by <a href="https://notes.plontsch.de/about/">Bernd Plontsch</a></footer>
+<footer>Steps · seeded from project history · 2026-07-05 · A project by <a href="https://notes.plontsch.de/about/">Bernd Plontsch</a></footer>
 
 <script>
 document.querySelectorAll('.tab').forEach(function (tab) {
@@ -114,6 +95,57 @@ document.querySelectorAll('.tab').forEach(function (tab) {
     document.getElementById(tab.dataset.panel).classList.add('is-active');
   });
 });
+
+// Hero phone cascade: staggered portrait screens shown at once. Tap any screen (or let it
+// autoplay) to bring it to the front — the front/mid/back "slots" are just classes the
+// script rotates, animated by the CSS transitions. Pauses while the pointer is over it.
+(function () {
+  var stack = document.querySelector('.phone-stack');
+  if (!stack) return;
+  var phones = [].slice.call(stack.querySelectorAll('.phone'));
+  if (phones.length < 2) return;
+  var slots = ['is-front', 'is-mid', 'is-back'];
+  var order = phones.slice();            // order[0] === the front phone
+  var timer;
+  function render() {
+    order.forEach(function (ph, i) {
+      slots.forEach(function (s) { ph.classList.remove(s); });
+      ph.classList.add(slots[Math.min(i, slots.length - 1)]);
+      ph.tabIndex = i === 0 ? -1 : 0;    // front isn't focusable (tapping it is a no-op)
+    });
+  }
+  function bringToFront(ph) {
+    var i = order.indexOf(ph);
+    if (i <= 0) return;
+    order = order.slice(i).concat(order.slice(0, i));   // cyclic rotate so ph leads
+    render();
+  }
+  function advance() { order = order.slice(1).concat(order.slice(0, 1)); render(); }
+  function restart() { clearInterval(timer); timer = setInterval(advance, 4000); }
+  phones.forEach(function (ph) {
+    ph.setAttribute('role', 'button');
+    ph.addEventListener('click', function () { bringToFront(ph); restart(); });
+    ph.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); bringToFront(ph); restart(); }
+    });
+  });
+  stack.addEventListener('mouseenter', function () { clearInterval(timer); });
+  stack.addEventListener('mouseleave', restart);
+  render(); restart();
+})();
+
+// Reveal-on-scroll topbar: hidden by default, slides in only once the hero (masthead) has
+// scrolled off — so there's no header at the top on first view, and no duplicate CTA.
+(function () {
+  var bar = document.querySelector('.topbar');
+  if (!bar) return;
+  var hero = document.querySelector('.hero');
+  var threshold = function () { return hero ? Math.max(80, hero.offsetHeight - 72) : 120; };
+  var onScroll = function () { bar.classList.toggle('is-scrolled', window.scrollY > threshold()); };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  onScroll();
+})();
 </script>
 </body>
 </html>

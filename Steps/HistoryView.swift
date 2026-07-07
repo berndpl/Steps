@@ -55,16 +55,6 @@ struct HistoryView: View {
                     Button("Done") { dismiss() }
                         .font(.system(.body, design: .monospaced))
                 }
-                if !clusters.isEmpty {
-                    ToolbarItem(placement: .destructiveAction) {
-                        Button("Clear") {
-                            VisitLog.clear()
-                            reload()
-                        }
-                        .font(.system(.body, design: .monospaced))
-                        .tint(textMuted)
-                    }
-                }
             }
         }
         .task { reload(); await resolveTrips() }
@@ -78,14 +68,48 @@ struct HistoryView: View {
 
     private var list: some View {
         List {
-            ForEach(clusters) { cluster in
-                Button {
-                    selectedCluster = cluster
+            ForEach(groupedClusters, id: \.day) { group in
+                Section {
+                    ForEach(group.items) { cluster in
+                        Button {
+                            selectedCluster = cluster
+                        } label: {
+                            row(for: cluster)
+                        }
+                        .buttonStyle(.plain)
+                        .listRowBackground(Color("AppBackground"))
+                    }
+                } header: {
+                    Text(dayLabel(group.day))
+                        .font(.system(.caption, design: .monospaced, weight: .semibold))
+                        .foregroundStyle(textMuted)
+                        .textCase(nil)
+                }
+            }
+
+            Section {
+                Button(role: .destructive) {
+                    VisitLog.clear()
+                    reload()
                 } label: {
-                    row(for: cluster)
+                    Label("Clear history", systemImage: "trash")
+                        .font(.system(.callout, design: .monospaced))
+                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.plain)
+                .foregroundStyle(.red)
                 .listRowBackground(Color("AppBackground"))
+                .listRowSeparator(.hidden)
+            }
+
+            Section {
+                Text(privacyFooter)
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundStyle(textMuted)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 8)
+                    .listRowBackground(Color("AppBackground"))
+                    .listRowSeparator(.hidden)
             }
         }
         .listStyle(.plain)
@@ -96,6 +120,34 @@ struct HistoryView: View {
                          coordinate: cluster.coordinate,
                          isHome: cluster.id == homeID)
         }
+    }
+
+    /// Privacy-forward explainer shown at the foot of the list: what's captured,
+    /// where it lives, and the soft bias toward places you likely dwell at.
+    private let privacyFooter = """
+    How this works: Steps uses Apple's low-power visit detection to notice where you \
+    dwell, then measures the round trip home ↔ there to suggest walks that reach your \
+    goal. Your places stay on this device — the only thing sent out is an anonymous \
+    map lookup to name each spot and measure walking distance.
+
+    When naming a place, Steps leans toward the kinds of spots you likely spend time at \
+    — supermarkets, parks and playgrounds, and gyms — so a stay reads as the venue you \
+    were at rather than a pin that happens to sit a few metres closer.
+    """
+
+    /// Clusters bucketed by calendar day of their most recent visit, newest first.
+    private var groupedClusters: [(day: Date, items: [VisitCluster])] {
+        let cal = Calendar.current
+        return Dictionary(grouping: clusters) { cal.startOfDay(for: $0.lastSeen) }
+            .map { (day: $0.key, items: $0.value.sorted { $0.lastSeen > $1.lastSeen }) }
+            .sorted { $0.day > $1.day }
+    }
+
+    private func dayLabel(_ date: Date) -> String {
+        let cal = Calendar.current
+        if cal.isDateInToday(date) { return "Today" }
+        if cal.isDateInYesterday(date) { return "Yesterday" }
+        return date.formatted(.dateTime.weekday(.wide).month().day())
     }
 
     @ViewBuilder
@@ -113,7 +165,7 @@ struct HistoryView: View {
                         .foregroundStyle(.tint)
                 }
                 Spacer(minLength: 8)
-                Text(cluster.lastSeen, format: .dateTime.month().day())
+                Text(cluster.lastSeen, format: .dateTime.hour().minute())
                     .font(.system(.caption2, design: .monospaced))
                     .foregroundStyle(textMuted)
             }

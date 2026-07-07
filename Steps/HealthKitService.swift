@@ -165,6 +165,16 @@ enum SettingsStore {
     /// Whether per-1,000-step milestone notifications are enabled.
     static let notificationsEnabledKey = "milestoneNotificationsEnabled"
 
+    /// Whether the Health authorization sheet has been presented at least once.
+    /// Persisted because HealthKit's read-access status is deliberately opaque,
+    /// so this is the reliable signal for "we've already asked" (see
+    /// `HealthKitService.needsAuthorizationPrompt`).
+    private static let hasRequestedHealthAuthKey = "hasRequestedHealthAuth"
+    static var hasRequestedHealthAuth: Bool {
+        get { defaults.bool(forKey: hasRequestedHealthAuthKey) }
+        set { defaults.set(newValue, forKey: hasRequestedHealthAuthKey) }
+    }
+
     private static let lastNotifiedThousandKey = "lastNotifiedThousand"
     private static let lastNotifiedDayKey = "lastNotifiedDay"   // start-of-day epoch
 
@@ -244,6 +254,36 @@ enum SettingsStore {
         defaults.string(forKey: gridMarkerKey) ?? BestDayMarker.dot.rawValue
     }
 
+    // MARK: Flyover camera perspectives (start + end)
+
+    /// The camera tilt (degrees; 0 = top-down, ~80 = near-horizon) and zoom
+    /// (camera distance in meters) a route flyover holds constant for the whole
+    /// walk. Persisted so every future flyover reuses the framing you dial in.
+    /// Camera-only: this never changes the walk's start location or step math.
+    private static let flyoverTiltKey = "flyoverTilt"
+    private static let flyoverZoomKey = "flyoverZoom"
+    private static let flyoverHeadingOffsetKey = "flyoverHeadingOffset"
+
+    static let flyoverDefaultTilt: Double = 62
+    static let flyoverDefaultZoom: Double = 280
+
+    static var flyoverTilt: Double {
+        get { defaults.object(forKey: flyoverTiltKey) as? Double ?? flyoverDefaultTilt }
+        set { defaults.set(newValue, forKey: flyoverTiltKey) }
+    }
+
+    static var flyoverZoom: Double {
+        get { defaults.object(forKey: flyoverZoomKey) as? Double ?? flyoverDefaultZoom }
+        set { defaults.set(newValue, forKey: flyoverZoomKey) }
+    }
+
+    /// A heading offset (degrees) added to the route's own direction, so the user
+    /// can rotate the flyover's viewing angle with a gesture and keep it.
+    static var flyoverHeadingOffset: Double {
+        get { defaults.object(forKey: flyoverHeadingOffsetKey) as? Double ?? 0 }
+        set { defaults.set(newValue, forKey: flyoverHeadingOffsetKey) }
+    }
+
     private static func isToday(_ epoch: Double?) -> Bool {
         guard let epoch else { return false }
         let stored = Date(timeIntervalSince1970: epoch)
@@ -263,6 +303,12 @@ final class HealthKitService {
     private let store = HKHealthStore()
     private let stepType = HKQuantityType(.stepCount)
     private let cyclingDistanceType = HKQuantityType(.distanceCycling)
+
+    /// Every Health type the app reads. Used for both the authorization request
+    /// and the request-status check so they never drift apart.
+    private var readTypes: Set<HKObjectType> {
+        [stepType, cyclingDistanceType, HKObjectType.workoutType(), HKCategoryType(.mindfulSession)]
+    }
 
     /// Retained so the long-lived observer query keeps running; also guards
     /// against registering it more than once per launch.
@@ -313,12 +359,10 @@ final class HealthKitService {
         guard HKHealthStore.isHealthDataAvailable() else {
             throw HealthKitError.notAvailable
         }
-        try await store.requestAuthorization(toShare: [], read: [
-            stepType,
-            cyclingDistanceType,
-            HKObjectType.workoutType(),
-            HKCategoryType(.mindfulSession),
-        ])
+        try await store.requestAuthorization(toShare: [], read: readTypes)
+        // The sheet has now been presented (grant or deny). Record it so the UI
+        // never traps on the permission screen — read-only status is ambiguous.
+        SettingsStore.hasRequestedHealthAuth = true
     }
 
     /// Which tracked activities happened today (cycling/strength workouts, mindful
@@ -443,12 +487,20 @@ final class HealthKitService {
         return Int(seconds / 60)
     }
 
-    /// HealthKit deliberately hides whether *read* access was granted (to avoid
-    /// leaking the absence of data). We treat "we got a non-zero read at least
-    /// once" as authorized at the call sites; this only reports the explicit
-    /// not-determined state so the UI can decide whether to show the prompt.
+    /// Whether the app should present the Health authorization sheet.
+    ///
+    /// HealthKit deliberately obscures whether *read* access was granted (to
+    /// avoid leaking the absence of data), and `authorizationStatus(for:)` only
+    /// reports *share/write* status — which stays ambiguous for our read-only
+    /// request. So we can't reliably re-derive "already asked" from the status
+    /// alone. Instead we persist a flag once the sheet has been presented: after
+    /// that we never bounce back to the permission screen (we read data, or show
+    /// the "no data" state), which is what fixes tapping *Allow* appearing to do
+    /// nothing. On a genuinely fresh install the flag is false and the step type
+    /// is `.notDetermined`, so the prompt still shows.
     var needsAuthorizationPrompt: Bool {
         guard HKHealthStore.isHealthDataAvailable() else { return false }
+        if SettingsStore.hasRequestedHealthAuth { return false }
         return store.authorizationStatus(for: stepType) == .notDetermined
     }
 
@@ -506,9 +558,22 @@ final class HealthKitService {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
         var data: [Date: Int] = [:]
+        // Deterministic, tuned sample so widget placeholders and screenshots are
+        // reproducible and read well: today is a solid mid-goal day (matches the
+        // in-app hero number), and the rest is a fixed, pleasant month — a handful
+        // of goal days, many partials, a few rest days — instead of pure noise.
+        var rng = SeededGenerator(seed: 0x5_7E95_C0DE)
         for offset in 0..<daysBack {
             guard let day = calendar.date(byAdding: .day, value: -offset, to: today) else { continue }
-            data[day] = Int.random(in: 0...14_000)
+            if offset == 0 {
+                data[day] = 8_432
+                continue
+            }
+            switch Int.random(in: 0..<100, using: &rng) {
+            case 0..<16:  data[day] = Int.random(in: 0...1_500, using: &rng)       // rest day
+            case 16..<72: data[day] = Int.random(in: 3_000...9_500, using: &rng)   // partial
+            default:      data[day] = Int.random(in: 10_000...14_000, using: &rng) // goal+
+            }
         }
         return data
     }
@@ -521,5 +586,19 @@ final class HealthKitService {
         let stats = try await descriptor.result(for: store)
         guard let sum = stats?.sumQuantity() else { return 0 }
         return Int(sum.doubleValue(for: .count()))
+    }
+}
+
+/// A tiny deterministic RNG (SplitMix64) so sample/preview step data is stable
+/// across launches — reproducible widget placeholders and screenshots.
+struct SeededGenerator: RandomNumberGenerator {
+    private var state: UInt64
+    init(seed: UInt64) { state = seed }
+    mutating func next() -> UInt64 {
+        state &+= 0x9E37_79B9_7F4A_7C15
+        var z = state
+        z = (z ^ (z >> 30)) &* 0xBF58_476D_1CE4_E5B9
+        z = (z ^ (z >> 27)) &* 0x94D0_49BB_1331_11EB
+        return z ^ (z >> 31)
     }
 }
