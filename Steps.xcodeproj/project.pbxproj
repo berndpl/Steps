@@ -13,9 +13,9 @@
 		0EF4538C98ACD1233C2E7D21 /* StepsWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2CAF0D75F8FF046B240DA71 /* StepsWatchApp.swift */; };
 		13231D59C4AC3684C3072D53 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650647087439AF5B333EB4AA /* HealthKitService.swift */; };
 		151BC8601660D2C61853577C /* GridStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D18FEE6FA38F062795F9BA /* GridStyle.swift */; };
+		1C592DFE13A1D46B09A9B92E /* FeatureShots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64E9CAA2BF3AB2CAE27000D3 /* FeatureShots.swift */; };
 		1ECAC28A92B67138FC45693D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D6048643F41AAF2121BC801 /* ContentView.swift */; };
 		1F0DD790881E7060FA7E1F3D /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 981D1B4C070F6FE886F7DF12 /* AppIcon.icon */; };
-		1F67545686E9A49BB831AC14 /* ThemeSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9174E91672B84EA9C3CA02FA /* ThemeSync.swift */; };
 		1F86476481ED5F3819ABB0BE /* StepsWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0FDD2810FEA784E5C3549CC2 /* StepsWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		1FE5ACA75F392DA4D8168553 /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 630958B05E99998D99A895CE /* LocationService.swift */; };
 		291BD0276B5B3982791683F5 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650647087439AF5B333EB4AA /* HealthKitService.swift */; };
@@ -23,9 +23,10 @@
 		2F50E51B8F1E9C4A7E1BAAA0 /* StepsGridComplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F81BAD24CF4EBA908E5D1BE /* StepsGridComplication.swift */; };
 		32CA6A76855DC86CA4893573 /* StepsWatchWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5EB93A337538FE1FF90844 /* StepsWatchWidget.swift */; };
 		3F025567B98F79E2B30C9868 /* NotificationLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5284E451CB9E03BB151F278 /* NotificationLog.swift */; };
-		3F23D7A86452E7EB751D24EC /* ThemeSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9174E91672B84EA9C3CA02FA /* ThemeSync.swift */; };
 		46B13D9E4DA5AC9CC484B5EE /* StepsAccessoryWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 286DF7C75C319D9EB28D2B38 /* StepsAccessoryWidgets.swift */; };
 		4F9FD803729A188D8BAFBE6D /* VisitDistance.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB111751562307FE71103F01 /* VisitDistance.swift */; };
+		54EB81022880E8E10C5FBF04 /* WatchHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ABB724ED3EB14A2D01C5B52 /* WatchHistoryView.swift */; };
+		69288E5181BFC68B5138FBAC /* WatchSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A2D550ED064AA7B4BC78AED /* WatchSync.swift */; };
 		6A7D503FABE26535570C2D70 /* StepsWatchWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B878455EA419B960F72913E5 /* StepsWatchWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		6FF782419112403A09E48995 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 981D1B4C070F6FE886F7DF12 /* AppIcon.icon */; };
 		73F7C960B6FEC0B6AB682F26 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 126A8EE3C671765DB39E8A81 /* HistoryView.swift */; };
@@ -41,6 +42,7 @@
 		C70B023CEE7FFBB91CFCBCA7 /* GridCustomizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94D00A1E1E247E0D5F0B5A6 /* GridCustomizationView.swift */; };
 		CD56F665BEA72F8F5AA27147 /* GridStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26D18FEE6FA38F062795F9BA /* GridStyle.swift */; };
 		D3A9EEF9D76DBAA689B003E0 /* StepsChime.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6D21A3B1C20FBE7612F488B8 /* StepsChime.wav */; };
+		D7BBA80EBA64148F4FE19A19 /* WatchSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A2D550ED064AA7B4BC78AED /* WatchSync.swift */; };
 		D84F3D63196C3CD062E7E12F /* StepsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C0293D916723287F977B02 /* StepsGridView.swift */; };
 		DA313363EA7E27343F4408C7 /* WalkFlyoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDF0876FBE15F7D08694B979 /* WalkFlyoverView.swift */; };
 		E14510AFFB30410EA6D6850A /* StepNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EF689CDC383CFD433DD833 /* StepNotifier.swift */; };
@@ -120,14 +122,16 @@
 		32AD4C11D5B4218BBB5D01AA /* InboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxView.swift; sourceTree = "<group>"; };
 		37C0293D916723287F977B02 /* StepsGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsGridView.swift; sourceTree = "<group>"; };
 		630958B05E99998D99A895CE /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
+		64E9CAA2BF3AB2CAE27000D3 /* FeatureShots.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureShots.swift; sourceTree = "<group>"; };
 		650647087439AF5B333EB4AA /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 		652546EE4DB6EA22B2F2E57B /* StepsAccessoryViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsAccessoryViews.swift; sourceTree = "<group>"; };
 		6D21A3B1C20FBE7612F488B8 /* StepsChime.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = StepsChime.wav; sourceTree = "<group>"; };
 		6F81BAD24CF4EBA908E5D1BE /* StepsGridComplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsGridComplication.swift; sourceTree = "<group>"; };
 		79A747E8CF173847817DFFEA /* StepsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepsWidget.swift; sourceTree = "<group>"; };
+		7A2D550ED064AA7B4BC78AED /* WatchSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSync.swift; sourceTree = "<group>"; };
 		7D6048643F41AAF2121BC801 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		8ABB724ED3EB14A2D01C5B52 /* WatchHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchHistoryView.swift; sourceTree = "<group>"; };
 		8BF87752AADFFEF944714729 /* VisitLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisitLog.swift; sourceTree = "<group>"; };
-		9174E91672B84EA9C3CA02FA /* ThemeSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeSync.swift; sourceTree = "<group>"; };
 		981D1B4C070F6FE886F7DF12 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		A77FE52361B004CC740C83D4 /* StepsWatchWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepsWatchWidget.entitlements; sourceTree = "<group>"; };
 		A94D00A1E1E247E0D5F0B5A6 /* GridCustomizationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCustomizationView.swift; sourceTree = "<group>"; };
@@ -146,7 +150,7 @@
 		F2EAAE91F5047E9330C33D6A /* StepsWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StepsWidget.entitlements; sourceTree = "<group>"; };
 		F4EF689CDC383CFD433DD833 /* StepNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepNotifier.swift; sourceTree = "<group>"; };
 		F8AEBD94E086B8F24AC1513A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		"TEMP_52D11B99-9121-4604-91FD-130CE5D5FE8E" /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = "<group>"; };
+		"TEMP_E020D1B4-8846-42EB-8049-27EE608C472B" /* Local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Local.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -191,6 +195,7 @@
 				EC64E5E0A2FB4C4799DE9038 /* StepsWatch.entitlements */,
 				B2CAF0D75F8FF046B240DA71 /* StepsWatchApp.swift */,
 				ECECABDD5BDFB15079B129D0 /* WatchContentView.swift */,
+				8ABB724ED3EB14A2D01C5B52 /* WatchHistoryView.swift */,
 			);
 			path = StepsWatch;
 			sourceTree = "<group>";
@@ -201,6 +206,7 @@
 				981D1B4C070F6FE886F7DF12 /* AppIcon.icon */,
 				CA3444CD9578DC32CC1F7D6F /* Assets.xcassets */,
 				7D6048643F41AAF2121BC801 /* ContentView.swift */,
+				64E9CAA2BF3AB2CAE27000D3 /* FeatureShots.swift */,
 				A94D00A1E1E247E0D5F0B5A6 /* GridCustomizationView.swift */,
 				26D18FEE6FA38F062795F9BA /* GridStyle.swift */,
 				650647087439AF5B333EB4AA /* HealthKitService.swift */,
@@ -212,10 +218,10 @@
 				2FEEE04CC6987E48638A774B /* Steps.entitlements */,
 				11BF37174DA15C09DDA6AD5E /* StepsApp.swift */,
 				6D21A3B1C20FBE7612F488B8 /* StepsChime.wav */,
-				9174E91672B84EA9C3CA02FA /* ThemeSync.swift */,
 				CB111751562307FE71103F01 /* VisitDistance.swift */,
 				8BF87752AADFFEF944714729 /* VisitLog.swift */,
 				DDF0876FBE15F7D08694B979 /* WalkFlyoverView.swift */,
+				7A2D550ED064AA7B4BC78AED /* WatchSync.swift */,
 			);
 			path = Steps;
 			sourceTree = "<group>";
@@ -231,10 +237,10 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		"TEMP_174EEC2B-312A-42AE-888A-E72A5F3129B7" /* Steps */ = {
+		"TEMP_4BAE70EE-C5F8-478D-A234-9D6019E4280F" /* Steps */ = {
 			isa = PBXGroup;
 			children = (
-				"TEMP_52D11B99-9121-4604-91FD-130CE5D5FE8E" /* Local.xcconfig */,
+				"TEMP_E020D1B4-8846-42EB-8049-27EE608C472B" /* Local.xcconfig */,
 			);
 			path = Steps;
 			sourceTree = "<group>";
@@ -394,6 +400,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1ECAC28A92B67138FC45693D /* ContentView.swift in Sources */,
+				1C592DFE13A1D46B09A9B92E /* FeatureShots.swift in Sources */,
 				C70B023CEE7FFBB91CFCBCA7 /* GridCustomizationView.swift in Sources */,
 				151BC8601660D2C61853577C /* GridStyle.swift in Sources */,
 				13231D59C4AC3684C3072D53 /* HealthKitService.swift in Sources */,
@@ -404,10 +411,10 @@
 				E14510AFFB30410EA6D6850A /* StepNotifier.swift in Sources */,
 				FA5787B1A276553491D3584B /* StepsApp.swift in Sources */,
 				D84F3D63196C3CD062E7E12F /* StepsGridView.swift in Sources */,
-				3F23D7A86452E7EB751D24EC /* ThemeSync.swift in Sources */,
 				4F9FD803729A188D8BAFBE6D /* VisitDistance.swift in Sources */,
 				E39F9962912489E381385651 /* VisitLog.swift in Sources */,
 				DA313363EA7E27343F4408C7 /* WalkFlyoverView.swift in Sources */,
+				69288E5181BFC68B5138FBAC /* WatchSync.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -432,8 +439,9 @@
 				F4000C4CA0F3712F312B5269 /* HealthKitService.swift in Sources */,
 				776CF70D838D9176C64B351C /* StepsGridView.swift in Sources */,
 				0EF4538C98ACD1233C2E7D21 /* StepsWatchApp.swift in Sources */,
-				1F67545686E9A49BB831AC14 /* ThemeSync.swift in Sources */,
 				8A2FBC01226A0D1EFDF16372 /* WatchContentView.swift in Sources */,
+				54EB81022880E8E10C5FBF04 /* WatchHistoryView.swift in Sources */,
+				D7BBA80EBA64148F4FE19A19 /* WatchSync.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -578,7 +586,7 @@
 		};
 		633FC851B708DCB08B653A4A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_52D11B99-9121-4604-91FD-130CE5D5FE8E" /* Local.xcconfig */;
+			baseConfigurationReference = "TEMP_E020D1B4-8846-42EB-8049-27EE608C472B" /* Local.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -666,7 +674,7 @@
 		};
 		7BFECDEC5DB29F1ACCF2B96B /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = "TEMP_52D11B99-9121-4604-91FD-130CE5D5FE8E" /* Local.xcconfig */;
+			baseConfigurationReference = "TEMP_E020D1B4-8846-42EB-8049-27EE608C472B" /* Local.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;

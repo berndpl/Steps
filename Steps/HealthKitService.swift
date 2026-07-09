@@ -153,7 +153,7 @@ enum SettingsStore {
 
     /// Shared so `@AppStorage(..., store:)` in the UI and the background observer
     /// read/write the very same defaults. The watch has no App Group entitlement,
-    /// so it uses `.standard` — a single reliable store that `ThemeSync` writes the
+    /// so it uses `.standard` — a single reliable store that `WatchSync` writes the
     /// synced theme into and `GridStyle.current` reads back. iOS/widget use the
     /// App Group suite (falling back to `.standard` only if it's unavailable).
     #if os(watchOS)
@@ -230,6 +230,7 @@ enum SettingsStore {
     // customization sheet writes the very same values these accessors read.
     static let gridRampHexKey = "gridRampHex"
     static let gridGoalHexKey = "gridGoalHex"
+    static let gridTodayHexKey = "gridTodayHex"
     static let gridCurveKey = "gridCurve"
     static let gridSpreadKey = "gridSpread"
     static let gridShapeKey = "gridShape"
@@ -240,6 +241,9 @@ enum SettingsStore {
     }
     static var gridGoalHex: String {
         defaults.string(forKey: gridGoalHexKey) ?? GridStyle.defaultGoalHex
+    }
+    static var gridTodayHex: String {
+        defaults.string(forKey: gridTodayHexKey) ?? GridStyle.defaultTodayHex
     }
     static var gridCurve: String {
         defaults.string(forKey: gridCurveKey) ?? CurveShape.easeIn.rawValue

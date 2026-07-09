@@ -115,7 +115,7 @@ targets:
       - path: Steps/HealthKitService.swift   # shared: HealthKit, stages, App Group
       - path: Steps/GridStyle.swift          # shared: SettingsStore depends on these types
       - path: StepsWidget/StepsGridView.swift  # shared: grid + badges, same as iOS widget
-      - path: Steps/ThemeSync.swift          # shared: WatchConnectivity theme sync
+      - path: Steps/WatchSync.swift          # shared: WatchConnectivity theme + places sync
       - path: Steps/AppIcon.icon             # shared Icon Composer icon (declares watchOS support)
     dependencies:
       - target: StepsWatchWidgetExtension

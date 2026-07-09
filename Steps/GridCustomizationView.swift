@@ -10,6 +10,7 @@
 
 import SwiftUI
 import WidgetKit
+import UIKit
 
 struct GridCustomizationView: View {
     @Environment(\.dismiss) private var dismiss
@@ -19,6 +20,8 @@ struct GridCustomizationView: View {
     private var rampHex = GridStyle.defaultRampHex
     @AppStorage(SettingsStore.gridGoalHexKey, store: SettingsStore.defaults)
     private var goalHex = GridStyle.defaultGoalHex
+    @AppStorage(SettingsStore.gridTodayHexKey, store: SettingsStore.defaults)
+    private var todayHex = GridStyle.defaultTodayHex
     @AppStorage(SettingsStore.gridCurveKey, store: SettingsStore.defaults)
     private var curveRaw = CurveShape.easeIn.rawValue
     @AppStorage(SettingsStore.gridSpreadKey, store: SettingsStore.defaults)
@@ -30,9 +33,13 @@ struct GridCustomizationView: View {
 
     private var curve: CurveShape { CurveShape(rawValue: curveRaw) ?? .easeIn }
 
+    /// Transient "copied" confirmation shown after tapping the preview.
+    @State private var didCopy = false
+
     /// The style currently described by the controls — drives the live preview.
     private var draft: GridStyle {
-        GridStyle(rampHex: rampHex, goalHex: goalHex, curve: curve, spread: spread,
+        GridStyle(rampHex: rampHex, goalHex: goalHex, todayHex: todayHex,
+                  curve: curve, spread: spread,
                   shape: DayShape(rawValue: shapeRaw) ?? .roundedSquare,
                   marker: BestDayMarker(rawValue: markerRaw) ?? .dot)
     }
@@ -43,6 +50,9 @@ struct GridCustomizationView: View {
     }
     private var goalBinding: Binding<Color> {
         Binding(get: { Color(hex: goalHex) }, set: { goalHex = $0.hexString })
+    }
+    private var todayBinding: Binding<Color> {
+        Binding(get: { Color(hex: todayHex) }, set: { todayHex = $0.hexString })
     }
 
     var body: some View {
@@ -62,8 +72,13 @@ struct GridCustomizationView: View {
                         .font(.system(.body, design: .monospaced))
                     ColorPicker("Goal", selection: goalBinding, supportsOpacity: false)
                         .font(.system(.body, design: .monospaced))
+                    ColorPicker("Today", selection: todayBinding, supportsOpacity: false)
+                        .font(.system(.body, design: .monospaced))
                 } header: {
                     Text("Custom colors").font(.system(.caption, design: .monospaced))
+                } footer: {
+                    Text("Today is the ring around the current day — separate from the goal color.")
+                        .font(.system(.caption2, design: .monospaced))
                 }
 
                 Section {
@@ -114,6 +129,7 @@ struct GridCustomizationView: View {
                     Button("Reset to default", role: .destructive) {
                         rampHex = GridStyle.defaultRampHex
                         goalHex = GridStyle.defaultGoalHex
+                        todayHex = GridStyle.defaultTodayHex
                         curveRaw = CurveShape.easeIn.rawValue
                         spread = GridStyle.defaultSpread
                         shapeRaw = DayShape.roundedSquare.rawValue
@@ -134,7 +150,7 @@ struct GridCustomizationView: View {
         // The widget reads the same App Group keys; refresh it as the user tweaks.
         .onChange(of: draft) { _, _ in
             WidgetCenter.shared.reloadAllTimelines()
-            ThemeSync.shared.push()   // mirror the new theme to the watch
+            WatchSync.shared.push()   // mirror the new theme to the watch
         }
     }
 
@@ -142,17 +158,32 @@ struct GridCustomizationView: View {
 
     private var preview: some View {
         VStack(spacing: 10) {
-            Text("Example month")
+            Text(didCopy ? "Copied — paste in chat" : "Example month · tap to copy")
                 .font(.system(.caption, design: .monospaced))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(didCopy ? draft.goalColor(for: scheme) : .secondary)
+                .animation(.easeInOut(duration: 0.2), value: didCopy)
             StepsMonthView(dailySteps: GridStyle.sampleMonth, style: draft)
                 .padding(14)
                 .frame(width: 200, height: 200)
                 .background(Color("AppTextMuted").opacity(0.12))   // flat neutral surface
                 .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .onTapGesture { copyPayload() }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 4)
+    }
+
+    /// Copy the current color/shape settings to the clipboard as a shareable
+    /// payload, so the exact look can be pasted into a chat as a reference.
+    private func copyPayload() {
+        UIPasteboard.general.string = draft.sharePayload
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        withAnimation { didCopy = true }
+        Task {
+            try? await Task.sleep(for: .seconds(1.8))
+            withAnimation { didCopy = false }
+        }
     }
 
     // MARK: - Curve type

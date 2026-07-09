@@ -52,9 +52,9 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         // Resume visit monitoring if the user previously granted Always location.
         // No-ops until then; when active, iOS relaunches us for background visits.
         LocationService.shared.startMonitoringIfAuthorized()
-        // Bring up WatchConnectivity so the chosen grid theme reaches the watch.
-        ThemeSync.shared.activate()
-        ThemeSync.shared.push()
+        // Bring up WatchConnectivity so the grid theme + places reach the watch.
+        WatchSync.shared.activate()
+        WatchSync.shared.push()
         return true
     }
 }

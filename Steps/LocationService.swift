@@ -108,6 +108,8 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
             await VisitDistance.resolveName(for: visit)
             let resolved = VisitLog.all().first(where: { $0.id == visit.id }) ?? visit
             StepNotifier.shared.postVisit(resolved)
+            // Mirror the updated places to the watch.
+            WatchSync.shared.refreshPlaces()
             await MainActor.run { self.onVisitsUpdate?() }
         }
     }

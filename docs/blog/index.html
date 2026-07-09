@@ -15,11 +15,6 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0" aria-hidden="true">
-  <symbol id="i-grid" viewBox="0 0 24 24"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></symbol>
-  <symbol id="i-medal" viewBox="0 0 24 24"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15"/><path d="M11 12 5.12 2.2"/><path d="m13 12 5.88-9.8"/><path d="M8 7h8"/><circle cx="12" cy="17" r="5"/><path d="M12 18v-2h-.5"/></symbol>
-  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></symbol>
-</svg>
 <header class="topbar">
   <div class="topbar-inner">
     <div class="nav-left">
@@ -38,44 +33,48 @@
     <img class="hero-icon" src="img/icon.png" alt="Steps app icon">
     <h1>Steps</h1>
     <p class="tagline">Personal step counting that also tells you where to walk to reach 10,000.</p>
-    <p class="short">A small iOS app, home- and lock-screen widgets, and a watchOS app that read Apple Health and paint each day of the month by how close you got to your 10,000-step goal — empty to a deep hue, a standout color for the goal, the way a contribution graph reads a year of commits. Pick from a set of palettes to match your home screen. And when you fall short, it points you to a real walk that would close the gap.</p>
+    <p class="short">A small iOS app, widgets, and a watchOS app — all reading Apple Health to paint your month.</p>
+    <p class="short">Each day fills by how close you got to 10,000 steps, the way a contribution graph reads a year of commits. Pick a palette to match your home screen.</p>
+    <p class="short">Fall short? Steps points you to a real walk that closes the gap.</p>
     <p class="hero-cta">
       <a class="action-link" href="https://github.com/berndpl/Steps">Download and Build</a>
       <a class="action-link secondary" href="https://notes.plontsch.de/about/">Get in touch</a>
     </p>
   </div>
   <figure class="hero-shot phone-stack" aria-label="Steps app screenshots — tap a screen to bring it to the front">
-    <div class="phone is-front"><img src="img/shot-widget.png" alt="Home-screen widget preview: the month as a contribution grid with today's step count" width="680" height="1478"></div>
+    <div class="phone is-front"><img src="img/shot-home-widget.png" alt="Home-screen widget: the month as a contribution grid with today's step count, goal progress, and best day" width="680" height="1478"></div>
     <div class="phone is-mid"><img src="img/shot-inapp.png" alt="In-app screen: today's total, activity badges, and a round-trip suggestion" width="680" height="1478"></div>
     <div class="phone is-back"><img src="img/shot-flyover.png" alt="3D map fly-through of a round-trip walk with playback controls" width="680" height="1478"></div>
   </figure>
 </header>
 
 <section id="features">
-  <h2>What it does</h2>
-  <ul class="feature-list">
-    <li>
-      <span class="feature-ico"><svg class="sym"><use href="#i-grid"/></svg></span>
-      <div>
-        <h3>A widget you can make your own</h3>
-        <p>Twelve palettes, tunable response curves, day shapes, and a marker for the month's best day — the contribution grid, painted your way, on both the home and lock screen.</p>
-      </div>
-    </li>
-    <li>
-      <span class="feature-ico"><svg class="sym"><use href="#i-medal"/></svg></span>
-      <div>
-        <h3>More than steps</h3>
-        <p>Log a ride, a strength session, or mindful minutes and a small badge joins the day beside the count. Fitness, cycling, and meditation, all at a glance.</p>
-      </div>
-    </li>
-    <li>
-      <span class="feature-ico"><svg class="sym"><use href="#i-route"/></svg></span>
-      <div>
-        <h3>A walk that reaches your goal</h3>
-        <p>Short of 10,000? Steps suggests a round trip to a place you've actually been — with the real walking distance and step cost — then flies the route in photorealistic 3D.</p>
-      </div>
-    </li>
-  </ul>
+  <h2>Features</h2>
+  <div class="feature-grid">
+    <article class="feature-card">
+      <img class="feature-shot" src="img/feature-grid.png" alt="The month as a rose contribution grid, each day a cell, the best day ringed" width="720" height="720" loading="lazy">
+      <h3>Your widget</h3>
+      <p>Twelve palettes, tunable curves, and day shapes — the grid, painted your way.</p>
+    </article>
+    <article class="feature-card">
+      <img class="feature-shot" src="img/feature-activities.png" alt="Today's step count with cycling, strength, and mindful badges beneath" width="720" height="720" loading="lazy">
+      <h3>More than steps</h3>
+      <p>Rides, strength, and mindful minutes each add a badge by the day's count.</p>
+    </article>
+    <article class="feature-card">
+      <img class="feature-shot" src="img/feature-walk.png" alt="A round-trip walk suggestion to a real place, with its step and distance cost" width="720" height="720" loading="lazy">
+      <h3>Reach your goal</h3>
+      <p>Short of 10,000? A real round trip closes the gap, flown in 3D.</p>
+    </article>
+    <article class="feature-card">
+      <figure class="feature-shot watch-stack" aria-label="Steps watchOS screens — tap a watch to bring it to the front">
+        <div class="watch is-front"><img src="img/watch-app.png" alt="Steps watch app: the month grid with today's step count and cycling and strength badges" width="416" height="496" loading="lazy"></div>
+        <div class="watch is-back"><img src="img/watch-history.png" alt="Watch location history: a round-trip walk suggestion above your recent places" width="416" height="496" loading="lazy"></div>
+      </figure>
+      <h3>On your wrist</h3>
+      <p>Grid, count, and badges on watchOS — places a tap from Maps directions.</p>
+    </article>
+  </div>
 </section>
 
 <section id="posts">
@@ -96,42 +95,47 @@ document.querySelectorAll('.tab').forEach(function (tab) {
   });
 });
 
-// Hero phone cascade: staggered portrait screens shown at once. Tap any screen (or let it
-// autoplay) to bring it to the front — the front/mid/back "slots" are just classes the
-// script rotates, animated by the CSS transitions. Pauses while the pointer is over it.
+// Cascade: staggered screens shown at once. Tap any screen (or let it autoplay) to bring
+// it to the front — the front/mid/back "slots" are just classes the script rotates,
+// animated by the CSS transitions. Pauses while the pointer is over it. Reused by the hero
+// phone-stack and the watchOS watch-stack; an optional caption element tracks the front.
 (function () {
-  var stack = document.querySelector('.phone-stack');
-  if (!stack) return;
-  var phones = [].slice.call(stack.querySelectorAll('.phone'));
-  if (phones.length < 2) return;
-  var slots = ['is-front', 'is-mid', 'is-back'];
-  var order = phones.slice();            // order[0] === the front phone
-  var timer;
-  function render() {
-    order.forEach(function (ph, i) {
-      slots.forEach(function (s) { ph.classList.remove(s); });
-      ph.classList.add(slots[Math.min(i, slots.length - 1)]);
-      ph.tabIndex = i === 0 ? -1 : 0;    // front isn't focusable (tapping it is a no-op)
+  function initCascade(stack, slots, caption) {
+    if (!stack) return;
+    var items = [].slice.call(stack.children);
+    if (items.length < 2) return;
+    var order = items.slice();             // order[0] === the front item
+    var timer;
+    function render() {
+      order.forEach(function (el, i) {
+        slots.forEach(function (s) { el.classList.remove(s); });
+        el.classList.add(slots[Math.min(i, slots.length - 1)]);
+        el.tabIndex = i === 0 ? -1 : 0;    // front isn't focusable (tapping it is a no-op)
+      });
+      if (caption && order[0].dataset.caption) caption.textContent = order[0].dataset.caption;
+    }
+    function bringToFront(el) {
+      var i = order.indexOf(el);
+      if (i <= 0) return;
+      order = order.slice(i).concat(order.slice(0, i));   // cyclic rotate so el leads
+      render();
+    }
+    function advance() { order = order.slice(1).concat(order.slice(0, 1)); render(); }
+    function restart() { clearInterval(timer); timer = setInterval(advance, 4000); }
+    items.forEach(function (el) {
+      el.setAttribute('role', 'button');
+      el.addEventListener('click', function () { bringToFront(el); restart(); });
+      el.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); bringToFront(el); restart(); }
+      });
     });
+    stack.addEventListener('mouseenter', function () { clearInterval(timer); });
+    stack.addEventListener('mouseleave', restart);
+    render(); restart();
   }
-  function bringToFront(ph) {
-    var i = order.indexOf(ph);
-    if (i <= 0) return;
-    order = order.slice(i).concat(order.slice(0, i));   // cyclic rotate so ph leads
-    render();
-  }
-  function advance() { order = order.slice(1).concat(order.slice(0, 1)); render(); }
-  function restart() { clearInterval(timer); timer = setInterval(advance, 4000); }
-  phones.forEach(function (ph) {
-    ph.setAttribute('role', 'button');
-    ph.addEventListener('click', function () { bringToFront(ph); restart(); });
-    ph.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); bringToFront(ph); restart(); }
-    });
-  });
-  stack.addEventListener('mouseenter', function () { clearInterval(timer); });
-  stack.addEventListener('mouseleave', restart);
-  render(); restart();
+  initCascade(document.querySelector('.phone-stack'), ['is-front', 'is-mid', 'is-back']);
+  initCascade(document.querySelector('.watch-stack'), ['is-front', 'is-back'],
+              document.querySelector('.watch-caption'));
 })();
 
 // Reveal-on-scroll topbar: hidden by default, slides in only once the hero (masthead) has

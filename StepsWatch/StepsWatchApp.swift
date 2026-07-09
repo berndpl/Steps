@@ -12,11 +12,31 @@ import SwiftUI
 
 @main
 struct StepsWatchApp: App {
-    init() { ThemeSync.shared.activate() }
+    private let demoMode = CommandLine.arguments.contains("-STEPS_WATCH_DEMO")
+        || ProcessInfo.processInfo.arguments.contains("STEPS_WATCH_DEMO")
+
+    init() {
+        WatchSync.shared.activate()
+        #if DEBUG
+        if CommandLine.arguments.contains("-STEPS_WATCH_DEMO")
+            || ProcessInfo.processInfo.environment["STEPS_WATCH_DEMO"] != nil {
+            WatchSync.seedDemoDigest()
+        }
+        #endif
+    }
 
     var body: some Scene {
         WindowGroup {
+            #if DEBUG
+            if demoMode || ProcessInfo.processInfo.environment["STEPS_WATCH_DEMO"] != nil {
+                WatchContentView(previewSteps: HealthKitService.sampleDailySteps(),
+                                 previewActivities: [.cycling, .strength])
+            } else {
+                WatchContentView()
+            }
+            #else
             WatchContentView()
+            #endif
         }
     }
 }

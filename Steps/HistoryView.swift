@@ -256,6 +256,8 @@ struct HistoryView: View {
                 trips[cluster.id] = Trip(meters: result.meters, steps: result.steps)
             }
         }
+        // Distances are freshly cached now — push the enriched digest to the watch.
+        WatchSync.shared.refreshPlaces()
     }
 }
 

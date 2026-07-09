@@ -218,6 +218,18 @@ struct WalkFlyoverView: View {
         rebuildTimeline()
         isLoading = false
 
+#if DEBUG
+        // Screenshot-only: seat a static, pulled-back camera that frames the whole
+        // round-trip walk (both markers + the route line) for the project-site hero,
+        // instead of auto-flying the close-up tour. Launch arg `-STEPS_FLYOVER_OVERVIEW 1`.
+        // hasSeated stays false so this framing is never adopted/persisted as the
+        // user's real flyover zoom.
+        if UserDefaults.standard.string(forKey: "STEPS_FLYOVER_OVERVIEW") == "1" {
+            seatOverviewCamera()
+            return
+        }
+#endif
+
         // Seat the opening frame, then auto-play once. Only after the intro
         // transition settles do we start honouring pinch/tilt gestures, so the
         // region→camera animation isn't mistaken for the user reframing.
@@ -226,6 +238,33 @@ struct WalkFlyoverView: View {
         hasSeated = true
         play()
     }
+
+#if DEBUG
+    /// Frame the entire walk in one static, gently-tilted overview: center on the
+    /// route's bounding box, pull the camera back far enough to fit it, and look
+    /// along the home→destination bearing so the path leads into the scene.
+    private func seatOverviewCamera() {
+        let coords = roundTripCoords.isEmpty ? [suggestion.home, suggestion.destination] : roundTripCoords
+        var minLat = coords[0].latitude, maxLat = coords[0].latitude
+        var minLon = coords[0].longitude, maxLon = coords[0].longitude
+        for c in coords {
+            minLat = min(minLat, c.latitude); maxLat = max(maxLat, c.latitude)
+            minLon = min(minLon, c.longitude); maxLon = max(maxLon, c.longitude)
+        }
+        let center = CLLocationCoordinate2D(latitude: (minLat + maxLat) / 2,
+                                            longitude: (minLon + maxLon) / 2)
+        let extent = CLLocation(latitude: maxLat, longitude: minLon)
+            .distance(from: CLLocation(latitude: minLat, longitude: maxLon))
+        let distance = max(extent * 1.9, 650)
+        let heading = Self.bearing(from: suggestion.home, to: suggestion.destination)
+        currentCoord = suggestion.home
+        lastDrivenHeading = heading
+        cameraPosition = .camera(MapCamera(centerCoordinate: center,
+                                           distance: distance,
+                                           heading: heading,
+                                           pitch: 50))
+    }
+#endif
 
     /// (Re)build the anchors + keyframe timeline from the current route.
     private func rebuildTimeline() {

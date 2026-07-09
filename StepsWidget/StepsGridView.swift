@@ -114,13 +114,16 @@ struct StepsGridView: View {
     /// Per-day step totals keyed by local start-of-day (from HealthKitService).
     let dailySteps: [Date: Int]
     var style: GridStyle = .current
+    /// The "today" anchor — the last filled day and the ring's home. Defaults to
+    /// now; overridable so previews/screenshots can render a fully-elapsed month.
+    var referenceDate: Date = Date()
 
     @Environment(\.colorScheme) private var scheme
 
     private let columns = 7   // days of the week
 
     var body: some View {
-        let month = MonthLayout()
+        let month = MonthLayout(reference: referenceDate)
         let bestDay = monthBestDay(dailySteps)?.date
 
         GeometryReader { geo in
@@ -154,7 +157,7 @@ struct StepsGridView: View {
             // Outside the current month: blank so the month's shape reads clearly.
             Color.clear
         } else if let date = month.date(forDay: dayNumber) {
-            let today = Calendar.current.startOfDay(for: Date())
+            let today = Calendar.current.startOfDay(for: referenceDate)
             let steps = dailySteps[date] ?? 0
             let fill: Color = date > today
                 ? style.color(forSteps: 0, goal: dailyStepGoal, scheme: scheme).opacity(0.4) // future, faint
@@ -220,9 +223,9 @@ private struct MonthLayout {
     let dayCount: Int
     let rows: Int
 
-    init() {
+    init(reference: Date = Date()) {
         let cal = Calendar.current
-        let today = Date()
+        let today = reference
         let start = cal.dateInterval(of: .month, for: today)?.start
             ?? cal.startOfDay(for: today)
         let days = cal.range(of: .day, in: .month, for: today)?.count ?? 30

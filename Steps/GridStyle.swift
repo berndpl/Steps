@@ -240,6 +240,10 @@ enum CurveShape: String, CaseIterable, Identifiable {
 struct GridStyle: Equatable {
     var rampHex: String
     var goalHex: String
+    /// The today-marker (ring) stroke color — independent of the goal color so the
+    /// "this is today" outline can be tuned for separation. Defaulted so existing
+    /// initializers stay source-compatible.
+    var todayHex: String = GridStyle.defaultTodayHex
     var curve: CurveShape   // shape of the steps→intensity response
     var spread: Double      // curve strength 0…1 (how pronounced the shape is)
     var shape: DayShape
@@ -247,12 +251,14 @@ struct GridStyle: Equatable {
 
     static let defaultRampHex = "#216E39"   // current darkest-green ramp end
     static let defaultGoalHex = "#F5A623"   // current Steps gold
+    static let defaultTodayHex = "#F5A623"  // today-ring stroke (matches gold by default)
     static let defaultSpread = 0.5          // mid strength
     static let spreadRange: ClosedRange<Double> = 0.0...1.0
 
     static let `default` = GridStyle(
         rampHex: defaultRampHex,
         goalHex: defaultGoalHex,
+        todayHex: defaultTodayHex,
         curve: .easeIn,
         spread: defaultSpread,
         shape: .roundedSquare,
@@ -264,6 +270,7 @@ struct GridStyle: Equatable {
         GridStyle(
             rampHex: SettingsStore.gridRampHex,
             goalHex: SettingsStore.gridGoalHex,
+            todayHex: SettingsStore.gridTodayHex,
             curve: CurveShape(rawValue: SettingsStore.gridCurve) ?? .easeIn,
             spread: SettingsStore.gridSpread,
             shape: DayShape(rawValue: SettingsStore.gridShape) ?? .roundedSquare,
@@ -283,11 +290,12 @@ struct GridStyle: Equatable {
         return OKLCH(l: l, c: min(base.c, 0.34), h: base.h).color
     }
 
-    /// A luminous version of the goal color for *today's* ring — pushed bright and
-    /// more saturated in OKLCH so it out-pops every fill (including a goal-day
-    /// cell, which uses the plain goal color). Keeps the palette's hue.
+    /// A luminous version of *today's* ring color — pushed bright and more
+    /// saturated in OKLCH so it out-pops every fill (including a goal-day cell).
+    /// Sourced from the independent `todayHex` so it's tunable separately from the
+    /// goal color; keeps the chosen hue.
     func todayRingColor(for scheme: ColorScheme) -> Color {
-        let base = goalColor(for: scheme).oklch
+        let base = Color(hex: todayHex).oklch
         let l = scheme == .dark ? 0.82 : 0.45
         return OKLCH(l: l, c: min(base.c * 1.3 + 0.03, 0.37), h: base.h).color
     }
@@ -313,6 +321,24 @@ struct GridStyle: Equatable {
         let l = lLow + (lHigh - lLow) * i
         let c = cLow + (base.c - cLow) * i
         return OKLCH(l: l, c: c, h: base.h).color
+    }
+}
+
+// MARK: - Shareable payload
+
+extension GridStyle {
+    /// A compact, copy-paste description of every color/shape setting. Tapping the
+    /// customization preview puts this on the clipboard so the exact look can be
+    /// shared as a reference (e.g. pasted into a chat). Machine-parseable JSON.
+    var sharePayload: String {
+        "{\"stepsGridStyle\":{" +
+        "\"ramp\":\"\(rampHex)\"," +
+        "\"goal\":\"\(goalHex)\"," +
+        "\"today\":\"\(todayHex)\"," +
+        "\"curve\":\"\(curve.rawValue)\"," +
+        "\"spread\":\(String(format: "%.2f", spread))," +
+        "\"shape\":\"\(shape.rawValue)\"," +
+        "\"marker\":\"\(marker.rawValue)\"}}"
     }
 }
 

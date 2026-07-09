@@ -119,6 +119,20 @@ struct ContentView: View {
                 if VisitLog.all().isEmpty { Self.seedSampleVisits() }
                 showHistory = true
             }
+            // Seed the widget's App Group step cache with sample data so a real
+            // home-screen widget renders a populated grid + count for screenshots
+            // (HealthKit is empty on a fresh simulator; the widget falls back to
+            // this cache). Launch arg `-STEPS_SEED_STEPS 1`.
+            if UserDefaults.standard.string(forKey: "STEPS_SEED_STEPS") == "1" {
+                SharedStore.save(HealthKitService.sampleDailySteps())
+                WidgetCenter.shared.reloadAllTimelines()
+            }
+            // Render the square "Features" tiles for the project site to PNGs in the
+            // app's Documents dir, then exit-worthy (pull with simctl). See
+            // FeatureShots.swift. Launch arg `-STEPS_RENDER_FEATURES 1`.
+            if UserDefaults.standard.string(forKey: "STEPS_RENDER_FEATURES") == "1" {
+                FeatureShots.renderAll()
+            }
             // Open the Walk Flyover directly for testing/auditing the 3D fly-through:
             // launch arg `-STEPS_OPEN_FLYOVER 1`. Seeds sample visits when the log is
             // empty so a round-trip suggestion exists, resolves it, then presents the
@@ -563,6 +577,8 @@ struct ContentView: View {
             if let sel = selectedActivity, activityDetails[sel] == nil { selectedActivity = nil }
             // Round-trip nudge from tracked visits (nil once at/over goal).
             suggestion = await VisitDistance.todaySuggestion(todaySteps: steps)
+            // Ship the freshest places + suggestion to the watch.
+            WatchSync.shared.refreshPlaces()
         } catch {
             phase = .denied
         }
