@@ -100,8 +100,7 @@ private enum FeatureSample {
 
 struct FeatureGridSquare: View {
     /// Rows the current month spans (mirrors StepsGridView's MonthLayout), so the
-    /// grid frame can be sized to hug exactly those rows — no vertical slack below
-    /// the last row before the count row.
+    /// grid frame can be sized to hug exactly those rows inside the square tile.
     private static var monthRows: Int {
         let cal = Calendar.current
         guard let interval = cal.dateInterval(of: .month, for: FeatureSample.referenceDay),
@@ -120,34 +119,13 @@ struct FeatureGridSquare: View {
         return cell * rows + w * 0.04 * (rows - 1) // rows + inter-row gaps
     }
 
-    /// Today's activity badges — a couple, to keep the tile calm.
-    private let activities: [DayActivity] = [.cycling, .strength]
-
     var body: some View {
         FeatureTile(padding: 44) {
-            VStack(spacing: 30) {
-                // The month grid as circular cells — the widget shown big, calm.
-                StepsGridView(dailySteps: FeatureSample.denseMonth,
-                              style: FeaturePalette.grid,
-                              referenceDate: FeatureSample.referenceDay)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: Self.gridHeight)
-                // Today's count with a couple of activity badges — like the widget.
-                HStack(spacing: 22) {
-                    Text(8_432, format: .number)
-                        .font(.system(size: 88, weight: .medium, design: .monospaced))
-                        .foregroundStyle(FeaturePalette.rose)
-                        .minimumScaleFactor(0.5)
-                        .lineLimit(1)
-                    Spacer(minLength: 12)
-                    ForEach(activities) { activity in
-                        Image(systemName: activity.symbol)
-                            .font(.system(size: 60))
-                            .symbolRenderingMode(.hierarchical)
-                            .foregroundStyle(FeaturePalette.rose)
-                    }
-                }
-            }
+            StepsGridView(dailySteps: FeatureSample.denseMonth,
+                          style: FeaturePalette.grid,
+                          referenceDate: FeatureSample.referenceDay)
+                .frame(maxWidth: .infinity)
+                .frame(height: Self.gridHeight)
         }
     }
 }
