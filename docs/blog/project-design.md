@@ -29,6 +29,8 @@ Local family decisions:
 - Preserve the pink/rose accent pair, product icon, hero copy, and real product screenshots.
 - Preserve the interactive phone and watch cascades.
 - Preserve the four-card feature grid and its order: Suggested walk, Badges, Colors, Watch.
+- Keep the four-card feature grid at a minimum of two columns on mobile instead of collapsing to
+  the family default single-column compact layout.
 - Keep the feature grid visually headingless; name it accessibly in markup.
 - Keep the compact home-page changelog visually headingless; name it accessibly in markup.
 - Keep the three newest changelog entries as single-line links on the home page, followed by one

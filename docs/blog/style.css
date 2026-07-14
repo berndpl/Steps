@@ -399,7 +399,6 @@ h1, h2, h3, h4 {
 .feature-card .watch.is-front { left: 10%; }
 .feature-card .watch.is-back  { left: 44%; }
 @media (max-width: 760px) { .feature-grid { grid-template-columns: repeat(2, 1fr); gap: 1.4rem; } }
-@media (max-width: 440px) { .feature-grid { grid-template-columns: 1fr; max-width: 22rem; } }
 
 /* Watch section — watchOS captures as a tap / auto-cycling cascade (mirrors the
    hero phone-stack): two rounded watch screens fanned horizontally but sharing one
