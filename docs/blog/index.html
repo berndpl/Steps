@@ -15,28 +15,31 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<!-- Shared family header: source of truth is project-site-family/data/components/site-header.* -->
+<a class="skip-link" href="#top">Skip to content</a>
 <header class="topbar">
   <div class="topbar-inner">
     <div class="nav-left">
-      <a class="blog-title" href="./"><img class="brand-mark" src="img/icon.png" alt="">Steps</a>
+      <a class="blog-title" href="./"><img class="brand-mark" src="img/icon.png" alt="" width="256" height="256">Steps</a>
     </div>
     <div class="nav-right">
-      <a class="action-link" href="https://github.com/berndpl/Steps">Download and Build</a>
-      <a class="action-link secondary" href="https://notes.plontsch.de/about/">Get in touch</a>
+      <nav class="site-nav" aria-label="Bernd Plontsch">
+        <a href="https://notes.plontsch.de/">Notes</a>
+        <a href="https://notes.plontsch.de/about/">About</a>
+      </nav>
     </div>
   </div>
 </header>
 
-<main id="top">
+<main id="top" tabindex="-1">
 <header class="hero hero-with-shot">
   <div class="hero-copy">
-    <img class="hero-icon" src="img/icon.png" alt="Steps app icon">
+    <img class="hero-icon" src="img/icon.png" alt="" width="256" height="256">
     <h1>Steps</h1>
-    <p class="tagline">Personal step counting that also tells you where to walk to reach 10,000.</p>
-    <p class="short">A small iOS app, widgets, and a watchOS app — all reading Apple Health to paint your month.</p>
+    <p class="tagline">Not just a step counter. But also suggesting the walk to reach your 10.000 today.</p>
+    <p class="short">Also badges, a grid and watch app. You're welcome.</p>
     <p class="hero-cta">
-      <a class="action-link" href="https://github.com/berndpl/Steps">Download and Build</a>
-      <a class="action-link secondary" href="https://notes.plontsch.de/about/">Get in touch</a>
+      <a class="action-link" href="https://github.com/berndpl/Steps"><span class="action-hammer" aria-hidden="true"></span>Download and Build</a>
     </p>
   </div>
   <figure class="hero-shot phone-stack" aria-label="Steps app screenshots — tap a screen to bring it to the front">
@@ -46,7 +49,7 @@
   </figure>
 </header>
 
-<section id="features">
+<section id="features" aria-label="Features">
   <div class="feature-grid">
     <article class="feature-card">
       <img class="feature-shot" src="img/feature-walk.png" alt="A round-trip walk suggestion to a real place, with its step and distance cost" width="720" height="720" loading="lazy">
@@ -74,28 +77,23 @@
   </div>
 </section>
 
-<section id="posts">
-  <h2>Changelog</h2>
-  <p class="changelog-cta">A running log of what shipped — visits, the 3D flyover, the watch app, the tunable grid, and more. <a href="changelog.html">Read the changelog →</a></p>
+<section id="posts" aria-label="Recent changes">
+  <ol class="log" aria-label="Recent changes">
+    <li><a class="log-row" href="changelog.html#e-visits-flyover"><span class="log-date">2026-07-05</span><span class="log-title">The places you go, and a 3D walk to close the gap</span></a></li>
+    <li><a class="log-row" href="changelog.html#e-inbox-icon"><span class="log-date">2026-06-29</span><span class="log-title">An inbox, a log, and a new face</span></a></li>
+    <li><a class="log-row" href="changelog.html#e-watch"><span class="log-date">2026-06-28</span><span class="log-title">A wrist, a chime, and little badges for the rest of the day</span></a></li>
+  </ol>
+  <p class="changelog-cta"><a href="changelog.html">View Changelog</a></p>
 </section>
 </main>
 
 <footer>Steps · seeded from project history · 2026-07-05 · A project by <a href="https://notes.plontsch.de/about/">Bernd Plontsch</a></footer>
 
 <script>
-document.querySelectorAll('.tab').forEach(function (tab) {
-  tab.addEventListener('click', function () {
-    document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('is-active'); });
-    document.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('is-active'); });
-    tab.classList.add('is-active');
-    document.getElementById(tab.dataset.panel).classList.add('is-active');
-  });
-});
+var prefersReducedMotion = window.matchMedia &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Cascade: staggered screens shown at once. Tap any screen (or let it autoplay) to bring
-// it to the front — the front/mid/back "slots" are just classes the script rotates,
-// animated by the CSS transitions. Pauses while the pointer is over it. Reused by the hero
-// phone-stack and the watchOS watch-stack; an optional caption element tracks the front.
+// Shared cascade behavior for the project-owned phone and watch compositions.
 (function () {
   function initCascade(stack, slots, caption) {
     if (!stack) return;
@@ -107,7 +105,9 @@ document.querySelectorAll('.tab').forEach(function (tab) {
       order.forEach(function (el, i) {
         slots.forEach(function (s) { el.classList.remove(s); });
         el.classList.add(slots[Math.min(i, slots.length - 1)]);
-        el.tabIndex = i === 0 ? -1 : 0;    // front isn't focusable (tapping it is a no-op)
+        el.tabIndex = i === 0 ? -1 : 0;
+        el.setAttribute('aria-current', i === 0 ? 'true' : 'false');
+        el.setAttribute('aria-disabled', i === 0 ? 'true' : 'false');
       });
       if (caption && order[0].dataset.caption) caption.textContent = order[0].dataset.caption;
     }
@@ -118,7 +118,11 @@ document.querySelectorAll('.tab').forEach(function (tab) {
       render();
     }
     function advance() { order = order.slice(1).concat(order.slice(0, 1)); render(); }
-    function restart() { clearInterval(timer); timer = setInterval(advance, 4000); }
+    function stop() { clearInterval(timer); }
+    function restart() {
+      stop();
+      if (!prefersReducedMotion && !document.hidden) timer = setInterval(advance, 4000);
+    }
     items.forEach(function (el) {
       el.setAttribute('role', 'button');
       el.addEventListener('click', function () { bringToFront(el); restart(); });
@@ -126,26 +130,20 @@ document.querySelectorAll('.tab').forEach(function (tab) {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); bringToFront(el); restart(); }
       });
     });
-    stack.addEventListener('mouseenter', function () { clearInterval(timer); });
+    stack.addEventListener('mouseenter', stop);
     stack.addEventListener('mouseleave', restart);
+    stack.addEventListener('focusin', stop);
+    stack.addEventListener('focusout', function (event) {
+      if (!stack.contains(event.relatedTarget)) restart();
+    });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stop(); else restart();
+    });
     render(); restart();
   }
   initCascade(document.querySelector('.phone-stack'), ['is-front', 'is-mid', 'is-back']);
   initCascade(document.querySelector('.watch-stack'), ['is-front', 'is-back'],
               document.querySelector('.watch-caption'));
-})();
-
-// Reveal-on-scroll topbar: hidden by default, slides in only once the hero (masthead) has
-// scrolled off — so there's no header at the top on first view, and no duplicate CTA.
-(function () {
-  var bar = document.querySelector('.topbar');
-  if (!bar) return;
-  var hero = document.querySelector('.hero');
-  var threshold = function () { return hero ? Math.max(80, hero.offsetHeight - 72) : 120; };
-  var onScroll = function () { bar.classList.toggle('is-scrolled', window.scrollY > threshold()); };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll, { passive: true });
-  onScroll();
 })();
 </script>
 </body>

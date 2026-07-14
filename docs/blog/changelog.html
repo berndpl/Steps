@@ -15,16 +15,32 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<nav class="page-nav">
+<!-- Shared family header: source of truth is project-site-family/data/components/site-header.* -->
+<a class="skip-link" href="#top">Skip to content</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="nav-left">
+      <a class="blog-title" href="./"><img class="brand-mark" src="img/icon.png" alt="" width="256" height="256">Steps</a>
+    </div>
+    <div class="nav-right">
+      <nav class="site-nav" aria-label="Bernd Plontsch">
+        <a href="https://notes.plontsch.de/">Notes</a>
+        <a href="https://notes.plontsch.de/about/">About</a>
+      </nav>
+    </div>
+  </div>
+</header>
+<nav class="page-nav" aria-label="Changelog">
   <a class="back-link" href="./">← Steps</a>
-  <a class="action-link secondary" href="https://github.com/berndpl/Steps">Download and Build</a>
+  <a class="action-link secondary" href="https://github.com/berndpl/Steps"><span class="action-hammer" aria-hidden="true"></span>Download and Build</a>
 </nav>
 
-<main id="top" class="changelog-page">
+<main id="top" class="changelog-page" tabindex="-1">
   <h1>Changelog</h1>
   <p class="lead">Every change, newest first. Pick an entry for the full story.</p>
 
-  <ol class="log">
+  <h2 id="changelog-index-title" class="visually-hidden">Entries</h2>
+  <ol class="log" aria-labelledby="changelog-index-title">
     <li><a class="log-row" href="#e-visits-flyover"><span class="log-date">2026-07-05</span><span class="log-title">The places you go, and a 3D walk to close the gap</span><span class="log-cat">visits + flyover</span></a></li>
     <li><a class="log-row" href="#e-inbox-icon"><span class="log-date">2026-06-29</span><span class="log-title">An inbox, a log, and a new face</span><span class="log-cat">inbox + icon</span></a></li>
     <li><a class="log-row" href="#e-watch"><span class="log-date">2026-06-28</span><span class="log-title">A wrist, a chime, and little badges for the rest of the day</span><span class="log-cat">watch</span></a></li>
@@ -38,7 +54,8 @@
 
   <hr class="log-sep">
 
-  <div class="entries">
+  <section class="entries" aria-labelledby="changelog-entries-title">
+    <h2 id="changelog-entries-title" class="visually-hidden">Full entries</h2>
     <article class="entry" id="e-visits-flyover">
       <div class="date">2026-07-05 · visits + flyover</div>
       <h3>The places you go, and a 3D walk to close the gap</h3>
@@ -108,7 +125,7 @@
         </ul></div>
       </div>
     </article>
-  </div>
+  </section>
 
   <p class="log-top"><a href="#top">↑ Back to top</a> · <a href="./">← Steps</a></p>
 </main>

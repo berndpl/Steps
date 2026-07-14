@@ -23,6 +23,26 @@
   --theme-good: #40c463;
   --theme-bad: #c23b32;
   --theme-font: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  --project-app-name-size: 2rem;
+}
+
+/* FAMILY METRICS — fixed across every Project page. */
+:root {
+  --family-brand-icon-size: 1.4rem;
+  --family-hero-icon-size: 4rem;
+  --family-feature-icon-size: 2.5rem;
+  --family-feature-glyph-size: 1.3rem;
+  --family-brand-title-size: 1.1rem;
+  --family-hero-title-size: 2.1rem;
+  --family-section-title-size: 1.35rem;
+  --family-component-title-size: 1.05rem;
+  --family-page-title-size: 1.6rem;
+  --family-action-height: 2rem;
+  --family-action-padding-y: .25rem;
+  --family-action-padding-x: .75rem;
+  --family-action-font-size: 1rem;
+  --family-action-radius: 8px;
+  --family-changelog-top-space: 3.5rem;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -30,7 +50,7 @@ html { scroll-behavior: smooth; overflow-y: scroll; }
 body {
   max-width: 800px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0 20px 20px;
   color: var(--theme-text);
   background: var(--theme-base);
   font: 16px/1.5 var(--theme-font);
@@ -39,9 +59,40 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .shot, .dot, .thumb, .phone, .watch, .node {
+    transition: none;
+  }
+}
 a { color: var(--theme-link); text-decoration: none; }
 a:hover { color: var(--theme-hover); text-decoration: underline; }
+:focus-visible {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: 3px;
+}
 main a, article a { text-decoration: underline; }
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+.skip-link {
+  position: fixed;
+  top: .7rem;
+  left: .7rem;
+  z-index: 100;
+  padding: .5rem .75rem;
+  color: var(--theme-base);
+  background: var(--theme-accent);
+  border-radius: 7px;
+  font-weight: 700;
+  transform: translateY(-180%);
+}
+.skip-link:focus { transform: none; }
 code, kbd {
   padding: 1px 5px;
   color: var(--theme-text);
@@ -68,26 +119,18 @@ h1, h2, h3, h4 {
   line-height: 1.4;
 }
 
-/* Topbar: hidden by default; slides down into view only once the hero (masthead) has
-   scrolled off. Fixed / out of flow, so the hero sits flush at the top with no header gap.
-   The tail script toggles .is-scrolled once you scroll past the hero. */
+/* Global header: app identity + the fixed Notes / About navigation on every Website page. */
 .topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
+  position: sticky;
+  top: 0;
   z-index: 20;
-  border-bottom: 1px solid transparent;
+  margin-right: calc(50% - 50vw);
+  margin-left: calc(50% - 50vw);
+  border-bottom: 1px solid var(--theme-surface0);
+  background: var(--theme-base);
   background: color-mix(in srgb, var(--theme-base) 88%, transparent);
+  -webkit-backdrop-filter: saturate(140%) blur(10px);
   backdrop-filter: saturate(140%) blur(10px);
-  opacity: 0;
-  transform: translateY(-100%);
-  pointer-events: none;
-  transition: opacity .25s ease, transform .3s ease, border-color .25s ease;
-}
-.topbar.is-scrolled {
-  opacity: 1;
-  transform: none;
-  pointer-events: auto;
-  border-bottom-color: var(--theme-surface0);
 }
 .topbar-inner {
   max-width: 800px;
@@ -98,47 +141,66 @@ h1, h2, h3, h4 {
   justify-content: space-between;
   gap: 1rem;
 }
-.nav-left, .nav-right, nav {
+.nav-left, .nav-right, .site-nav {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   align-items: center;
 }
+.nav-right { margin-left: auto; }
 .blog-title {
   display: inline-flex;
   gap: .55rem;
   align-items: center;
   color: var(--theme-text);
-  font-size: 1.1rem;
+  font-size: var(--family-brand-title-size);
   font-weight: 700;
   line-height: 1;
 }
 .brand-mark {
-  width: 1.4rem;
-  height: 1.4rem;
+  width: var(--family-brand-icon-size);
+  height: var(--family-brand-icon-size);
   flex: 0 0 auto;
   display: block;
+  object-fit: contain;
 }
-nav a { color: rgba(var(--theme-body-rgb), .6); font-size: 1rem; line-height: 1; }
-nav a.active { color: var(--theme-text); text-decoration: none; }
+.site-nav a {
+  color: rgba(var(--theme-body-rgb), .6);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1;
+}
+.site-nav a:hover { color: var(--theme-hover); }
+.site-nav a[aria-current="page"] { color: var(--theme-text); text-decoration: none; }
 
 /* Primary action button — Play / Try / Download / Download and Build (label per project type) */
 .action-link {
   display: inline-flex;
   align-items: center;
-  min-height: 1.8rem;
-  padding: .18rem .7rem;
+  justify-content: center;
+  gap: .4rem;
+  min-height: var(--family-action-height);
+  padding: var(--family-action-padding-y) var(--family-action-padding-x);
   color: var(--theme-base);
   background: var(--theme-accent);
   border: 1px solid var(--theme-accent);
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: var(--family-action-radius);
+  font-size: var(--family-action-font-size);
   font-weight: 700;
+  line-height: 1.2;
   text-decoration: none;
 }
 .action-link:hover { color: var(--theme-base); text-decoration: none; filter: brightness(.95); }
+.action-hammer {
+  width: .9em;
+  height: .9em;
+  flex: 0 0 auto;
+  background: currentColor;
+  -webkit-mask: url("img/hammer.svg") center / contain no-repeat;
+  mask: url("img/hammer.svg") center / contain no-repeat;
+}
 
-/* Secondary action button — quieter outline variant (e.g. "Get in touch") */
+/* Secondary product action — quieter outline variant (e.g. "View source") */
 .action-link.secondary {
   color: var(--theme-accent);
   background: transparent;
@@ -157,15 +219,25 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
 }
 .hero-with-shot {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(15rem, 21rem);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 2.5rem;
-  align-items: center;
 }
 .hero-copy { min-width: 0; }
-.hero h1 { margin-top: .9rem; color: var(--theme-accent); font-size: 2.1rem; font-weight: 700; }
+.hero .hero-copy h1 {
+  margin-top: .9rem;
+  color: var(--theme-accent);
+  font-size: var(--project-app-name-size);
+  font-weight: 700;
+  line-height: 1.15;
+}
 /* icon.png is a glass render from Icon Composer (ictool) with the iOS squircle + transparent
    corners baked in — so no CSS border-radius (that would clip the glass edge). */
-.hero-icon { width: 4rem; height: 4rem; display: block; }
+.hero-icon {
+  width: var(--family-hero-icon-size);
+  height: var(--family-hero-icon-size);
+  display: block;
+  object-fit: contain;
+}
 .tagline { margin-top: .6rem; color: var(--theme-subtext0); font-size: 1.1rem; }
 .short { max-width: 38rem; margin-top: 1rem; color: var(--theme-subtext0); font-size: 1rem; line-height: 1.5; }
 .hero-cta { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.8rem; }
@@ -239,11 +311,11 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
 .phone-stack {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1.12;   /* group box sized to the (vertically centered) front phone */
+  aspect-ratio: 1 / 1.26;   /* group box sized to the wider, vertically centered front phone */
 }
 .phone {
   position: absolute;
-  width: 50%;
+  width: 58%;
   aspect-ratio: 680 / 1478;   /* the screenshots' real ratio */
   /* iPhone Pro screen corner radius ≈ 62pt on a 402pt-wide display ⇒ ~15.4% of width.
      The paired vertical value (15.4% × 680/1478) keeps the corner a true circle, not an
@@ -251,7 +323,6 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
   border-radius: 15.4% / 7.1%;
   overflow: hidden;
   background: var(--theme-mantle);
-  border: 1px solid var(--theme-surface0);
   box-shadow: 0 14px 34px rgba(0, 0, 0, .38);
   cursor: pointer;
   transition: left .5s cubic-bezier(.4, 0, .2, 1), top .5s cubic-bezier(.4, 0, .2, 1),
@@ -259,15 +330,15 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
 }
 .phone img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .phone:focus-visible { outline: 2px solid var(--theme-accent); outline-offset: 4px; }
+.phone[aria-disabled="true"] { cursor: default; }
 /* Slots the script rotates (tap / autoplay). All share one vertical center (top:50% +
    translateY(-50%)) so the screens fan horizontally while staying vertically centered;
    they only recede right + scale/dim for depth. No-JS fallback: initial classes render a
    valid static cascade. */
 .phone.is-front { left: 0;   top: 50%; transform: translateY(-50%) scale(1);   opacity: 1;   z-index: 3; }
-.phone.is-mid   { left: 25%; top: 50%; transform: translateY(-50%) scale(.94); opacity: .97; z-index: 2; }
-.phone.is-back  { left: 50%; top: 50%; transform: translateY(-50%) scale(.88); opacity: .9;  z-index: 1; }
+.phone.is-mid   { left: 21%; top: 50%; transform: translateY(-50%) scale(.94); opacity: .97; z-index: 2; }
+.phone.is-back  { left: 42%; top: 50%; transform: translateY(-50%) scale(.88); opacity: .9;  z-index: 1; }
 .phone.is-front:hover { box-shadow: 0 18px 42px rgba(0, 0, 0, .46); }
-@media (prefers-reduced-motion: reduce) { .phone { transition: none; } }
 .kicker, .date, .tag, .badge { color: var(--theme-overlay0); font-size: .9rem; }
 
 /* ── Optional product-highlights components ───────────────────────────────────
@@ -292,11 +363,24 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
 .feature-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.7rem; max-width: 46rem; }
 .feature-list li { display: flex; align-items: flex-start; gap: 1.1rem; }
 .feature-ico {
-  flex: 0 0 auto; width: 2.5rem; height: 2.5rem; display: grid; place-items: center;
+  flex: 0 0 auto;
+  width: var(--family-feature-icon-size);
+  height: var(--family-feature-icon-size);
+  display: grid; place-items: center;
   border-radius: 11px; background: var(--theme-mantle);
 }
-.feature-ico .sym { width: 1.3rem; height: 1.3rem; color: var(--theme-accent); }
-.feature-list h3 { margin: .25rem 0 .4rem; color: var(--theme-text); font-size: 1.05rem; font-weight: 700; }
+.feature-ico .sym {
+  width: var(--family-feature-glyph-size);
+  height: var(--family-feature-glyph-size);
+  color: var(--theme-accent);
+}
+.feature-list h3 {
+  margin: .25rem 0 .4rem;
+  color: var(--theme-text);
+  font-size: var(--family-component-title-size);
+  font-weight: 700;
+  line-height: 1.3;
+}
 .feature-list p { margin: 0; max-width: 40rem; color: var(--theme-subtext0); }
 
 /* Feature cards — a square, real-view shot per feature above its copy. Adaptive grid:
@@ -307,9 +391,12 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
   display: block; width: 100%; height: auto; aspect-ratio: 1 / 1;
   border-radius: 16px; background: var(--theme-base);
 }
-.feature-card h3 {
-  margin: .8rem 0 .3rem; color: var(--theme-text); font-size: .95rem; font-weight: 700;
-  line-height: 1.15;
+.feature-grid .feature-card h3 {
+  margin: .8rem 0 .3rem;
+  color: var(--theme-subtext0);
+  font-size: var(--family-component-title-size);
+  font-weight: 700;
+  line-height: 1.3;
 }
 .feature-card p { margin: 0; color: var(--theme-subtext0); font-size: 1rem; line-height: 1.5; }
 /* The watch tile reuses the on-wrist cascade, inset inside the same square card as the
@@ -345,10 +432,10 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
 }
 .watch img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .watch:focus-visible { outline: 2px solid var(--theme-accent); outline-offset: 4px; }
+.watch[aria-disabled="true"] { cursor: default; }
 .watch.is-front { left: 0;   top: 50%; transform: translateY(-50%) scale(1);   opacity: 1;  z-index: 3; }
 .watch.is-back  { left: 34%; top: 50%; transform: translateY(-50%) scale(.9);  opacity: .9; z-index: 1; }
 .watch.is-front:hover { box-shadow: 0 18px 42px rgba(0, 0, 0, .5); }
-@media (prefers-reduced-motion: reduce) { .watch { transition: none; } }
 .watch-caption { margin: 1rem 0 0; color: var(--theme-subtext0); font-size: .9rem; }
 @media (max-width: 720px) { .watch-stack { max-width: 15rem; } }
 .section-lead { max-width: 40rem; margin: 0 0 1.6rem; color: var(--theme-subtext0); }
@@ -363,7 +450,13 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
 /* Cards with a visual step "chain" (e.g. a processing pipeline) */
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1.1rem; }
 .card-item { padding: 1.1rem 1.2rem; background: var(--theme-mantle); border-radius: 10px; }
-.card-item h3 { display: flex; align-items: center; gap: .45rem; margin: 0; color: var(--theme-text); font-size: 1.05rem; font-weight: 700; }
+.card-item h3 {
+  display: flex; align-items: center; gap: .45rem; margin: 0;
+  color: var(--theme-text);
+  font-size: var(--family-component-title-size);
+  font-weight: 700;
+  line-height: 1.3;
+}
 .card-item h3 .sym { width: 1.15em; height: 1.15em; }
 .card-item .sym { color: var(--theme-accent); }
 .chain {
@@ -390,12 +483,24 @@ nav a.active { color: var(--theme-text); text-decoration: none; }
 
 /* Posts */
 section { padding: 2rem 0; }
-section#posts { padding-top: 3.5rem; }
+section#posts { padding: var(--family-changelog-top-space) 0 2rem; }
 section#posts article.entry:first-of-type { padding-top: .4rem; }
-section > h2 { margin-bottom: 1.4rem; color: var(--theme-accent); font-size: 1.35rem; font-weight: 700; }
+section > h2 {
+  margin-bottom: 1.4rem;
+  color: var(--theme-accent);
+  font-size: var(--family-section-title-size);
+  font-weight: 700;
+  line-height: 1.25;
+}
 article.entry { padding: 2.2rem 0; border-bottom: 1px solid var(--theme-surface0); }
 article.entry:last-child { border-bottom: 0; }
-article.entry h3 { margin: .25rem 0 .8rem; color: var(--theme-text); font-weight: 700; }
+article.entry h3 {
+  margin: .25rem 0 .8rem;
+  color: var(--theme-text);
+  font-size: var(--family-component-title-size);
+  font-weight: 700;
+  line-height: 1.3;
+}
 article.entry .decisions { margin: 1.25rem 0; }
 
 /* Decided for / against cards */
@@ -408,7 +513,12 @@ article.entry .decisions { margin: 1.25rem 0; }
 .decisions > div + div, .grid2 > div + div {
   padding-left: 2rem;
 }
-.card h3 { margin-bottom: .65rem; }
+.card h3 {
+  margin-bottom: .65rem;
+  font-size: var(--family-component-title-size);
+  font-weight: 700;
+  line-height: 1.3;
+}
 .card { background: transparent; border: 0; padding: 0 !important; }
 .for li::marker { content: "+  "; color: var(--theme-good); }
 .against li::marker { content: "-  "; color: var(--theme-bad); }
@@ -428,7 +538,10 @@ figcaption { margin-top: .5rem; color: var(--theme-overlay0); font-size: .9rem; 
 .colophon { border-bottom: 0; padding-top: 3rem; padding-bottom: 0; }
 .colophon > h2 {
   display: flex; align-items: center; gap: .45rem; margin-bottom: .5rem;
-  color: var(--theme-accent); font-size: 1rem; font-weight: 700;
+  color: var(--theme-accent);
+  font-size: var(--family-section-title-size);
+  font-weight: 700;
+  line-height: 1.25;
 }
 .colophon > h2 .sym { color: var(--theme-accent); width: 1em; height: 1em; }
 .thanks-intro { margin: 0; max-width: 46rem; color: var(--theme-subtext0); font-size: .9rem; }
@@ -436,8 +549,8 @@ figcaption { margin-top: .5rem; color: var(--theme-overlay0); font-size: .9rem; 
 footer { padding: .75rem 0 1rem; color: var(--theme-overlay0); font-size: .9rem; text-align: left; }
 
 @media (max-width: 720px) {
-  body { padding: 16px; }
-  .topbar-inner { align-items: flex-start; padding: .7rem 16px; }
+  body { padding: 0 16px 16px; }
+  .topbar-inner { padding: .7rem 16px; }
   .hero { padding: 2.5rem 0 1.5rem; }
   .hero-with-shot { grid-template-columns: 1fr; gap: 1.75rem; }
   .hero-shot { max-width: 18rem; margin: 0 auto; }
@@ -449,7 +562,7 @@ footer { padding: .75rem 0 1rem; color: var(--theme-overlay0); font-size: .9rem;
 }
 
 /* ── Changelog: homepage pointer + dedicated tight changelog page ──────────── */
-.changelog-cta { max-width: 40rem; margin: 0; color: var(--theme-subtext0); }
+.changelog-cta { max-width: 40rem; margin: 1.5rem 0 0; color: var(--theme-subtext0); }
 
 /* Simple always-visible page nav (used on subpages like changelog.html) */
 .page-nav {
@@ -460,7 +573,13 @@ footer { padding: .75rem 0 1rem; color: var(--theme-overlay0); font-size: .9rem;
 .back-link { color: var(--theme-subtext0); }
 .back-link:hover { color: var(--theme-hover); }
 
-.changelog-page > h1 { margin: 0 0 .4rem; color: var(--theme-accent); font-size: 1.6rem; font-weight: 700; }
+.changelog-page > h1 {
+  margin: 0 0 .4rem;
+  color: var(--theme-accent);
+  font-size: var(--family-page-title-size);
+  font-weight: 700;
+  line-height: 1.2;
+}
 .changelog-page > .lead { max-width: 40rem; margin: 0 0 1.6rem; color: var(--theme-subtext0); }
 
 /* Tight index — one dense line per entry: date · title · category */
@@ -478,8 +597,9 @@ footer { padding: .75rem 0 1rem; color: var(--theme-overlay0); font-size: .9rem;
 .log-cat { flex: 0 0 auto; margin-left: auto; color: var(--theme-overlay0); font-size: .8rem; white-space: nowrap; }
 
 .log-sep { border: 0; border-top: 1px solid var(--theme-surface0); margin: 2.2rem 0 .5rem; }
+section.entries { padding: 0; }
 .entries article.entry { scroll-margin-top: 1.5rem; }
-.entries article.entry:first-child { padding-top: 1.5rem; }
+.entries article.entry:first-of-type { padding-top: 1.5rem; }
 .log-top { margin: 2rem 0 0; color: var(--theme-overlay0); font-size: .9rem; }
 
 @media (max-width: 720px) {
