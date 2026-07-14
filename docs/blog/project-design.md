@@ -22,7 +22,7 @@ The Website uses the family light/dark bases with a project-owned pink/rose acce
 
 ## Family contract
 
-Family contract version applied: `2026-07-14.19`.
+Family contract version applied: `2026-07-14.20`.
 
 Local family decisions:
 
@@ -35,6 +35,7 @@ Local family decisions:
 - Keep the compact home-page changelog visually headingless; name it accessibly in markup.
 - Keep the three newest changelog entries as single-line links on the home page, followed by one
   link to the complete changelog.
+- Link the PolyForm Noncommercial repository license from every Website footer.
 
 ## Hero story and media rationale
 

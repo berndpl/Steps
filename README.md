@@ -57,5 +57,5 @@ ladybug menu also has *Seed sample visits* / *Clear visits* actions.
 
 ## License
 
-[PolyForm Noncommercial 1.0.0](LICENSE) — free to use, modify, and share for
+Licensed under [PolyForm Noncommercial 1.0.0](LICENSE) — free to use, modify, and share for
 **noncommercial** purposes only.
