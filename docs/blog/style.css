@@ -53,7 +53,6 @@ body {
   padding: 0 20px 20px;
   color: var(--theme-text);
   background: var(--theme-base);
-  font: 16px/1.5 var(--theme-font);
   /* SF Mono renders heavy with default subpixel smoothing on dark backgrounds —
      grayscale antialiasing gives the regular weight its intended lighter stroke. */
   -webkit-font-smoothing: antialiased;
@@ -226,9 +225,6 @@ h1, h2, h3, h4 {
 .hero .hero-copy h1 {
   margin-top: .9rem;
   color: var(--theme-accent);
-  font-size: var(--project-app-name-size);
-  font-weight: 700;
-  line-height: 1.15;
 }
 /* icon.png is a glass render from Icon Composer (ictool) with the iOS squircle + transparent
    corners baked in — so no CSS border-radius (that would clip the glass edge). */
@@ -238,8 +234,8 @@ h1, h2, h3, h4 {
   display: block;
   object-fit: contain;
 }
-.tagline { margin-top: .6rem; color: var(--theme-subtext0); font-size: 1.1rem; }
-.short { max-width: 38rem; margin-top: 1rem; color: var(--theme-subtext0); font-size: 1rem; line-height: 1.5; }
+.tagline { margin-top: .6rem; color: var(--theme-subtext0); }
+.short { max-width: 38rem; margin-top: 1rem; color: var(--theme-subtext0); }
 .hero-cta { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.8rem; }
 /* Optional: primary action + a small caption beneath it (.cta-primary wraps both). */
 .cta-primary { display: inline-flex; flex-direction: column; align-items: flex-start; gap: .4rem; }
@@ -328,7 +324,7 @@ h1, h2, h3, h4 {
   transition: left .5s cubic-bezier(.4, 0, .2, 1), top .5s cubic-bezier(.4, 0, .2, 1),
               transform .5s cubic-bezier(.4, 0, .2, 1), opacity .5s ease, box-shadow .3s ease;
 }
-.phone img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.phone img { display: block; width: 100%; height: 100%; object-fit: cover; border: 0; }
 .phone:focus-visible { outline: 2px solid var(--theme-accent); outline-offset: 4px; }
 .phone[aria-disabled="true"] { cursor: default; }
 /* Slots the script rotates (tap / autoplay). All share one vertical center (top:50% +
@@ -394,11 +390,8 @@ h1, h2, h3, h4 {
 .feature-grid .feature-card h3 {
   margin: .8rem 0 .3rem;
   color: var(--theme-subtext0);
-  font-size: var(--family-component-title-size);
-  font-weight: 700;
-  line-height: 1.3;
 }
-.feature-card p { margin: 0; color: var(--theme-subtext0); font-size: 1rem; line-height: 1.5; }
+.feature-card p { margin: 0; color: var(--theme-subtext0); }
 /* The watch tile reuses the on-wrist cascade, inset inside the same square card as the
    other shots (lighter shadow so the base card stays visible around the watches). */
 .feature-card .watch-stack {

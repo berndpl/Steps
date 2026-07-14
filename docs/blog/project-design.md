@@ -22,7 +22,7 @@ The Website uses the family light/dark bases with a project-owned pink/rose acce
 
 ## Family contract
 
-Family contract version applied: `2026-07-14.1`.
+Family contract version applied: `2026-07-14.18`.
 
 Local family decisions:
 
@@ -50,7 +50,7 @@ motion-safe autoplay change which state leads.
 
 ## Section hierarchy
 
-- Global family header: Steps identity, Notes, and About.
+- Global family header: Notes, About, and the Louder/Steps project icon strip.
 - Hero: icon, product promise, primary Download and Build action, and phone screenshots.
 - Feature grid: Suggested walk, Badges, Colors, and Watch.
 - Changelog: three recent single-line links, followed by the full-log link.
@@ -85,3 +85,5 @@ rather than editing product UI out of the pixels.
   composition.
 - Replaced the repeated full changelog article with three recent single-line links while keeping
   every full entry on `changelog.html`.
+- Applied the non-sticky split family header, appearance controls, local family assets, and
+  borderless hero media from contract `2026-07-14.18`.
