@@ -22,7 +22,7 @@ The Website uses the family light/dark bases with a project-owned pink/rose acce
 
 ## Family contract
 
-Family contract version applied: `2026-07-14.18`.
+Family contract version applied: `2026-07-14.19`.
 
 Local family decisions:
 
@@ -87,3 +87,5 @@ rather than editing product UI out of the pixels.
   every full entry on `changelog.html`.
 - Applied the non-sticky split family header, appearance controls, local family assets, and
   borderless hero media from contract `2026-07-14.18`.
+- Moved body width and responsive horizontal insets into the canonical family shell so Notes and
+  Steps retain the same content column at every viewport width.

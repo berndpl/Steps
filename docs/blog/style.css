@@ -45,12 +45,9 @@
   --family-changelog-top-space: 3.5rem;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { margin: 0; padding: 0; }
 html { scroll-behavior: smooth; overflow-y: scroll; }
 body {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 20px 20px;
   color: var(--theme-text);
   background: var(--theme-base);
   /* SF Mono renders heavy with default subpixel smoothing on dark backgrounds —
@@ -542,8 +539,6 @@ figcaption { margin-top: .5rem; color: var(--theme-overlay0); font-size: .9rem; 
 footer { padding: .75rem 0 1rem; color: var(--theme-overlay0); font-size: .9rem; text-align: left; }
 
 @media (max-width: 720px) {
-  body { padding: 0 16px 16px; }
-  .topbar-inner { padding: .7rem 16px; }
   .hero { padding: 2.5rem 0 1.5rem; }
   .hero-with-shot { grid-template-columns: 1fr; gap: 1.75rem; }
   .hero-shot { max-width: 18rem; margin: 0 auto; }
