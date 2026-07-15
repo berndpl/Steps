@@ -28,7 +28,7 @@ fully local family alternative.
 
 ## Family contract
 
-Family contract version applied: `2026-07-15.30`.
+Family contract version applied: `2026-07-15.31`.
 
 Local family decisions:
 
@@ -122,3 +122,5 @@ rather than editing product UI out of the pixels.
   use the hand pointer instead of relying on browser cursor defaults.
 - Applied family contract `2026-07-15.30`; the global About and author links now resolve to the
   canonical family-styled page at `https://plontsch.de/`.
+- Applied family contract `2026-07-15.31`; removed the obsolete local sticky header, duplicated
+  action, and semantic typography rules so the transparent canonical shell is the only owner.
