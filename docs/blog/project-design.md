@@ -25,7 +25,7 @@ fully local family alternative.
 
 ## Family contract
 
-Family contract version applied: `2026-07-15.26`.
+Family contract version applied: `2026-07-15.27`.
 
 Local family decisions:
 
@@ -43,6 +43,7 @@ Local family decisions:
   to non-app family pages; Steps always uses its recorded pink/rose Website palette.
 - Keep the custom 404 at `docs/404.html`, using the Steps icon, pink/rose palette, family shell,
   and one action back to the Website.
+- Let the hammer inside the primary Download and Build action use the family spring response.
 
 ## Hero story and media rationale
 
@@ -110,3 +111,5 @@ rather than editing product UI out of the pixels.
   changing product copy, screenshots, feature order, or carousel behavior.
 - Applied family contract `2026-07-15.26` with a custom Pages-root 404 that preserves the Steps
   identity and resolves local assets from missing URLs at any depth.
+- Applied family contract `2026-07-15.27`; the primary action's local hammer now scales and lifts
+  with the shared spring response while the button itself remains fixed.
