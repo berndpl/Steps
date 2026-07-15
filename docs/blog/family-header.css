@@ -36,7 +36,7 @@ body {
   color: var(--theme-base);
   background: var(--theme-accent);
   border-radius: 7px;
-  font-weight: 700;
+  font-weight: var(--family-weight-bold, 700);
   transform: translateY(-180%);
 }
 .skip-link:focus { transform: none; }
@@ -120,7 +120,7 @@ body {
 .site-nav a {
   color: rgba(var(--theme-body-rgb), .6);
   font-size: var(--family-nav-font-size, 1rem);
-  font-weight: 400;
+  font-weight: var(--family-weight-regular, 400);
   line-height: var(--family-nav-line-height, 1);
   text-decoration: none;
 }

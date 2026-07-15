@@ -20,9 +20,12 @@ Keep shared icon boxes unclipped and unrounded in CSS. The icon artwork itself r
 The Website uses the family light/dark bases with a project-owned pink/rose accent pair: bright pink
 `#FF5184` in light appearance and rose `#f38ba8` in dark appearance.
 
+Inconsolata remains the default family typeface. JetBrains Mono is available as the URL-selected,
+fully local family alternative.
+
 ## Family contract
 
-Family contract version applied: `2026-07-14.20`.
+Family contract version applied: `2026-07-15.25`.
 
 Local family decisions:
 
@@ -36,6 +39,8 @@ Local family decisions:
 - Keep the three newest changelog entries as single-line links on the home page, followed by one
   link to the complete changelog.
 - Link the PolyForm Noncommercial repository license from every Website footer.
+- Keep only the family font and light/dark controls in the footer. Custom palette controls belong
+  to non-app family pages; Steps always uses its recorded pink/rose Website palette.
 
 ## Hero story and media rationale
 
@@ -92,3 +97,12 @@ rather than editing product UI out of the pixels.
   borderless hero media from contract `2026-07-14.18`.
 - Moved body width and responsive horizontal insets into the canonical family shell so Notes and
   Steps retain the same content column at every viewport width.
+
+### 2026-07-15
+
+- Applied family contract `2026-07-15.25`.
+- Added the fully local JetBrains Mono variable font and URL-driven whole-page font switching.
+- Kept Steps' project-owned pink/rose light and dark palettes; the app Website ignores custom
+  palette parameters and omits the non-app palette picker.
+- Refreshed the canonical family typography, header, footer, theme, and action assets without
+  changing product copy, screenshots, feature order, or carousel behavior.
