@@ -28,7 +28,7 @@ fully local family alternative.
 
 ## Family contract
 
-Family contract version applied: `2026-07-15.31`.
+Family contract version applied: `2026-07-15.32`.
 
 Local family decisions:
 
@@ -47,6 +47,8 @@ Local family decisions:
 - Keep the custom 404 at `docs/404.html`, using the Steps icon, pink/rose palette, family shell,
   and one action back to the Website.
 - Let the hammer inside the primary Download and Build action use the family spring response.
+- Keep the Website and GitHub Pages deployment available, but omit the retired family project
+  directory and copied project icons.
 
 ## Hero story and media rationale
 
@@ -64,7 +66,7 @@ motion-safe autoplay change which state leads.
 
 ## Section hierarchy
 
-- Global family header: Notes, About, and the Louder/Steps project icon strip.
+- Global header: Notes and About only.
 - Hero: icon, product promise, primary Download and Build action, and phone screenshots.
 - Feature grid: Suggested walk, Badges, Colors, and Watch.
 - Changelog: three recent single-line links, followed by the full-log link.
