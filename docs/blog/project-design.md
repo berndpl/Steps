@@ -25,7 +25,7 @@ fully local family alternative.
 
 ## Family contract
 
-Family contract version applied: `2026-07-15.25`.
+Family contract version applied: `2026-07-15.26`.
 
 Local family decisions:
 
@@ -41,6 +41,8 @@ Local family decisions:
 - Link the PolyForm Noncommercial repository license from every Website footer.
 - Keep only the family font and light/dark controls in the footer. Custom palette controls belong
   to non-app family pages; Steps always uses its recorded pink/rose Website palette.
+- Keep the custom 404 at `docs/404.html`, using the Steps icon, pink/rose palette, family shell,
+  and one action back to the Website.
 
 ## Hero story and media rationale
 
@@ -106,3 +108,5 @@ rather than editing product UI out of the pixels.
   palette parameters and omits the non-app palette picker.
 - Refreshed the canonical family typography, header, footer, theme, and action assets without
   changing product copy, screenshots, feature order, or carousel behavior.
+- Applied family contract `2026-07-15.26` with a custom Pages-root 404 that preserves the Steps
+  identity and resolves local assets from missing URLs at any depth.
