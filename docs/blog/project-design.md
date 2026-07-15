@@ -28,7 +28,7 @@ fully local family alternative.
 
 ## Family contract
 
-Family contract version applied: `2026-07-15.28`.
+Family contract version applied: `2026-07-15.29`.
 
 Local family decisions:
 
@@ -118,3 +118,5 @@ rather than editing product UI out of the pixels.
   with the shared spring response while the button itself remains fixed.
 - Applied family contract `2026-07-15.28`; the hammer now scales from its exact center and the
   primary button switches from pink to the project-owned purple secondary on hover.
+- Applied family contract `2026-07-15.29`; links and enabled button-like controls now explicitly
+  use the hand pointer instead of relying on browser cursor defaults.
