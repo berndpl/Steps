@@ -20,12 +20,15 @@ Keep shared icon boxes unclipped and unrounded in CSS. The icon artwork itself r
 The Website uses the family light/dark bases with a project-owned pink/rose accent pair: bright pink
 `#FF5184` in light appearance and rose `#f38ba8` in dark appearance.
 
+Primary-action hover uses a complementary purple pair: `#8839ef` in light appearance and
+`#cba6f7` in dark appearance. Link hover remains on the pink/rose ramp.
+
 Inconsolata remains the default family typeface. JetBrains Mono is available as the URL-selected,
 fully local family alternative.
 
 ## Family contract
 
-Family contract version applied: `2026-07-15.27`.
+Family contract version applied: `2026-07-15.28`.
 
 Local family decisions:
 
@@ -113,3 +116,5 @@ rather than editing product UI out of the pixels.
   identity and resolves local assets from missing URLs at any depth.
 - Applied family contract `2026-07-15.27`; the primary action's local hammer now scales and lifts
   with the shared spring response while the button itself remains fixed.
+- Applied family contract `2026-07-15.28`; the hammer now scales from its exact center and the
+  primary button switches from pink to the project-owned purple secondary on hover.
