@@ -32,6 +32,10 @@ struct ContentView: View {
     @State private var activityDetails: [DayActivity: ActivityDetail] = [:]
     /// The badge the user tapped — reveals its time/distance (nil = none selected).
     @State private var selectedActivity: DayActivity?
+    @State private var zone2State: Zone2ProgressState = .loading
+    @State private var zone2LowerBPMText = ""
+    @State private var zone2UpperBPMText = ""
+    @State private var zone2SettingsMessage: String?
     /// A round-trip suggestion for reaching today's goal (nil = none to show).
     @State private var suggestion: VisitDistance.Suggestion?
     @State private var showWalkFlyover = false
@@ -66,6 +70,8 @@ struct ContentView: View {
         case steps = "Steps"
         case denied = "Denied"
         case grid = "Grid"
+        case zone2Ready = "Zone 2 Ready"
+        case zone2Setup = "Zone 2 Setup"
         var id: String { rawValue }
     }
     // Initial mode can be forced via launch arg `-STEPS_PREVIEW Grid` (also handy
@@ -180,7 +186,10 @@ struct ContentView: View {
     private var settingsButton: some View {
         VStack {
             HStack(spacing: 4) {
-                Button { showSettings = true } label: {
+                Button {
+                    syncZone2RangeFields()
+                    showSettings = true
+                } label: {
                     Image(systemName: "gearshape")
                         .foregroundStyle(textMuted)
                         .padding(10)
@@ -239,6 +248,47 @@ struct ContentView: View {
                     Text("Get an encouraging notification every 1,000 steps toward your \(dailyStepGoal.formatted())-step goal.")
                         .font(.system(.caption, design: .monospaced))
                 }
+                Section {
+                    HStack {
+                        TextField("Lower", text: $zone2LowerBPMText)
+                            .keyboardType(.numberPad)
+                            .multilineTextAlignment(.trailing)
+                            .accessibilityLabel("Lower Zone 2 beats per minute")
+                        Text("–")
+                            .foregroundStyle(.secondary)
+                        TextField("Upper", text: $zone2UpperBPMText)
+                            .keyboardType(.numberPad)
+                            .multilineTextAlignment(.trailing)
+                            .accessibilityLabel("Upper Zone 2 beats per minute")
+                        Text("BPM")
+                            .foregroundStyle(.secondary)
+                    }
+                    .font(.system(.body, design: .monospaced))
+
+                    Button("Save range") {
+                        guard let range = enteredZone2Range else { return }
+                        SettingsStore.zone2Range = range
+                        zone2SettingsMessage = "Saved \(range.lowerBPM)–\(range.upperBPM) BPM."
+                        Task { await loadZone2Progress() }
+                    }
+                    .disabled(enteredZone2Range == nil)
+
+                    Button("Recalculate from Health") {
+                        Task { await recalculateZone2Range() }
+                    }
+
+                    if let zone2SettingsMessage {
+                        Text(zone2SettingsMessage)
+                            .font(.system(.caption, design: .monospaced))
+                            .foregroundStyle(textMuted)
+                    }
+                } header: {
+                    Text("Zone 2")
+                        .font(.system(.caption, design: .monospaced))
+                } footer: {
+                    Text("Counts heart-rate minutes inside recorded Health workouts. The estimated range uses age and resting heart rate and is not medical guidance.")
+                        .font(.system(.caption, design: .monospaced))
+                }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
@@ -281,6 +331,16 @@ struct ContentView: View {
                 }
         case .denied:     deniedView
         case .grid:       gridPreview
+        case .zone2Ready:
+            stepsView(8_432)
+                .task {
+                    zone2State = .ready(WeeklyZone2Progress(minutes: 74))
+                }
+        case .zone2Setup:
+            stepsView(8_432)
+                .task {
+                    zone2State = .needsRange
+                }
         }
 #else
         liveContent
@@ -320,6 +380,8 @@ struct ContentView: View {
             Text("steps today")
                 .font(.system(.title3, design: .monospaced))
                 .foregroundStyle(textMuted)
+
+            zone2ProgressView
 
             // Today's activities as tappable badges. Tap one to reveal the time
             // and/or distance covered — cycling shows distance even when no formal
@@ -380,6 +442,61 @@ struct ContentView: View {
         }
         .animation(.spring(response: 0.28, dampingFraction: 0.86), value: activityDetails)
         .animation(.spring(response: 0.28, dampingFraction: 0.86), value: suggestion)
+        .animation(.spring(response: 0.28, dampingFraction: 0.86), value: zone2State)
+    }
+
+    @ViewBuilder
+    private var zone2ProgressView: some View {
+        switch zone2State {
+        case .loading:
+            HStack(spacing: 8) {
+                ProgressView()
+                    .controlSize(.small)
+                Text("reading zone 2…")
+                    .font(.system(.caption, design: .monospaced))
+                    .foregroundStyle(textMuted)
+            }
+            .padding(.top, 10)
+
+        case .needsRange:
+            Button {
+                syncZone2RangeFields()
+                showSettings = true
+            } label: {
+                Label("Set Zone 2 range", systemImage: "heart.circle")
+                    .font(.system(.callout, design: .monospaced))
+                    .foregroundStyle(.tint)
+            }
+            .buttonStyle(.plain)
+            .padding(.top, 10)
+            .accessibilityIdentifier("zone2-progress-needs-range")
+
+        case .ready(let progress):
+            VStack(spacing: 5) {
+                HStack {
+                    Text("zone 2 this week")
+                    Spacer()
+                    Text("\(progress.minutes) / \(progress.goalMinutes) min")
+                }
+                .font(.system(.caption, design: .monospaced))
+                .foregroundStyle(textMuted)
+                ProgressView(value: progress.cappedFraction)
+                    .tint(accentColor)
+            }
+            .frame(maxWidth: 280)
+            .padding(.top, 10)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Zone 2 this week")
+            .accessibilityValue("\(progress.minutes) of \(progress.goalMinutes) minutes")
+            .accessibilityIdentifier("zone2-progress-ready")
+
+        case .unavailable:
+            Label("zone 2 unavailable", systemImage: "heart.slash")
+                .font(.system(.caption, design: .monospaced))
+                .foregroundStyle(textMuted)
+                .padding(.top, 10)
+                .accessibilityIdentifier("zone2-progress-unavailable")
+        }
     }
 
     /// "Cycling · 5.4 km · 12 min" — the activity's name plus whichever metrics
@@ -404,7 +521,7 @@ struct ContentView: View {
             Text("Track your steps")
                 .font(.system(.title2, design: .monospaced))
                 .foregroundStyle(textPrimary)
-            Text("Steps reads your step count from Apple Health to show today's total and your home-screen grid.")
+            Text("Steps reads your step count, workouts, and heart rate from Apple Health to show today's total, your home-screen grid, and weekly Zone 2 progress.")
                 .font(.system(.callout, design: .monospaced))
                 .foregroundStyle(textMuted)
                 .multilineTextAlignment(.center)
@@ -543,7 +660,9 @@ struct ContentView: View {
     private func requestAccess() async {
         phase = .loading   // show spinner; the Health dialog can take a moment
         do {
-            try await HealthKitService.shared.requestAuthorization()
+            try await HealthKitService.shared.requestAuthorization(
+                additionalReadTypes: Zone2ProgressService.authorizationTypes
+            )
             // Now that access exists, start the observer so the widget stays
             // current without waiting for the next launch.
             HealthKitService.shared.startObservingSteps()
@@ -565,7 +684,9 @@ struct ContentView: View {
         // added after steps, so users who granted steps earlier still need the
         // prompt for them (otherwise cycling minutes + activity badges stay empty).
         // Idempotent: iOS only prompts for not-yet-determined types.
-        try? await HealthKitService.shared.requestAuthorization()
+        try? await HealthKitService.shared.requestAuthorization(
+            additionalReadTypes: Zone2ProgressService.authorizationTypes
+        )
         do {
             let steps = try await HealthKitService.shared.todaySteps()
             phase = .ready(steps)
@@ -575,12 +696,69 @@ struct ContentView: View {
             WidgetCenter.shared.reloadAllTimelines()
             activityDetails = await HealthKitService.shared.todayActivityDetails()
             if let sel = selectedActivity, activityDetails[sel] == nil { selectedActivity = nil }
+            await loadZone2Progress()
             // Round-trip nudge from tracked visits (nil once at/over goal).
             suggestion = await VisitDistance.todaySuggestion(todaySteps: steps)
             // Ship the freshest places + suggestion to the watch.
             WatchSync.shared.refreshPlaces()
         } catch {
             phase = .denied
+        }
+    }
+
+    private var enteredZone2Range: Zone2Range? {
+        guard let lower = Int(zone2LowerBPMText),
+              let upper = Int(zone2UpperBPMText) else { return nil }
+        return Zone2Range(lowerBPM: lower, upperBPM: upper)
+    }
+
+    private func syncZone2RangeFields() {
+        guard let range = SettingsStore.zone2Range else {
+            zone2LowerBPMText = ""
+            zone2UpperBPMText = ""
+            return
+        }
+        zone2LowerBPMText = String(range.lowerBPM)
+        zone2UpperBPMText = String(range.upperBPM)
+    }
+
+    private func loadZone2Progress() async {
+        zone2State = .loading
+        var range = SettingsStore.zone2Range
+        if range == nil {
+            do {
+                range = try await Zone2ProgressService.shared.estimatedRange()
+                SettingsStore.zone2Range = range
+                syncZone2RangeFields()
+            } catch {
+                zone2State = .needsRange
+                return
+            }
+        }
+        guard let range else {
+            zone2State = .needsRange
+            return
+        }
+        do {
+            let progress = try await Zone2ProgressService.shared.weeklyProgress(range: range)
+            zone2State = .ready(progress)
+        } catch {
+            zone2State = .unavailable
+        }
+    }
+
+    private func recalculateZone2Range() async {
+        do {
+            guard let range = try await Zone2ProgressService.shared.estimatedRange() else {
+                zone2SettingsMessage = "Health has no age or resting-heart-rate estimate. Enter a range manually."
+                return
+            }
+            SettingsStore.zone2Range = range
+            syncZone2RangeFields()
+            zone2SettingsMessage = "Estimated \(range.lowerBPM)–\(range.upperBPM) BPM from Health."
+            await loadZone2Progress()
+        } catch {
+            zone2SettingsMessage = "The Health estimate is unavailable. Enter a range manually."
         }
     }
 }

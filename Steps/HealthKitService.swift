@@ -359,11 +359,16 @@ final class HealthKitService {
 
     /// Requests read access to step count and workouts (for cycling minutes).
     /// Safe to call repeatedly; iOS only prompts the user the first time.
-    func requestAuthorization() async throws {
+    func requestAuthorization(
+        additionalReadTypes: Set<HKObjectType> = []
+    ) async throws {
         guard HKHealthStore.isHealthDataAvailable() else {
             throw HealthKitError.notAvailable
         }
-        try await store.requestAuthorization(toShare: [], read: readTypes)
+        try await store.requestAuthorization(
+            toShare: [],
+            read: readTypes.union(additionalReadTypes)
+        )
         // The sheet has now been presented (grant or deny). Record it so the UI
         // never traps on the permission screen — read-only status is ambiguous.
         SettingsStore.hasRequestedHealthAuth = true

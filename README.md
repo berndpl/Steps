@@ -10,6 +10,10 @@ by how close you got to 10,000 steps.
 
 - **App** — a single live view showing today's step count, with a clean Health
   permission flow (loading → permission → today's total → denied).
+- **Weekly Zone 2** — a compact progress bar toward a fixed 120-minute weekly
+  goal. It estimates in-zone minutes from heart-rate samples recorded during
+  Health workouts, using an editable BPM range initialized from age and resting
+  heart rate.
 - **Visits & suggestions** — optional, opt-in visit tracking (Apple's low-power
   `CLVisit` dwell detection) logs the places you spend time at. A **History**
   sheet lists them with the round-trip walking cost home ↔ there (distance +
@@ -39,7 +43,11 @@ Then set your own Apple Developer Team under **Signing & Capabilities** (the rep
 ships with no team), select an iPhone simulator or device, and run.
 
 Requirements: Xcode 26+, iOS 26.5+. The app requests **read-only** access to
-step count via HealthKit. Step data stays on device; the visit-tracking feature
+steps, workouts, heart rate, resting heart rate, and date of birth via
+HealthKit. Health data stays on device; date of birth and resting heart rate are
+used only to initialize an editable Zone 2 BPM range and are not persisted by
+Steps. Zone 2 progress counts only recorded workouts that include heart-rate
+samples. The visit-tracking feature
 (opt-in) reaches Apple's map services only to compute walking distances
 (MapKit) and reverse-geocode place names — no personal data is sent anywhere
 else.
@@ -50,7 +58,8 @@ In `DEBUG` builds a bottom switcher (compiled out of release) lets you jump to
 any state — including an in-app render of the widget grid with sample data — so
 you can test without granting Health access or seeding data. You can also launch
 straight into a state with `-STEPS_PREVIEW Grid` (Live · Permission · Loading ·
-Steps · Denied · Grid). Pass `-STEPS_SEED_VISITS 1` to populate the visit log
+Steps · Denied · Grid · Zone 2 Ready · Zone 2 Setup). Pass
+`-STEPS_SEED_VISITS 1` to populate the visit log
 with sample places (home + a couple of destinations) so History and the
 round-trip suggestion are demonstrable without real `CLVisit` events; the
 ladybug menu also has *Seed sample visits* / *Clear visits* actions.
