@@ -19,6 +19,7 @@ Catalog: `Steps` (`projects/Steps/Steps.tokens.json`).
 | Font | `.system(design: .monospaced)` (SF Mono) | `ContentView.swift` | notes-plontsch is Inconsolata mono throughout; SF Mono is the owner-chosen stand-in. |
 | Weight | medium / regular (flattened) | `ContentView.swift` | notes-plontsch forces 400 — emphasis from size + colour, not weight (taste C1). |
 | Number | 68pt medium monospaced, gold | `ContentView.swift` `stepsView` | The one hero; colour (gold) + size carry it, not boldness. |
+| Weekly Zone 2 | Muted monospaced label + value over a thin accent progress bar | `ContentView.swift` `zone2ProgressView` | Keeps the fixed 120-minute weekly goal visible without competing with today's step hero. |
 | Accent | gold `#F5A623` default, now == the **scheme-adjusted palette goal colour** (`.tint`) | `ContentView.swift` / `GridStyle.goalColor(for:)` | Steps fingerprint; follows the customizer's goal colour while clamping lightness for readable light/dark contrast. |
 | Shadows | none | `ContentView.swift` | Flat; depth via Catppuccin surface tints. |
 | CTA | `.glassProminent` | `ContentView.swift` | Deskgym remnant — the single deliberate action stays Liquid Glass. |
