@@ -34,6 +34,7 @@ Catalog: `Steps` (`projects/Steps/Steps.tokens.json`).
 | Clip | `ContainerRelativeShape` | `StepsWidget.swift` | Follows the system widget shape. |
 | Insets | `18pt` + `.contentMarginsDisabled()` | `StepsWidget.swift` | Spark/Letters `LayoutMetrics`. |
 | Today's count | `.system(.footnote, design:.monospaced, weight:.semibold)`, gold, leading | `StepsGridView.swift` | Just the number — no glyph/label (owner request). |
+| Weekly Zone 2 | Compact `<minutes>m Z2`, muted, bottom-trailing | `StepsGridView.swift` / `StepsWidget.swift` | Adds the weekly total to every home-screen widget family without competing with the step count. |
 | Deep-link | `widgetURL("steps://open")` | `StepsWidget.swift` | Tap opens the app (like Letters `letters://open`). |
 
 ## Local directives (win over both styles) — the contribution grid

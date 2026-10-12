@@ -26,6 +26,8 @@ struct StepsMonthView: View {
     var style: GridStyle = .current
     /// Activities done today, shown as small badges beside the count.
     var activities: Set<DayActivity> = []
+    /// Current week's in-zone minutes, shown in the bottom-right widget footer.
+    var zone2Minutes: Int?
     @Environment(\.colorScheme) private var scheme
 
     private var todaySteps: Int {
@@ -47,6 +49,11 @@ struct StepsMonthView: View {
                         .font(.footnote)
                         .foregroundStyle(style.goalColor(for: scheme))
                 }
+                if let zone2Minutes {
+                    Text("\(zone2Minutes)m Z2")
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -60,6 +67,7 @@ struct StepsMediumView: View {
     let dailySteps: [Date: Int]
     var style: GridStyle = .current
     var activities: Set<DayActivity> = []
+    var zone2Minutes: Int?
     @Environment(\.colorScheme) private var scheme
 
     private var todaySteps: Int {
@@ -101,11 +109,17 @@ struct StepsMediumView: View {
                 }
             }
             Spacer(minLength: 0)
-            if let best {
-                Text("Best \(best.steps.formatted())")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundStyle(.secondary)
+            HStack(spacing: 6) {
+                if let best {
+                    Text("Best \(best.steps.formatted())")
+                }
+                Spacer(minLength: 0)
+                if let zone2Minutes {
+                    Text("\(zone2Minutes)m Z2")
+                }
             }
+            .font(.system(.caption2, design: .monospaced))
+            .foregroundStyle(.secondary)
         }
     }
 }
@@ -249,7 +263,8 @@ private struct MonthLayout {
 
 #Preview("Month View") {
     StepsMonthView(dailySteps: HealthKitService.sampleDailySteps(),
-                   activities: [.cycling, .strength])
+                   activities: [.cycling, .strength],
+                   zone2Minutes: 74)
         .padding(18)
         .frame(width: 170, height: 170)
 }

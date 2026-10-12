@@ -24,6 +24,7 @@ by how close you got to 10,000 steps.
   weekday slot (honoring Sunday/Monday week starts). Each past day is shaded
   against a fixed 10,000-step goal using GitHub's contribution ramp
   (`#9be9a8` → `#216e39`); future days fade, days outside the month stay blank.
+  The current week's Zone 2 minutes appear in the bottom-right corner.
 
 The grid is a single `StepsGridView` shared between the app and the widget, so
 the in-app preview and the home screen render from the exact same code.

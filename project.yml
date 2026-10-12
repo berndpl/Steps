@@ -92,6 +92,7 @@ targets:
     sources:
       - path: StepsWidget
       - path: Steps/HealthKitService.swift
+      - path: Steps/Zone2Progress.swift
       - path: Steps/GridStyle.swift          # shared: OKLCH ramp, GridStyle, shapes, palettes
     settings:
       base:

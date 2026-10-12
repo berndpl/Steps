@@ -10,28 +10,39 @@ struct StepsEntry: TimelineEntry {
     let date: Date
     let dailySteps: [Date: Int]
     var activities: Set<DayActivity> = []
+    var zone2Minutes: Int?
 }
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> StepsEntry {
-        StepsEntry(date: Date(), dailySteps: Self.sampleData(), activities: [.cycling, .mindful])
+        StepsEntry(date: Date(), dailySteps: Self.sampleData(),
+                   activities: [.cycling, .mindful], zone2Minutes: 74)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (StepsEntry) -> Void) {
         if context.isPreview {
-            completion(StepsEntry(date: Date(), dailySteps: Self.sampleData(), activities: [.cycling, .mindful]))
+            completion(StepsEntry(date: Date(), dailySteps: Self.sampleData(),
+                                  activities: [.cycling, .mindful], zone2Minutes: 74))
             return
         }
         Task {
-            completion(StepsEntry(date: Date(), dailySteps: await Self.currentSteps(),
-                                  activities: await HealthKitService.shared.todayActivities()))
+            async let steps = Self.currentSteps()
+            async let activities = HealthKitService.shared.todayActivities()
+            async let zone2Minutes = Self.currentZone2Minutes()
+            completion(StepsEntry(date: Date(), dailySteps: await steps,
+                                  activities: await activities,
+                                  zone2Minutes: await zone2Minutes))
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<StepsEntry>) -> Void) {
         Task {
-            let entry = StepsEntry(date: Date(), dailySteps: await Self.currentSteps(),
-                                   activities: await HealthKitService.shared.todayActivities())
+            async let steps = Self.currentSteps()
+            async let activities = HealthKitService.shared.todayActivities()
+            async let zone2Minutes = Self.currentZone2Minutes()
+            let entry = StepsEntry(date: Date(), dailySteps: await steps,
+                                   activities: await activities,
+                                   zone2Minutes: await zone2Minutes)
             // Fallback heartbeat so today's bucket keeps advancing even between
             // the app's observer-driven reloads. WidgetKit throttles/coalesces
             // these against the daily refresh budget, so 15 min is a request, not
@@ -62,6 +73,14 @@ struct Provider: TimelineProvider {
     static func sampleData() -> [Date: Int] {
         HealthKitService.sampleDailySteps()
     }
+
+    private static func currentZone2Minutes() async -> Int? {
+        guard let range = SettingsStore.zone2Range,
+              let progress = try? await Zone2ProgressService.shared.weeklyProgress(
+                range: range
+              ) else { return nil }
+        return progress.minutes
+    }
 }
 
 // MARK: - Home-screen grid widget
@@ -84,21 +103,25 @@ struct StepsWidgetEntryView: View {
 
             switch family {
             case .systemMedium:
-                StepsMediumView(dailySteps: entry.dailySteps, activities: entry.activities)
+                StepsMediumView(dailySteps: entry.dailySteps, activities: entry.activities,
+                                zone2Minutes: entry.zone2Minutes)
                     .padding(18)
             case .systemLarge:
-                StepsMonthView(dailySteps: entry.dailySteps, activities: entry.activities)
+                StepsMonthView(dailySteps: entry.dailySteps, activities: entry.activities,
+                               zone2Minutes: entry.zone2Minutes)
                     .padding(20)
             case .systemExtraLarge:
                 HStack(spacing: 28) {
-                    StepsMonthView(dailySteps: entry.dailySteps, activities: entry.activities)
+                    StepsMonthView(dailySteps: entry.dailySteps, activities: entry.activities,
+                                   zone2Minutes: entry.zone2Minutes)
                         .aspectRatio(1, contentMode: .fit)
                     statsPanel
                     Spacer(minLength: 0)
                 }
                 .padding(24)
             default: // .systemSmall
-                StepsMonthView(dailySteps: entry.dailySteps, activities: entry.activities)
+                StepsMonthView(dailySteps: entry.dailySteps, activities: entry.activities,
+                               zone2Minutes: entry.zone2Minutes)
                     .padding(18)
             }
         }
@@ -135,11 +158,17 @@ struct StepsWidgetEntryView: View {
                 }
             }
             Spacer(minLength: 0)
-            if let best {
-                Text("Best \(best.steps.formatted())")
-                    .font(.system(.caption2, design: .monospaced))
-                    .foregroundStyle(.secondary)
+            HStack(spacing: 6) {
+                if let best {
+                    Text("Best \(best.steps.formatted())")
+                }
+                Spacer(minLength: 0)
+                if let zone2Minutes = entry.zone2Minutes {
+                    Text("\(zone2Minutes)m Z2")
+                }
             }
+            .font(.system(.caption2, design: .monospaced))
+            .foregroundStyle(.secondary)
         }
     }
 }
@@ -173,13 +202,14 @@ struct StepsWidgetBundle: WidgetBundle {
 #Preview(as: .systemSmall) {
     StepsWidget()
 } timeline: {
-    StepsEntry(date: Date(), dailySteps: Provider.sampleData())
+    StepsEntry(date: Date(), dailySteps: Provider.sampleData(), zone2Minutes: 74)
 }
 
 #Preview(as: .systemMedium) {
     StepsWidget()
 } timeline: {
-    StepsEntry(date: Date(), dailySteps: Provider.sampleData(), activities: [.cycling, .strength])
+    StepsEntry(date: Date(), dailySteps: Provider.sampleData(),
+               activities: [.cycling, .strength], zone2Minutes: 74)
 }
 
 #Preview(as: .systemLarge) {

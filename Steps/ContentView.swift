@@ -572,7 +572,9 @@ struct ContentView: View {
             Text("Widget preview · sample data")
                 .font(.system(.caption, design: .monospaced))
                 .foregroundStyle(textMuted)
-            StepsMonthView(dailySteps: HealthKitService.sampleDailySteps())
+            StepsMonthView(dailySteps: HealthKitService.sampleDailySteps(),
+                           activities: [.cycling, .strength],
+                           zone2Minutes: 74)
                 .padding(12)
                 .frame(width: 158, height: 158)
                 .background(Color("AppTextMuted").opacity(0.12))   // flat surface, no shadow
